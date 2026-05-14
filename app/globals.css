@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-deep: #03040a;
+  --bg-panel: rgba(12, 14, 24, 0.72);
+  --stroke: rgba(148, 163, 184, 0.12);
+  --text-muted: #94a3b8;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-ink-950 text-slate-100 antialiased;
+  background-color: var(--bg-deep);
+}
+
+/* 底层由 WebAurora 负责；body 仅保留纯色兜底 */
+
+::selection {
+  @apply bg-fuchsia-500/30 text-white;
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      120deg,
+      #e9d5ff 0%,
+      #a78bfa 35%,
+      #f472b6 65%,
+      #22d3ee 100%
+    );
+  }
+  .glass-panel {
+    @apply border border-white/[0.08] bg-white/[0.03] shadow-inset backdrop-blur-xl;
+  }
+  .web-card-glow {
+    box-shadow:
+      0 0 0 1px rgba(167, 139, 250, 0.18),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+      0 32px 100px -40px rgba(139, 92, 246, 0.55),
+      0 0 90px -28px rgba(236, 72, 153, 0.3);
+  }
+
+  .web-aurora-spin-inner {
+    background: conic-gradient(
+      from 0deg,
+      rgba(139, 92, 246, 0.42),
+      rgba(236, 72, 153, 0.26),
+      rgba(34, 211, 238, 0.22),
+      rgba(99, 102, 241, 0.32),
+      rgba(139, 92, 246, 0.42)
+    );
+    filter: blur(76px);
+    opacity: 0.42;
+    animation: web-aurora-rotate 52s linear infinite;
+  }
+
+  .web-aurora-mesh {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      radial-gradient(ellipse 100% 70% at 50% -20%, rgba(139, 92, 246, 0.18), transparent 55%),
+      radial-gradient(ellipse 80% 60% at 100% 30%, rgba(236, 72, 153, 0.1), transparent 50%),
+      radial-gradient(ellipse 70% 50% at 0% 80%, rgba(34, 211, 238, 0.08), transparent 45%);
+    background-size:
+      48px 48px,
+      48px 48px,
+      100% 100%,
+      100% 100%,
+      100% 100%;
+    mask-image: radial-gradient(ellipse 95% 85% at 50% 45%, black 0%, transparent 78%);
+  }
+
+  .web-aurora-noise {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+
+  .web-aurora-vignette {
+    background: radial-gradient(
+      ellipse 75% 65% at 50% 50%,
+      transparent 0%,
+      rgba(3, 4, 10, 0.55) 100%
+    );
+  }
+
+  @keyframes web-aurora-rotate {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .web-aurora-spin-inner {
+      animation: none;
+    }
+  }
+
+  .text-gradient-anim {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      95deg,
+      #fae8ff 0%,
+      #c4b5fd 22%,
+      #f472b6 48%,
+      #22d3ee 72%,
+      #e9d5ff 100%
+    );
+    background-size: 200% auto;
+    animation: web-text-gradient 10s ease-in-out infinite;
+  }
+
+  @keyframes web-text-gradient {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .text-gradient-anim {
+      animation: none;
+      background-size: 100% auto;
+    }
+  }
+}
