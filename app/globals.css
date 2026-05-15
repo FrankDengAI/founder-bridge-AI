@@ -14,8 +14,7 @@ html {
 }
 
 body {
-  @apply bg-ink-950 text-slate-100 antialiased;
-  background-color: var(--bg-deep);
+  @apply min-h-screen antialiased;
 }
 
 /* 底层由 WebAurora 负责；body 仅保留纯色兜底 */
@@ -132,3 +131,5 @@ body {
     }
   }
 }
+
+@import "./globals-code-demo.css";

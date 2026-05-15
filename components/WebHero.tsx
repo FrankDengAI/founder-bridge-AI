@@ -3,11 +3,12 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { isMiniappConfigured, miniappOrigin } from "@/lib/miniappOrigin";
+import { appDemoReady, appShellHref, isExternalMiniapp } from "@/lib/miniappOrigin";
 
 export function WebHero() {
-  const demo = miniappOrigin();
-  const appReady = isMiniappConfigured();
+  const homeHref = appShellHref("/home");
+  const external = isExternalMiniapp();
+  const appReady = appDemoReady();
   return (
     <section
       id="vision"
@@ -51,7 +52,7 @@ export function WebHero() {
           </h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-slate-400 sm:text-lg">
             匹配、内容、工具与交易链路在同一叙事里闭环。左侧是你要的品牌张力；右侧是实时脉动的产品切片——
-            完整数据与账号流请跳转「App 演示」体验 SQLite 真入库。
+            完整数据与账号流请跳转「App 演示」体验 PostgreSQL 真入库。
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <motion.a
@@ -71,9 +72,9 @@ export function WebHero() {
             </Link>
             {appReady ? (
               <a
-                href={demo}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={homeHref}
+                target={external ? "_blank" : undefined}
+                rel={external ? "noopener noreferrer" : undefined}
                 className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-6 py-3 text-sm font-semibold text-slate-200 transition hover:border-cyan-400/35 hover:text-white"
               >
                 打开 App 壳 / 小程序端

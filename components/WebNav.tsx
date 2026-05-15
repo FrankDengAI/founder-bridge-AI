@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { isMiniappConfigured, miniappOrigin } from "@/lib/miniappOrigin";
+import { appDemoReady, appShellHref, isExternalMiniapp } from "@/lib/miniappOrigin";
 
 const links = [
   { href: "#vision", label: "愿景" },
@@ -9,8 +9,9 @@ const links = [
 ] as const;
 
 export function WebNav() {
-  const demo = miniappOrigin();
-  const appReady = isMiniappConfigured();
+  const homeHref = appShellHref("/home");
+  const external = isExternalMiniapp();
+  const appReady = appDemoReady();
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.08] bg-ink-950/55 shadow-[0_12px_48px_-16px_rgba(0,0,0,0.55)] backdrop-blur-2xl backdrop-saturate-150">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-400/50 to-transparent" />
@@ -44,9 +45,9 @@ export function WebNav() {
           </Link>
           {appReady ? (
             <a
-              href={demo}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={homeHref}
+              target={external ? "_blank" : undefined}
+              rel={external ? "noopener noreferrer" : undefined}
               className="rounded-full border border-violet-400/30 bg-gradient-to-r from-violet-600/90 to-fuchsia-600/90 px-3 py-1.5 text-xs font-semibold text-white shadow-[0_0_24px_-4px_rgba(167,139,250,0.7)] transition hover:brightness-110 sm:px-4 sm:text-sm"
             >
               打开 App 演示

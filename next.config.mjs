@@ -1,5 +1,49 @@
 /** @type {import('next').NextConfig} */
+const vercelOrigin =
+  process.env.VERCEL_URL && !process.env.VERCEL_URL.startsWith("http")
+    ? `https://${process.env.VERCEL_URL}`
+    : "";
+
 const nextConfig = {
+  env: {
+    NEXT_PUBLIC_SITE_URL:
+      (process.env.NEXT_PUBLIC_SITE_URL || vercelOrigin || "").replace(
+        /\/$/,
+        "",
+      ),
+  },
+  async headers() {
+    const fromEnv = process.env.FRAME_ANCESTOR_ORIGINS?.split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const frameAncestors = fromEnv?.length
+      ? [...new Set(["'self'", ...fromEnv])]
+      : [
+          "'self'",
+          "https://*.vercel.app",
+          "http://localhost:3000",
+          "http://localhost:3001",
+          "http://127.0.0.1:3000",
+          "http://127.0.0.1:3001",
+        ];
+    return [
+      {
+        source: "/welcome/login",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: `frame-ancestors ${frameAncestors.join(" ")};`,
+          },
+        ],
+      },
+    ];
+  },
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "picsum.photos", pathname: "/**" },
+      { protocol: "https", hostname: "i.pravatar.cc", pathname: "/**" },
+    ],
+  },
   webpack: (config, { dev }) => {
     if (dev && process.platform === "win32") {
       const ignored =

@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String       @id @default(cuid())
+  displayName String
+  avatarUrl   String?
+  createdAt   DateTime     @default(now())
+  profile     UserProfile?
+  posts       Post[]
+  projects    Project[]
+
+  followingEdges Follow[] @relation("FollowOut")
+  followerEdges  Follow[] @relation("FollowIn")
+
+  comments       Comment[]
+  postLikes      PostLike[]
+  postSaves      PostSave[]
+  wishlistItems  WishlistItem[]
+  demoOrders     DemoOrder[]
+  lessonProgress UserLessonProgress[]
+}
+
+model UserProfile {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role                 String
+  budgetTier           Int      @default(0)
+  intro                String   @default("")
+  direction            String   @default("")
+  skillKeywords        String   @default("[]")
+  interestTags         String   @default("[]")
+  desiredPartnerRoles  String   @default("[]")
+  updatedAt            DateTime @updatedAt
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  excerpt   String   @default("")
+  coverUrl  String
+  body      String   @default("")
+  likes     Int      @default(0)
+  saves     Int      @default(0)
+  tags      String   @default("[]")
+  createdAt DateTime @default(now())
+
+  comments Comment[]
+  likedBy  PostLike[]
+  savedBy  PostSave[]
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+  follower    User     @relation("FollowOut", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("FollowIn", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  authorId  String
+  body      String
+  createdAt DateTime @default(now())
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([postId, createdAt])
+}
+
+model PostLike {
+  userId String
+  postId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+}
+
+model PostSave {
+  userId String
+  postId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+}
+
+model Project {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  repoUrl    String   @default("")
+  previewUrl String   @default("")
+  stack      String   @default("[]")
+  createdAt  DateTime @default(now())
+}
+
+model Tool {
+  id          String       @id @default(cuid())
+  name        String
+  category    String
+  description String       @default("")
+  avgRating   Float        @default(0)
+  reviews     ToolReview[]
+}
+
+model ToolReview {
+  id        String   @id @default(cuid())
+  toolId    String
+  tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  userName  String
+  rating    Int
+  comment   String   @default("")
+  createdAt DateTime @default(now())
+}
+
+model MarketItem {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @default("")
+  priceCents  Int      @default(0)
+  itemType    String
+  createdAt   DateTime @default(now())
+
+  wishlistItems WishlistItem[]
+  demoOrders    DemoOrder[]
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  marketId  String
+  createdAt DateTime @default(now())
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  market MarketItem @relation(fields: [marketId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, marketId])
+}
+
+model DemoOrder {
+  id        String   @id @default(cuid())
+  userId    String
+  marketId  String
+  status    String   @default("DEMO_PAID")
+  createdAt DateTime @default(now())
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  market MarketItem @relation(fields: [marketId], references: [id], onDelete: Cascade)
+}
+
+model UserLessonProgress {
+  userId    String
+  step      Int
+  done      Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, step])
+}

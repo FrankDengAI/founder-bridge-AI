@@ -1,11 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { isMiniappConfigured, miniappOrigin } from "@/lib/miniappOrigin";
+import { appDemoReady, appShellHref, isExternalMiniapp } from "@/lib/miniappOrigin";
 
 export function WebCta() {
-  const demo = miniappOrigin();
-  const appReady = isMiniappConfigured();
+  const homeHref = appShellHref("/home");
+  const external = isExternalMiniapp();
+  const appReady = appDemoReady();
+  const demoLabel = homeHref.replace(/^https?:\/\//, "");
   return (
     <section id="cta" className="border-t border-white/[0.06] pb-24 pt-20 sm:pb-32 sm:pt-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -25,12 +27,12 @@ export function WebCta() {
           <div className="relative mt-8 flex flex-wrap justify-center gap-3">
             {appReady ? (
               <a
-                href={demo}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={homeHref}
+                target={external ? "_blank" : undefined}
+                rel={external ? "noopener noreferrer" : undefined}
                 className="inline-flex rounded-full bg-white px-8 py-3 text-sm font-bold text-ink-950 transition hover:bg-slate-100"
               >
-                打开 App 演示（{demo.replace(/^https?:\/\//, "")}）
+                打开 App 演示（{demoLabel}）
               </a>
             ) : (
               <span
@@ -50,9 +52,9 @@ export function WebCta() {
         </motion.div>
 
         <footer className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/[0.06] pt-10 text-center text-sm text-slate-500 sm:flex-row sm:text-left">
-          <p>© {new Date().getFullYear()} VibeCoding 演示工程 · 网页端与 App 壳端分离部署</p>
+          <p>© {new Date().getFullYear()} VibeCoding 演示工程 · 品牌与 App 同仓部署</p>
           <p className="font-mono text-xs text-slate-600">
-            code_demo_web · Next.js 14
+            Next.js 14 · Prisma PostgreSQL
           </p>
         </footer>
       </div>

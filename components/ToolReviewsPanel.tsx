@@ -1,0 +1,170 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { MessageSquarePlus, Star } from "lucide-react";
+
+type Review = {
+  id: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+};
+
+type Props = {
+  toolId: string;
+  initialReviews: Review[];
+};
+
+type SortMode = "new" | "rating";
+
+export function ToolReviewsPanel({ toolId, initialReviews }: Props) {
+  const router = useRouter();
+  const [reviews, setReviews] = useState(initialReviews);
+  const [sort, setSort] = useState<SortMode>("new");
+  const [name, setName] = useState("我");
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  const sorted = useMemo(() => {
+    const list = [...reviews];
+    if (sort === "rating") {
+      list.sort((a, b) => b.rating - a.rating || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    } else {
+      list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    }
+    return list;
+  }, [reviews, sort]);
+
+  const avg = useMemo(() => {
+    if (!reviews.length) return 0;
+    return reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
+  }, [reviews]);
+
+  const submit = async () => {
+    setBusy(true);
+    setMsg(null);
+    try {
+      const res = await fetch(`/api/tools/${toolId}/reviews`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userName: name, rating, comment }),
+      });
+      if (!res.ok) throw new Error("提交失败");
+      const now = new Date().toISOString();
+      setReviews((prev) => [
+        {
+          id: `local_${Date.now()}`,
+          userName: name.trim() || "匿名用户",
+          rating,
+          comment: comment.trim(),
+          createdAt: now,
+        },
+        ...prev,
+      ]);
+      setComment("");
+      setMsg("评价已入库，并刷新平均分。");
+      router.refresh();
+    } catch {
+      setMsg("提交失败，请稍后再试。");
+    } finally {
+      setBusy(false);
+      window.setTimeout(() => setMsg(null), 2000);
+    }
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-sm font-semibold text-zinc-900">用户评价</h2>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex gap-1 rounded-xl bg-zinc-100/80 p-0.5 ring-1 ring-zinc-200/60">
+            <button
+              type="button"
+              onClick={() => setSort("new")}
+              className={`rounded-lg px-2.5 py-1 text-[10px] font-semibold ${
+                sort === "new" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-600"
+              }`}
+            >
+              最新
+            </button>
+            <button
+              type="button"
+              onClick={() => setSort("rating")}
+              className={`rounded-lg px-2.5 py-1 text-[10px] font-semibold ${
+                sort === "rating" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-600"
+              }`}
+            >
+              评分优先
+            </button>
+          </div>
+          <span className="rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-900 ring-1 ring-amber-200/70">
+            均值 {avg.toFixed(1)}
+          </span>
+        </div>
+      </div>
+
+      <div className="glass-panel rounded-3xl p-4 shadow-sm ring-1 ring-white/70">
+        <div className="flex items-center gap-2 text-xs font-semibold text-zinc-900">
+          <MessageSquarePlus className="h-4 w-4 text-brand-700" />
+          写一条评价（演示）
+        </div>
+        <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <input
+            className="rounded-2xl border border-zinc-200/90 bg-white/80 px-3 py-2 text-sm"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="昵称"
+          />
+          <select
+            className="rounded-2xl border border-zinc-200/90 bg-white/80 px-3 py-2 text-sm"
+            value={rating}
+            onChange={(e) => setRating(Number(e.target.value))}
+          >
+            {[5, 4, 3, 2, 1].map((n) => (
+              <option key={n} value={n}>
+                {n} 星
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void submit()}
+            className="rounded-2xl bg-gradient-to-r from-brand-600 to-fuchsia-600 px-3 py-2 text-sm font-semibold text-white shadow-glow disabled:opacity-50"
+          >
+            {busy ? "提交中…" : "提交"}
+          </button>
+        </div>
+        <textarea
+          className="mt-2 min-h-[90px] w-full rounded-2xl border border-zinc-200/90 bg-white/80 px-3 py-2 text-sm"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="说说真实使用场景、上手成本、适合人群…"
+        />
+        {msg ? <p className="mt-2 text-[11px] font-medium text-brand-900">{msg}</p> : null}
+      </div>
+
+      <ul className="space-y-2">
+        {sorted.map((r) => (
+          <li key={r.id} className="glass-panel rounded-2xl p-3 shadow-sm">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-zinc-950">{r.userName}</p>
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-900 ring-1 ring-amber-200/70">
+                <Star className="h-3.5 w-3.5" />
+                {r.rating}.0
+              </span>
+            </div>
+            <p className="mt-2 text-xs leading-relaxed text-zinc-700">{r.comment || "（无文字）"}</p>
+            <p className="mt-2 text-[10px] text-zinc-400">
+              {new Date(r.createdAt).toLocaleString("zh-CN")}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
