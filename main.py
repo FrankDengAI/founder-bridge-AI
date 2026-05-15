@@ -6,8 +6,8 @@
 或在终端执行：python main.py
 
 与仓库根目录 main.py 的区别：
-  - 根目录 main.py 默认启动 code_demo（手机/App 壳界面，带底部 Tab）
-  - 本脚本只启动当前目录这一份网页端，适合在桌面浏览器全屏浏览
+  - 根目录 main.py 默认启动 code_demo（旧版独立 App 壳）
+  - 本脚本启动当前目录的 Next 应用（品牌 + App 已合并；见下方端口说明）
 
 用法：
   python main.py
@@ -15,7 +15,9 @@
   python main.py --no-auto-port
   python main.py --skip-setup
 
-默认监听 3001，与 App 壳（通常 3000）分离，避免 /login 内嵌 iframe 指向本站导致 404。
+默认监听 3001（可用 -p 或环境变量 PORT 修改）。本仓库已合并 App 与品牌站为同一 Next 应用：
+/login 内嵌的 /welcome/login 与当前站点同源，无需另起「壳端」、一般也无需设置 NEXT_PUBLIC_MINIAPP_URL。
+若你仍用旧版「网页 + 独立壳」双进程本地演示，请把壳端与网页错开端口，并在 .env.local 中设置 NEXT_PUBLIC_MINIAPP_URL 指向壳端 origin。
 """
 
 from __future__ import annotations
@@ -153,7 +155,7 @@ def main() -> None:
 
     print("\n【网页端】在电脑浏览器打开: http://localhost:%d" % port, flush=True)
     print(
-        "（品牌站；/login 内嵌 App 登录默认指向 http://localhost:3000，请先起壳端或设 NEXT_PUBLIC_MINIAPP_URL）",
+        "（品牌站 + App 已同仓：/login 内嵌本站 /welcome/login；仅双进程旧演示时才需 NEXT_PUBLIC_MINIAPP_URL）",
         flush=True,
     )
     print("（手机壳/App 数据演示请在仓库根目录运行 python main.py）\n", flush=True)

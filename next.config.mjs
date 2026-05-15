@@ -1,16 +1,22 @@
 /** @type {import('next').NextConfig} */
+const vercelUrl = process.env.VERCEL_URL?.trim();
 const vercelOrigin =
-  process.env.VERCEL_URL && !process.env.VERCEL_URL.startsWith("http")
-    ? `https://${process.env.VERCEL_URL}`
-    : "";
+  vercelUrl && !vercelUrl.startsWith("http") ? `https://${vercelUrl}` : "";
+
+const vercelProd = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+const vercelProdOrigin =
+  vercelProd && !vercelProd.startsWith("http")
+    ? `https://${vercelProd}`
+    : vercelProd || "";
 
 const nextConfig = {
   env: {
-    NEXT_PUBLIC_SITE_URL:
-      (process.env.NEXT_PUBLIC_SITE_URL || vercelOrigin || "").replace(
-        /\/$/,
-        "",
-      ),
+    NEXT_PUBLIC_SITE_URL: (
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      vercelOrigin ||
+      vercelProdOrigin ||
+      ""
+    ).replace(/\/$/, ""),
   },
   async headers() {
     const fromEnv = process.env.FRAME_ANCESTOR_ORIGINS?.split(",")
