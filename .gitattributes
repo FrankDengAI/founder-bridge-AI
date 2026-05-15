@@ -1,0 +1,3 @@
+# 降低 CRLF / 编码差异；Prisma 迁移 SQL 应为 UTF-8 无 BOM
+* text=auto eol=lf
+*.sql text eol=lf
