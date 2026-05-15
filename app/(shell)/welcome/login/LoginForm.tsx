@@ -34,8 +34,15 @@ export function LoginForm() {
     void fetch("/api/auth/users")
       .then(async (r) => {
         if (!r.ok) {
-          const t = await r.text().catch(() => "");
-          throw new Error(t || `请求失败（${r.status}）`);
+          const raw = await r.text().catch(() => "");
+          let msg = raw.trim() || `请求失败（${r.status}）`;
+          try {
+            const j = JSON.parse(raw) as { message?: string };
+            if (typeof j?.message === "string" && j.message.trim()) msg = j.message.trim();
+          } catch {
+            /* 非 JSON 时用原文 */
+          }
+          throw new Error(msg);
         }
         return r.json() as Promise<{ users: Row[] }>;
       })
@@ -135,6 +142,28 @@ export function LoginForm() {
           </p>
         </div>
 
+        {userListState === "empty" || userListState === "error" ? (
+          <div
+            className={clsx(
+              "mt-4 rounded-2xl border px-3 py-3 text-xs leading-relaxed",
+              userListState === "error"
+                ? "border-red-200 bg-red-50 text-red-950"
+                : "border-amber-200/80 bg-amber-50 text-amber-950",
+            )}
+          >
+            {userListState === "error" ? (
+              <p>{err ?? "无法加载账号列表。"}</p>
+            ) : (
+              <p>
+                当前数据库中还没有演示用户，登录按钮会保持不可用。请在能访问同一{" "}
+                <span className="font-mono">DATABASE_URL</span> 的环境执行一次{" "}
+                <span className="font-mono font-semibold">npm run db:seed</span>
+                ，然后点下方「重新加载」。
+              </p>
+            )}
+          </div>
+        ) : null}
+
         <div className="mt-6 flex rounded-xl bg-zinc-100 p-1">
           <button
             type="button"
@@ -219,14 +248,6 @@ export function LoginForm() {
                 );
               })}
             </ul>
-            {userListState === "empty" || userListState === "error" ? (
-              <p className="rounded-2xl border border-amber-200/80 bg-amber-50 px-3 py-3 text-xs leading-relaxed text-amber-950">
-                部署后请在项目根目录执行{" "}
-                <span className="font-mono font-semibold">npm run db:seed</span>{" "}
-                写入演示用户；若使用 Vercel，请在本地或 CI 对同一{" "}
-                <span className="font-mono">DATABASE_URL</span> 执行种子后，再点「重新加载」。
-              </p>
-            ) : null}
           </div>
         ) : (
           <div className="mt-5 space-y-4">
@@ -283,7 +304,7 @@ export function LoginForm() {
           </span>
         </label>
 
-        {err ? (
+        {err && userListState !== "error" ? (
           <p className="mt-3 text-sm font-medium text-red-600">{err}</p>
         ) : null}
 

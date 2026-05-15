@@ -9,7 +9,7 @@ import {
   loginIframeSrc,
   miniappOrigin,
 } from "@/lib/miniappOrigin";
-import { VBC_AUTH_POST_MESSAGE } from "@/lib/vbcAuth";
+import { VBC_AUTH_POST_MESSAGE } from "@/lib/constants";
 
 export function LoginBridge() {
   const app = miniappOrigin();

@@ -1,2 +1,2 @@
-/** 与 code_demo/lib/constants.ts 中 VBC_AUTH_POST_MESSAGE 保持一致 */
-export const VBC_AUTH_POST_MESSAGE = "vbc:login" as const;
+/** 与 iframe / 品牌站 postMessage 使用同一常量（见 lib/constants） */
+export { VBC_AUTH_POST_MESSAGE } from "@/lib/constants";
