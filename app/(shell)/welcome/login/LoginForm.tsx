@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -13,6 +13,8 @@ type Row = { id: string; displayName: string };
 
 type Tab = "account" | "password";
 
+type UserListState = "loading" | "ready" | "empty" | "error";
+
 export function LoginForm() {
   const searchParams = useSearchParams();
   const embed = searchParams.get("embed") === "1";
@@ -24,25 +26,59 @@ export function LoginForm() {
   const [agree, setAgree] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [userListState, setUserListState] = useState<UserListState>("loading");
+
+  const loadUsers = useCallback(() => {
+    setUserListState("loading");
+    setErr(null);
+    void fetch("/api/auth/users")
+      .then(async (r) => {
+        if (!r.ok) {
+          const t = await r.text().catch(() => "");
+          throw new Error(t || `请求失败（${r.status}）`);
+        }
+        return r.json() as Promise<{ users: Row[] }>;
+      })
+      .then((d) => {
+        const list = d.users ?? [];
+        setUsers(list);
+        if (list.length) {
+          setUserId((prev) => (prev && list.some((u) => u.id === prev) ? prev : list[0].id));
+          setUserListState("ready");
+        } else {
+          setUserId("");
+          setUserListState("empty");
+        }
+      })
+      .catch(() => {
+        setUsers([]);
+        setUserId("");
+        setUserListState("error");
+        setErr(
+          "无法加载演示账号列表。请确认服务器已配置 DATABASE_URL、迁移已成功，并执行 npm run db:seed。",
+        );
+      });
+  }, []);
 
   useEffect(() => {
-    void fetch("/api/auth/users")
-      .then((r) => r.json())
-      .then((d: { users: Row[] }) => {
-        setUsers(d.users ?? []);
-        if (d.users?.length) setUserId(d.users[0].id);
-      })
-      .catch(() => setErr("无法加载用户列表，请先 npm run db:seed"));
-  }, []);
+    loadUsers();
+  }, [loadUsers]);
 
   const selected = useMemo(
     () => users.find((u) => u.id === userId),
     [users, userId],
   );
 
+  const canSubmit =
+    userListState === "ready" && Boolean(userId) && agree && !busy;
+
   const submit = async () => {
     if (!agree) {
       setErr("请先勾选同意演示用户协议");
+      return;
+    }
+    if (!userId) {
+      setErr("请先选择一个演示账号");
       return;
     }
     setBusy(true);
@@ -128,7 +164,22 @@ export function LoginForm() {
 
         {tab === "account" ? (
           <div className="mt-5 space-y-2">
-            <p className="text-xs font-semibold text-zinc-500">选择账号</p>
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs font-semibold text-zinc-500">选择账号</p>
+              <button
+                type="button"
+                onClick={() => loadUsers()}
+                disabled={userListState === "loading"}
+                className="text-xs font-semibold text-violet-600 hover:underline disabled:opacity-40"
+              >
+                重新加载
+              </button>
+            </div>
+            {userListState === "loading" ? (
+              <p className="rounded-2xl border border-zinc-200 bg-zinc-50 px-3 py-4 text-center text-sm text-zinc-500">
+                正在加载演示账号…
+              </p>
+            ) : null}
             <ul className="max-h-[min(52vh,320px)] space-y-2 overflow-y-auto pr-0.5">
               {users.map((u) => {
                 const active = u.id === userId;
@@ -168,6 +219,14 @@ export function LoginForm() {
                 );
               })}
             </ul>
+            {userListState === "empty" || userListState === "error" ? (
+              <p className="rounded-2xl border border-amber-200/80 bg-amber-50 px-3 py-3 text-xs leading-relaxed text-amber-950">
+                部署后请在项目根目录执行{" "}
+                <span className="font-mono font-semibold">npm run db:seed</span>{" "}
+                写入演示用户；若使用 Vercel，请在本地或 CI 对同一{" "}
+                <span className="font-mono">DATABASE_URL</span> 执行种子后，再点「重新加载」。
+              </p>
+            ) : null}
           </div>
         ) : (
           <div className="mt-5 space-y-4">
@@ -230,11 +289,21 @@ export function LoginForm() {
 
         <button
           type="button"
-          disabled={busy || !userId}
+          disabled={!canSubmit}
           onClick={() => void submit()}
           className="mt-5 w-full rounded-full bg-zinc-900 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:bg-zinc-800 disabled:opacity-45"
         >
-          {busy ? "登录中…" : "登 录"}
+          {busy
+            ? "登录中…"
+            : userListState === "loading"
+              ? "加载账号…"
+              : userListState === "error"
+                ? "无法登录（未加载账号）"
+                : userListState === "empty"
+                  ? "暂无演示账号"
+                  : !agree
+                    ? "请先勾选协议"
+                    : "登 录"}
         </button>
 
         {!embed ? (
