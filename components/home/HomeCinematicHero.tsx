@@ -34,10 +34,11 @@ function useAnimatedInt(target: number, active: boolean) {
 
 export function HomeCinematicHero({ stats }: { stats: Stats }) {
   const [mounted, setMounted] = useState(false);
-  const [badges, setBadges] = useState(getUnlockedBadges());
+  const [badges, setBadges] = useState<ReturnType<typeof getUnlockedBadges>>([]);
 
   useEffect(() => {
     setMounted(true);
+    setBadges(getUnlockedBadges());
     const on = () => setBadges(getUnlockedBadges());
     window.addEventListener("vibe-badges-updated", on);
     return () => window.removeEventListener("vibe-badges-updated", on);

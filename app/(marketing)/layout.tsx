@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, JetBrains_Mono, Syne } from "next/font/google";
+import { MarketingMotionConfig } from "@/components/MarketingMotionConfig";
 import { WebAurora } from "@/components/WebAurora";
 
 const syne = Syne({
@@ -35,8 +36,10 @@ export default function MarketingLayout({
     <div
       className={`dark min-h-screen bg-ink-950 text-slate-100 ${syne.variable} ${dmSans.variable} ${jetbrains.variable} font-sans`}
     >
-      <WebAurora />
-      <div className="relative z-10 min-h-screen">{children}</div>
+      <MarketingMotionConfig>
+        <WebAurora />
+        <div className="relative z-10 min-h-screen">{children}</div>
+      </MarketingMotionConfig>
     </div>
   );
 }

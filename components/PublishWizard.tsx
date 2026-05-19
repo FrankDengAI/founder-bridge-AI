@@ -4,21 +4,16 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, ImagePlus, NotebookPen } from "lucide-react";
 import clsx from "clsx";
-import { LS_USER_ID } from "@/lib/clientSession";
 import { DEMO_USER_ID } from "@/lib/constants";
+import { useClientUserId } from "@/lib/hooks/useClientUserId";
 import { POST_TYPES, isPostType } from "@/lib/domain/postType";
 import { POST_TYPE_LABEL } from "@/lib/labels";
 
 const STEPS = ["类型", "内容", "封面", "发布"] as const;
 
-function currentUserId() {
-  if (typeof window === "undefined") return DEMO_USER_ID;
-  return localStorage.getItem(LS_USER_ID) || DEMO_USER_ID;
-}
-
 export function PublishWizard() {
   const router = useRouter();
-  const userId = useMemo(() => currentUserId(), []);
+  const userId = useClientUserId(DEMO_USER_ID);
   const [step, setStep] = useState(0);
   const [type, setType] = useState<string>("NOTE");
   const [title, setTitle] = useState("");
