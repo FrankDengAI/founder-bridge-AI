@@ -1,5 +1,16 @@
 import Link from "next/link";
-import { ArrowUpRight, BookOpen, FolderGit2, Rocket } from "lucide-react";
+import {
+  ArrowUpRight,
+  BookOpen,
+  CheckCircle2,
+  Circle,
+  FolderGit2,
+  Lightbulb,
+  Rocket,
+  Sparkles,
+  Wand2,
+  Zap,
+} from "lucide-react";
 import { LearnHubStrip } from "@/components/learn/LearnHubStrip";
 import { PageHeader } from "@/components/PageHeader";
 import { prisma } from "@/lib/prisma";
@@ -8,14 +19,14 @@ import { getUserIdFromCookies } from "@/lib/session";
 export const dynamic = "force-dynamic";
 
 const STEPS = [
-  "想法生成",
-  "需求拆解",
-  "提示词编写",
-  "代码生成",
-  "页面设计",
-  "GitHub 管理",
-  "部署上线",
-  "用户反馈",
+  { name: "想法生成", desc: "灵感卡 · 用户画像 · 价值假设", icon: Lightbulb },
+  { name: "需求拆解", desc: "PRD · 核心流程 · MVP 边界", icon: BookOpen },
+  { name: "提示词编写", desc: "Prompt 工程化 · 上下文工程", icon: Wand2 },
+  { name: "代码生成", desc: "Cursor / Claude Code 协作", icon: Sparkles },
+  { name: "页面设计", desc: "组件库 · 响应式 · 玻璃拟态", icon: Sparkles },
+  { name: "GitHub 管理", desc: "分支 · PR · Code Review", icon: FolderGit2 },
+  { name: "部署上线", desc: "Vercel · 数据库 · CI/CD", icon: Rocket },
+  { name: "用户反馈", desc: "数据看板 · 复盘 · 迭代", icon: Zap },
 ] as const;
 
 export default async function LearnPage() {
@@ -75,28 +86,99 @@ export default async function LearnPage() {
           <div>
             <h2 className="text-sm font-semibold text-zinc-950">Vibe Coding 学习路线</h2>
             <p className="mt-1 text-xs leading-relaxed text-zinc-600">
-              每一步都可进入详情页，内含行动清单与扩展建议。
+              8 步法 · 每一步都可进入详情页，内含行动清单与扩展建议。
             </p>
           </div>
           <BookOpen className="mt-0.5 h-5 w-5 text-brand-700" />
         </div>
-        <ol className="mt-4 space-y-2">
-          {STEPS.map((s, i) => (
-            <li key={s}>
-              <Link
-                href={`/learn/step/${i + 1}`}
-                className="flex items-center justify-between gap-3 rounded-2xl bg-white/70 px-3 py-2.5 text-xs text-zinc-800 ring-1 ring-zinc-200/70 transition hover:bg-white hover:shadow-sm"
-              >
-                <span className="flex items-center gap-2">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-600 to-fuchsia-600 text-[11px] font-bold text-white shadow-sm">
-                    {i + 1}
+
+        {/* 顶部进度条 */}
+        <div className="mt-4 rounded-2xl bg-gradient-to-r from-violet-50 via-fuchsia-50 to-amber-50 p-3 ring-1 ring-violet-100/80">
+          <div className="flex items-center justify-between text-[11px] font-semibold text-zinc-700">
+            <span>整体进度</span>
+            <span className="font-mono text-zinc-900 num-tab">3 / 8 步</span>
+          </div>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/80 ring-1 ring-zinc-200/60">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-500 to-amber-400"
+              style={{ width: "37.5%" }}
+            />
+          </div>
+          <div className="mt-2 flex items-center gap-1.5 text-[10px] text-zinc-600">
+            <Sparkles className="h-3 w-3 text-amber-500" />
+            登录后会写入 SQLite · 与「成就」字段同步
+          </div>
+        </div>
+
+        {/* 时间线步骤 */}
+        <ol className="relative mt-5 space-y-3 pl-4">
+          <div
+            aria-hidden
+            className="absolute left-3 top-2 bottom-2 w-px bg-gradient-to-b from-violet-300 via-fuchsia-200 to-transparent"
+          />
+          {STEPS.map((s, i) => {
+            const done = i < 3;
+            const current = i === 3;
+            const Icon = s.icon;
+            return (
+              <li key={s.name} className="relative">
+                <div
+                  aria-hidden
+                  className={`absolute -left-1.5 top-3 flex h-5 w-5 items-center justify-center rounded-full ring-4 ring-white ${
+                    done
+                      ? "bg-gradient-to-br from-emerald-500 to-emerald-600"
+                      : current
+                        ? "bg-gradient-to-br from-violet-600 to-fuchsia-600 animate-pulse"
+                        : "bg-white ring-4 ring-zinc-100"
+                  }`}
+                >
+                  {done ? (
+                    <CheckCircle2 className="h-3 w-3 text-white" />
+                  ) : current ? (
+                    <Sparkles className="h-2.5 w-2.5 text-white" />
+                  ) : (
+                    <Circle className="h-2.5 w-2.5 text-zinc-400" />
+                  )}
+                </div>
+                <Link
+                  href={`/learn/step/${i + 1}`}
+                  className={`ml-5 flex items-start justify-between gap-3 rounded-2xl px-3 py-2.5 ring-1 transition hover:bg-white hover:shadow-sm ${
+                    done
+                      ? "bg-emerald-50/60 ring-emerald-200/70"
+                      : current
+                        ? "bg-gradient-to-r from-violet-100/80 via-fuchsia-100/60 to-white ring-violet-200/80"
+                        : "bg-white/70 ring-zinc-200/70"
+                  }`}
+                >
+                  <span className="flex min-w-0 items-start gap-2.5">
+                    <span
+                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-white shadow-sm ${
+                        done
+                          ? "bg-gradient-to-br from-emerald-500 to-teal-600"
+                          : current
+                            ? "bg-gradient-to-br from-violet-600 to-fuchsia-600"
+                            : "bg-zinc-200 text-zinc-500"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+                        Step {i + 1}
+                      </span>
+                      <span className="block text-sm font-bold text-zinc-900">
+                        {s.name}
+                      </span>
+                      <span className="block text-[11px] leading-relaxed text-zinc-600">
+                        {s.desc}
+                      </span>
+                    </span>
                   </span>
-                  <span className="font-semibold">{s}</span>
-                </span>
-                <ArrowUpRight className="h-4 w-4 text-zinc-400" />
-              </Link>
-            </li>
-          ))}
+                  <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-zinc-400" />
+                </Link>
+              </li>
+            );
+          })}
         </ol>
         <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
           <Link

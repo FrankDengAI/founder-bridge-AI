@@ -6,7 +6,9 @@
     "node": ">=20"
   },
   "scripts": {
+    "clean": "node -e \"try{require('fs').rmSync('.next',{recursive:true,force:true})}catch(e){}\"",
     "dev": "next dev",
+    "dev:clean": "npm run clean && next dev",
     "build": "node scripts/vercel-build.cjs",
     "build:with-migrate": "npx prisma migrate deploy && npx prisma generate && npx next build",
     "start": "next start",

@@ -93,6 +93,15 @@ const config: Config = {
           "0%, 100%": { backgroundPosition: "0% 50%" },
           "50%": { backgroundPosition: "100% 50%" },
         },
+        "tilt": {
+          "0%, 50%, 100%": { transform: "rotate(0deg)" },
+          "25%": { transform: "rotate(0.7deg)" },
+          "75%": { transform: "rotate(-0.7deg)" },
+        },
+        "ping-slow": {
+          "0%, 100%": { transform: "scale(1)", opacity: "0.7" },
+          "50%": { transform: "scale(1.18)", opacity: "0.35" },
+        },
       },
       animation: {
         drift: "drift 18s ease-in-out infinite",
@@ -103,6 +112,8 @@ const config: Config = {
         "float-c": "float-c 30s ease-in-out infinite",
         "border-shine": "border-shine 8s ease-in-out infinite",
         "gradient-x": "gradient-x 6s ease infinite",
+        "tilt": "tilt 9s ease-in-out infinite",
+        "ping-slow": "ping-slow 3.2s ease-in-out infinite",
       },
     },
   },

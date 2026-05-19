@@ -4,8 +4,11 @@ import { appDemoReady, appShellHref, isExternalMiniapp } from "@/lib/miniappOrig
 const links = [
   { href: "#vision", label: "愿景" },
   { href: "#features", label: "能力" },
+  { href: "#match", label: "匹配引擎" },
   { href: "#pulse", label: "实时脉动" },
-  { href: "#cta", label: "开始" },
+  { href: "#market", label: "工具商城" },
+  { href: "#stories", label: "用户故事" },
+  { href: "#roadmap", label: "路线图" },
 ] as const;
 
 export function WebNav() {

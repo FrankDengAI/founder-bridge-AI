@@ -10,12 +10,24 @@ export type ParsedProfile = {
   desiredPartnerRoles: Role[];
 };
 
+/**
+ * 匹配评分 7 维加权（v2）：
+ *  - role        角色互补矩阵
+ *  - keywords    技能关键词向量相似（Jaccard + TF cosine + 期望意向）
+ *  - direction   创业方向语义（token Jaccard + bigram 重叠）
+ *  - interest    兴趣画像（关键词 + 方向 拼合后的兴趣向量相似）
+ *  - reciprocity 双向意向（互为对方期望伙伴时的奖励）
+ *  - budget      资金档位接近度
+ *  - activity    活跃度（资料新鲜度 + 简介信息密度）
+ */
 export type ScoreBreakdown = {
   role: number;
   keywords: number;
   direction: number;
+  interest: number;
+  reciprocity: number;
   budget: number;
-  freshness: number;
+  activity: number;
 };
 
 export type RankedCandidate = {

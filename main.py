@@ -146,12 +146,21 @@ def main() -> None:
         action="store_true",
         help="跳过首次 npm install（仍执行 npm run dev）",
     )
+    parser.add_argument(
+        "--clean",
+        action="store_true",
+        help="启动前删除 .next 缓存（修复 Cannot find module './xxxx.js' 等开发缓存损坏）",
+    )
     args = parser.parse_args()
 
     ensure_npm()
     cwd = project_dir()
     maybe_first_time_setup(cwd, skip=args.skip_setup)
     port = _resolve_listen_port(args.port, auto=not args.no_auto_port)
+
+    dev_script = "dev:clean" if args.clean else "dev"
+    if args.clean:
+        print("[清理] 将先删除 .next 再启动开发服务器…", flush=True)
 
     print("\n【网页端】在电脑浏览器打开: http://localhost:%d" % port, flush=True)
     print(
@@ -160,7 +169,7 @@ def main() -> None:
     )
     print("（手机壳/App 数据演示请在仓库根目录运行 python main.py）\n", flush=True)
 
-    run(["npm", "run", "dev", "--", "-p", str(port)], cwd=cwd)
+    run(["npm", "run", dev_script, "--", "-p", str(port)], cwd=cwd)
 
 
 if __name__ == "__main__":
