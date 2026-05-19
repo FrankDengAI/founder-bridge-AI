@@ -1,15 +1,26 @@
 "use client";
 
 import { MotionConfig } from "framer-motion";
+import { useEffect, useState } from "react";
 
 /**
- * 品牌站动效：关闭全局 initial 入场动画，避免 SSR 与客户端首屏 DOM/样式不一致导致 hydration 报错。
- * whileInView 等滚动动效仍可在客户端正常工作。
+ * 品牌站动效：首屏（SSR + hydration）强制 reducedMotion，避免 motion 入场样式不一致。
+ * 挂载后恢复 user，保留 whileInView 等滚动动效。
  */
 export function MarketingMotionConfig({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <MotionConfig initial={false}>{children}</MotionConfig>;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  return (
+    <MotionConfig reducedMotion={mounted ? "user" : "always"}>
+      {children}
+    </MotionConfig>
+  );
 }
