@@ -6,14 +6,14 @@ const cards = [
   {
     href: "/welcome/login",
     title: "登录",
-    desc: "选择已有演示账号或种子用户，固定口令 demo。",
+    desc: "使用注册的账号与密码登录。",
     icon: LogIn,
     tone: "from-brand-600 to-fuchsia-600",
   },
   {
     href: "/welcome/register",
     title: "注册",
-    desc: "昵称、创业角色、兴趣标签，一步写入数据库。",
+    desc: "设置账号密码，填写昵称、角色与兴趣标签。",
     icon: UserPlus,
     tone: "from-sky-600 to-brand-600",
   },

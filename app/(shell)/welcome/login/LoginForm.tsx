@@ -14,9 +14,8 @@ type DemoRow = { id: string; displayName: string };
 export function LoginForm() {
   const searchParams = useSearchParams();
   const embed = searchParams.get("embed") === "1";
-  const verified = searchParams.get("verified") === "1";
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -50,9 +49,9 @@ export function LoginForm() {
     loadDemoUsers();
   }, [loadDemoUsers]);
 
-  const canSubmit = Boolean(email.trim() && password) && !busy;
+  const canSubmit = Boolean(username.trim() && password) && !busy;
 
-  const submitEmail = async () => {
+  const submitLogin = async () => {
     setBusy(true);
     setErr(null);
     try {
@@ -60,7 +59,7 @@ export function LoginForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email: email.trim(), password }),
+        body: JSON.stringify({ username: username.trim(), password }),
       });
       if (!res.ok) {
         const j = (await res.json().catch(() => ({}))) as { error?: string };
@@ -133,26 +132,20 @@ export function LoginForm() {
             登录 VibeCoding
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-zinc-500">
-            使用注册邮箱与密码登录。新用户请先注册并验证邮箱。
+            使用注册的账号与密码登录。还没有账号请先注册。
           </p>
         </div>
 
-        {verified ? (
-          <p className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-900">
-            邮箱已验证，请登录。
-          </p>
-        ) : null}
-
         <div className="mt-6 space-y-4">
           <label className="block text-xs font-semibold text-zinc-600">
-            邮箱
+            账号
             <input
-              type="email"
-              autoComplete="email"
+              type="text"
+              autoComplete="username"
               className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm text-zinc-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="注册时填写的账号"
             />
           </label>
           <label className="block text-xs font-semibold text-zinc-600">
@@ -164,6 +157,7 @@ export function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="输入密码"
+              onKeyDown={(e) => e.key === "Enter" && canSubmit && void submitLogin()}
             />
           </label>
         </div>
@@ -173,7 +167,7 @@ export function LoginForm() {
         <button
           type="button"
           disabled={!canSubmit}
-          onClick={() => void submitEmail()}
+          onClick={() => void submitLogin()}
           className="mt-5 w-full rounded-full bg-zinc-900 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:bg-zinc-800 disabled:opacity-45"
         >
           {busy ? "登录中…" : "登 录"}
@@ -183,10 +177,6 @@ export function LoginForm() {
           <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-zinc-100 pt-5 text-xs font-medium text-zinc-500">
             <Link href="/welcome/register" className="text-zinc-700 hover:text-violet-700">
               注册新账号
-            </Link>
-            <span className="text-zinc-300">|</span>
-            <Link href="/welcome/forgot-password" className="hover:text-violet-700">
-              忘记密码
             </Link>
           </div>
         ) : null}

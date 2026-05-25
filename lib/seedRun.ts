@@ -101,6 +101,7 @@ async function insertSeedData(prisma: PrismaClient) {
   await prisma.user.create({
     data: {
       id: DEMO_USER_ID,
+      username: "demo",
       isDemo: true,
       displayName: "演示用户",
       avatarUrl: "https://i.pravatar.cc/150?u=demo",
@@ -152,6 +153,7 @@ async function insertSeedData(prisma: PrismaClient) {
     await prisma.user.create({
       data: {
         id,
+        username: `founder_${String(i + 1).padStart(2, "0")}`,
         isDemo: true,
         displayName: `创业者 ${i + 1}`,
         avatarUrl: `https://i.pravatar.cc/150?u=${id}`,

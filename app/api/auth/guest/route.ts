@@ -23,6 +23,7 @@ export async function POST(req: Request) {
   const user = await prisma.user.create({
     data: {
       id,
+      username: id.replace(/[^a-zA-Z0-9_]/g, "_").slice(0, 32) || `guest_${suffix}`,
       displayName: `游客_${suffix.slice(-6)}`,
       avatarUrl: `https://i.pravatar.cc/150?u=${id}`,
       profile: {
