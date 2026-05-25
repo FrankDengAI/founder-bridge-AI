@@ -4,6 +4,8 @@ import { useState } from "react";
 import clsx from "clsx";
 import { INTEREST_OPTIONS } from "@/lib/interestPool";
 import { syncLocalUserId } from "@/lib/clientSession";
+import { writePersona } from "@/lib/retention";
+import { completeActivationStep } from "@/lib/activation";
 
 export function GuestInterestForm() {
   const [tags, setTags] = useState<string[]>([]);
@@ -30,6 +32,8 @@ export function GuestInterestForm() {
       }
       const data = (await res.json()) as { userId: string };
       syncLocalUserId(data.userId);
+      writePersona("student");
+      completeActivationStep("persona");
       window.location.href = "/home";
     } catch (e) {
       setErr(e instanceof Error ? e.message : "创建失败");

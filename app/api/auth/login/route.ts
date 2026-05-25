@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   }
 
   const pwd = (body.password ?? "").trim();
-  if (pwd && pwd !== DEMO_PASSWORD) {
+  if (pwd !== DEMO_PASSWORD) {
     return NextResponse.json({ error: "口令错误（演示固定为 demo）" }, { status: 401 });
   }
 

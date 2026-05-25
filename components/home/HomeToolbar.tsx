@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { Command, PenSquare, Search } from "lucide-react";
+import { I18nToggle } from "@/components/I18nToggle";
 
 export function HomeToolbar() {
   return (
     <div className="flex items-center gap-1.5">
+      <I18nToggle />
       <button
         type="button"
         title="命令面板"

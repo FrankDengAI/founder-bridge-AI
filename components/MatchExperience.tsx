@@ -19,9 +19,15 @@ import { ROLE_LABEL, ROLE_MATCH_DESC } from "@/lib/labels";
 import type { ScoreBreakdown } from "@/lib/matching/types";
 import {
   MATCH_BREAKDOWN_LABELS,
-  MATCH_DIRECTION_PRESETS,
-  MATCH_KEYWORD_SUGGESTIONS,
+  getDirectionPresets,
+  getKeywordSuggestions,
+  matchAnimDurationMs,
+  readMatchAnimMode,
+  type MatchAnimMode,
+  writeMatchAnimMode,
 } from "@/lib/matchUiCopy";
+import { completeActivationStep } from "@/lib/activation";
+import { completeMission, trackEvent } from "@/lib/retention";
 import { upsertThread } from "@/lib/threads";
 import { PageHeader } from "@/components/PageHeader";
 import { MatchProgress } from "./MatchProgress";
@@ -208,6 +214,20 @@ export function MatchExperience() {
     null,
   );
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [animMode, setAnimMode] = useState<MatchAnimMode>("fast");
+
+  useEffect(() => {
+    setAnimMode(readMatchAnimMode());
+  }, []);
+
+  const keywordSuggestions = useMemo(
+    () => getKeywordSuggestions(form.role),
+    [form.role],
+  );
+  const directionPresets = useMemo(
+    () => getDirectionPresets(form.role),
+    [form.role],
+  );
 
   const refreshProfile = useCallback(async () => {
     setLoadingProfile(true);
@@ -280,6 +300,9 @@ export function MatchExperience() {
         body: JSON.stringify({ userId, ...form }),
       });
       if (!put.ok) throw new Error("保存资料失败");
+      trackEvent("match_run");
+      completeMission("match_run");
+      completeActivationStep("first_match");
       setRunning(true);
       void fetch("/api/match", {
         method: "POST",
@@ -316,7 +339,7 @@ export function MatchExperience() {
     <div className="space-y-4 pb-28">
       <PageHeader
         title="创业伙伴匹配"
-        subtitle={`多维度互补评分 · 约 30 秒仪式感动效 · 当前会话：${userId}`}
+        subtitle={`多维度互补评分 · 支持快速/仪式感动效 · 当前会话：${userId}`}
         right={
           <Link
             href="/messages"
@@ -337,7 +360,7 @@ export function MatchExperience() {
             <ul className="list-inside list-disc space-y-1 text-[11px] text-zinc-600">
               <li>用 MOBA 角色隐喻「增长 / 产品运营 / 技术交付」三类创业分工，计算与你互补的程度。</li>
               <li>结合能力关键词、创业方向、资金档位与资料新鲜度，输出可解释的分数与理由。</li>
-              <li>点击下方按钮会先保存当前表单，再进入约 30 秒的动效；真实计算在服务端毫秒级完成。</li>
+              <li>点击下方按钮会先保存当前表单，再进入动效（默认快速 3 秒，可跳过）；真实计算在服务端毫秒级完成。</li>
             </ul>
           </div>
         </div>
@@ -405,7 +428,7 @@ export function MatchExperience() {
               写你「能交付什么」：与首页/笔记里的技能标签越一致，与种子用户的 Jaccard 重叠越高。
             </p>
             <div className="flex flex-wrap gap-1.5">
-              {MATCH_KEYWORD_SUGGESTIONS.map((s) => (
+              {keywordSuggestions.map((s) => (
                 <button
                   key={s}
                   type="button"
@@ -461,7 +484,7 @@ export function MatchExperience() {
             <p className="text-xs font-semibold text-zinc-900">创业方向</p>
             <p className="text-[11px] text-zinc-500">一句话描述赛道或场景，可点选下方快捷短语再微调。</p>
             <div className="flex flex-wrap gap-1.5">
-              {MATCH_DIRECTION_PRESETS.map((d) => (
+              {directionPresets.map((d) => (
                 <button
                   key={d}
                   type="button"
@@ -525,13 +548,40 @@ export function MatchExperience() {
             />
           </section>
 
+          <div className="flex flex-wrap items-center gap-2 text-[11px] text-zinc-600">
+            <span>动效模式：</span>
+            {(
+              [
+                ["fast", "快速 3s"],
+                ["normal", "标准 8s"],
+                ["ritual", "仪式感 30s"],
+              ] as const
+            ).map(([m, label]) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => {
+                  writeMatchAnimMode(m);
+                  setAnimMode(m);
+                }}
+                className={`rounded-full border px-2.5 py-1 font-medium transition ${
+                  animMode === m
+                    ? "border-violet-400 bg-violet-50 text-violet-900"
+                    : "border-zinc-200 bg-white text-zinc-600"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
           <button
             type="button"
             disabled={running}
             onClick={() => void startMatch()}
             className="w-full rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 py-3.5 text-sm font-semibold text-white shadow-glow transition hover:opacity-95 disabled:opacity-60"
           >
-            保存画像并开始匹配（约 30 秒仪式感）
+            保存画像并开始匹配（{animMode === "fast" ? "约 3 秒" : animMode === "normal" ? "约 8 秒" : "约 30 秒"}）
           </button>
           {error ? <p className="text-xs text-red-600">{error}</p> : null}
         </div>
@@ -555,6 +605,14 @@ export function MatchExperience() {
                 共 {results.length} 人 · 分数为综合加权，可展开查看各维度与完整理由
               </p>
             </div>
+            <button
+              type="button"
+              disabled={running}
+              onClick={() => void startMatch()}
+              className="rounded-2xl bg-violet-100 px-3 py-2 text-xs font-semibold text-violet-900 ring-1 ring-violet-200/80 hover:bg-violet-50 disabled:opacity-50"
+            >
+              保存参数并再匹配
+            </button>
           </div>
           <ul className="space-y-4">
             {results.map((c, idx) => {
@@ -656,14 +714,19 @@ export function MatchExperience() {
                         type="button"
                         className="rounded-2xl bg-zinc-950 px-3 py-2.5 text-xs font-semibold text-white hover:bg-zinc-800"
                         onClick={() => {
+                          const intent = `你好 ${c.displayName}，我在 VibeHub 匹配里看到你的资料（${isRole(c.role) ? ROLE_LABEL[c.role] : c.role}），想聊聊合作可能性。`;
                           upsertThread({
                             peerId: c.userId,
                             peerName: c.displayName,
-                            lastMessage: "通过匹配发起连接",
+                            lastMessage: intent,
                             updatedAt: Date.now(),
                             source: "match",
+                            contextTitle: "创业伙伴匹配",
+                            draftMessage: intent,
                           });
-                          router.push(`/messages?peer=${encodeURIComponent(c.userId)}`);
+                          router.push(
+                            `/messages?peer=${encodeURIComponent(c.userId)}&intent=match`,
+                          );
                         }}
                       >
                         发起沟通
@@ -691,7 +754,10 @@ export function MatchExperience() {
 
       <MatchProgress
         active={running}
+        animMode={animMode}
+        durationMs={matchAnimDurationMs(animMode)}
         onComplete={onProgressDone}
+        onSkip={onProgressDone}
         onCancel={() => {
           setRunning(false);
           setPendingResult(null);

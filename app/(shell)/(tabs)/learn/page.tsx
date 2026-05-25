@@ -4,10 +4,12 @@ import {
   BookOpen,
   CheckCircle2,
   Circle,
+  Cpu,
   FolderGit2,
   Lightbulb,
   Rocket,
   Sparkles,
+  Star,
   Wand2,
   Zap,
 } from "lucide-react";
@@ -31,21 +33,94 @@ const STEPS = [
 
 export default async function LearnPage() {
   const uid = getUserIdFromCookies();
-  const projects = uid
-    ? await prisma.project.findMany({
-        where: { userId: uid },
-        orderBy: { createdAt: "desc" },
-      })
-    : [];
+  const [projects, topModel, modelCount, reviewCount] = await Promise.all([
+    uid
+      ? prisma.project.findMany({
+          where: { userId: uid },
+          orderBy: { createdAt: "desc" },
+        })
+      : Promise.resolve([]),
+    prisma.aiModel.findFirst({
+      orderBy: { rankScore: "desc" },
+      select: { id: true, name: true, avgRating: true, reviewCount: true },
+    }),
+    prisma.aiModel.count(),
+    prisma.aiModelReview.count(),
+  ]);
 
   return (
     <div className="space-y-4 pb-4">
       <PageHeader
         title="学习与项目"
-        subtitle="把「路线 → 步骤 → 项目 → 发布」串成可点击的闭环；登录后学习进度写入 SQLite，并与成就同步。"
+        subtitle="把「路线 → 步骤 → 项目 → 发布」串成可点击的闭环；登录后学习进度写入 PostgreSQL，并与成就同步。"
       />
 
       <LearnHubStrip />
+
+      <Link
+        href="/models"
+        className="group block overflow-hidden rounded-3xl border border-violet-200/70 bg-gradient-to-r from-violet-600 via-fuchsia-600 to-violet-700 p-[1px] shadow-soft transition hover:shadow-[0_20px_50px_-24px_rgba(109,40,217,0.55)]"
+      >
+        <div className="relative rounded-[22px] bg-zinc-950/92 px-4 py-4">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-6 -top-8 h-24 w-24 rounded-full bg-fuchsia-400/25 blur-2xl"
+          />
+          <div className="relative flex items-start gap-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-sm">
+              <Cpu className="h-5 w-5" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-violet-200/90">
+                选型必看
+              </p>
+              <p className="text-sm font-bold text-white">大模型口碑榜 · 真实短评社区</p>
+              <p className="mt-1 text-[11px] leading-relaxed text-zinc-400">
+                编程 / 写作 / 性价比场景下的真实体验，比参数表更贴近 VibeCoding 日常。
+              </p>
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px]">
+                {modelCount > 0 ? (
+                  <span className="rounded-full bg-white/10 px-2 py-0.5 font-semibold text-violet-100 ring-1 ring-white/15">
+                    {modelCount} 个模型
+                  </span>
+                ) : null}
+                {reviewCount > 0 ? (
+                  <span className="rounded-full bg-white/10 px-2 py-0.5 font-semibold text-amber-100 ring-1 ring-white/15">
+                    {reviewCount} 条短评
+                  </span>
+                ) : null}
+                {topModel ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 font-semibold text-amber-100 ring-1 ring-amber-400/30">
+                    <Star className="h-3 w-3 fill-amber-300 text-amber-300" />
+                    榜首 {topModel.name} · {topModel.avgRating.toFixed(1)}
+                  </span>
+                ) : null}
+              </div>
+              <span className="relative mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-violet-200 group-hover:text-white">
+                进入榜单，写第一条短评 →
+              </span>
+            </div>
+          </div>
+        </div>
+      </Link>
+
+      <div className="flex flex-wrap gap-2">
+        <Link
+          href="/learn"
+          className="rounded-full bg-violet-100 px-3 py-1.5 text-[11px] font-semibold text-violet-900 ring-1 ring-violet-200/70"
+        >
+          入门路线（全 8 步）
+        </Link>
+        <Link
+          href="/learn?level=advanced"
+          className="rounded-full bg-white px-3 py-1.5 text-[11px] font-semibold text-zinc-700 ring-1 ring-zinc-200/70"
+        >
+          进阶 · 开源与协作（5–8 步）
+        </Link>
+        <Link href="/templates" className="rounded-full bg-white px-3 py-1.5 text-[11px] font-semibold text-zinc-700 ring-1 ring-zinc-200/70">
+          模板市场
+        </Link>
+      </div>
 
       <section className="glass-panel rounded-3xl p-4 shadow-soft ring-1 ring-white/70">
         <div className="flex items-start gap-3">
@@ -106,7 +181,7 @@ export default async function LearnPage() {
           </div>
           <div className="mt-2 flex items-center gap-1.5 text-[10px] text-zinc-600">
             <Sparkles className="h-3 w-3 text-amber-500" />
-            登录后会写入 SQLite · 与「成就」字段同步
+            登录后会写入 PostgreSQL · 与「成就」字段同步
           </div>
         </div>
 

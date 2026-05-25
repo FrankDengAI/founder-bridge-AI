@@ -9,6 +9,7 @@ type Review = {
   userName: string;
   rating: number;
   comment: string;
+  authorReply?: string;
   createdAt: string;
 };
 
@@ -28,6 +29,7 @@ export function ToolReviewsPanel({ toolId, initialReviews }: Props) {
   const [comment, setComment] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [replyDraft, setReplyDraft] = useState<Record<string, string>>({});
 
   const sorted = useMemo(() => {
     const list = [...reviews];
@@ -159,6 +161,45 @@ export function ToolReviewsPanel({ toolId, initialReviews }: Props) {
               </span>
             </div>
             <p className="mt-2 text-xs leading-relaxed text-zinc-700">{r.comment || "（无文字）"}</p>
+            {r.authorReply ? (
+              <p className="mt-2 rounded-xl bg-violet-50/80 px-2.5 py-2 text-[11px] text-violet-950 ring-1 ring-violet-200/50">
+                <span className="font-semibold">开发者回复：</span>
+                {r.authorReply}
+              </p>
+            ) : (
+              <div className="mt-2 flex gap-2">
+                <input
+                  className="flex-1 rounded-xl border border-zinc-200 px-2 py-1.5 text-[11px]"
+                  placeholder="开发者回复（演示）"
+                  value={replyDraft[r.id] ?? ""}
+                  onChange={(e) =>
+                    setReplyDraft((d) => ({ ...d, [r.id]: e.target.value }))
+                  }
+                />
+                <button
+                  type="button"
+                  className="shrink-0 rounded-xl bg-zinc-900 px-2 py-1.5 text-[10px] font-semibold text-white"
+                  onClick={async () => {
+                    const text = (replyDraft[r.id] ?? "").trim();
+                    if (!text) return;
+                    const res = await fetch(`/api/tools/${toolId}/reviews`, {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ reviewId: r.id, authorReply: text }),
+                    });
+                    if (res.ok) {
+                      setReviews((prev) =>
+                        prev.map((x) =>
+                          x.id === r.id ? { ...x, authorReply: text } : x,
+                        ),
+                      );
+                    }
+                  }}
+                >
+                  回复
+                </button>
+              </div>
+            )}
             <p className="mt-2 text-[10px] text-zinc-400">
               {new Date(r.createdAt).toLocaleString("zh-CN")}
             </p>

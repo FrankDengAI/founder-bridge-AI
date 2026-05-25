@@ -25,4 +25,6 @@ export const POST_TYPE_LABEL: Record<PostType, string> = {
   REVIEW: "工具测评",
   IDEA: "创业想法",
   TUTORIAL: "教程",
+  RECRUIT: "组队招募",
+  MODEL_DISCUSSION: "模型讨论",
 };

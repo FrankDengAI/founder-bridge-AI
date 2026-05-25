@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -28,36 +28,49 @@ model User {
 }
 
 model UserProfile {
-  id                   String   @id @default(cuid())
-  userId               String   @unique
-  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   role                 String
-  budgetTier           Int      @default(0)
-  intro                String   @default("")
-  direction            String   @default("")
-  skillKeywords        String   @default("[]")
-  interestTags         String   @default("[]")
-  desiredPartnerRoles  String   @default("[]")
-  updatedAt            DateTime @updatedAt
+  budgetTier           Int       @default(0)
+  intro                String    @default("")
+  direction            String    @default("")
+  skillKeywords        String    @default("[]")
+  interestTags         String    @default("[]")
+  desiredPartnerRoles  String    @default("[]")
+  remoteOk             Boolean   @default(false)
+  githubUrl            String    @default("")
+  verifiedAt           DateTime?
+  updatedAt            DateTime  @updatedAt
 }
 
 model Post {
-  id        String   @id @default(cuid())
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  type      String
-  title     String
-  excerpt   String   @default("")
-  coverUrl  String
-  body      String   @default("")
-  likes     Int      @default(0)
-  saves     Int      @default(0)
-  tags      String   @default("[]")
-  createdAt DateTime @default(now())
+  id              String   @id @default(cuid())
+  authorId        String
+  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  type            String
+  title           String
+  excerpt         String   @default("")
+  coverUrl        String
+  body            String   @default("")
+  status          String   @default("published")
+  meta            String   @default("{}")
+  linkedProjectId String?
+  linkedToolId    String?
+  linkedModelId   String?
+  linkedModel     AiModel? @relation(fields: [linkedModelId], references: [id], onDelete: SetNull)
+  likes           Int      @default(0)
+  saves           Int      @default(0)
+  tags            String   @default("[]")
+  createdAt       DateTime @default(now())
 
   comments Comment[]
   likedBy  PostLike[]
   savedBy  PostSave[]
+
+  @@index([status, createdAt])
+  @@index([type])
+  @@index([linkedModelId])
 }
 
 model Follow {
@@ -104,14 +117,31 @@ model PostSave {
 }
 
 model Project {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name       String
-  repoUrl    String   @default("")
-  previewUrl String   @default("")
-  stack      String   @default("[]")
-  createdAt  DateTime @default(now())
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String   @default("")
+  coverUrl    String   @default("")
+  repoUrl     String   @default("")
+  previewUrl  String   @default("")
+  stack       String   @default("[]")
+  teamNeeds   String   @default("")
+  stage       String   @default("")
+  tags        String   @default("[]")
+  revenueBand String   @default("")
+  createdAt   DateTime @default(now())
+}
+
+model Template {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @default("")
+  category    String
+  stack       String   @default("[]")
+  downloadUrl String   @default("")
+  copyCmd     String   @default("")
+  createdAt   DateTime @default(now())
 }
 
 model Tool {
@@ -124,13 +154,49 @@ model Tool {
 }
 
 model ToolReview {
+  id          String   @id @default(cuid())
+  toolId      String
+  tool        Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  userName    String
+  rating      Int
+  comment     String   @default("")
+  authorReply String   @default("")
+  createdAt   DateTime @default(now())
+}
+
+model AiModel {
+  id          String          @id @default(cuid())
+  name        String
+  provider    String
+  description String          @default("")
+  logoUrl     String          @default("")
+  websiteUrl  String          @default("")
+  strengths   String          @default("[]")
+  scenarios   String          @default("[]")
+  avgRating   Float           @default(0)
+  reviewCount Int             @default(0)
+  rankScore   Float           @default(0)
+  createdAt   DateTime        @default(now())
+  reviews     AiModelReview[]
+  posts       Post[]
+
+  @@index([rankScore])
+  @@index([avgRating])
+}
+
+model AiModelReview {
   id        String   @id @default(cuid())
-  toolId    String
-  tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  modelId   String
+  model     AiModel  @relation(fields: [modelId], references: [id], onDelete: Cascade)
   userName  String
   rating    Int
+  pros      String   @default("")
+  cons      String   @default("")
+  scenario  String   @default("")
   comment   String   @default("")
   createdAt DateTime @default(now())
+
+  @@index([modelId, createdAt])
 }
 
 model MarketItem {

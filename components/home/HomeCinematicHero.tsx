@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Flame, Sparkles, Zap } from "lucide-react";
+import { Cpu, Flame, Sparkles, Zap } from "lucide-react";
 import { getUnlockedBadges } from "@/lib/gamification";
 
 type Stats = {
@@ -10,6 +10,8 @@ type Stats = {
   users: number;
   tools: number;
   projects: number;
+  models?: number;
+  reviews?: number;
 };
 
 function useAnimatedInt(target: number, active: boolean) {
@@ -46,17 +48,17 @@ export function HomeCinematicHero({ stats }: { stats: Stats }) {
 
   const p = useAnimatedInt(stats.posts, mounted);
   const u = useAnimatedInt(stats.users, mounted);
-  const t = useAnimatedInt(stats.tools, mounted);
-  const j = useAnimatedInt(stats.projects, mounted);
+  const m = useAnimatedInt(stats.models ?? 0, mounted);
+  const rv = useAnimatedInt(stats.reviews ?? 0, mounted);
 
   const chips = useMemo(
     () => [
       { label: "笔记", value: p, accent: "from-violet-500 to-fuchsia-500" },
       { label: "用户", value: u, accent: "from-fuchsia-500 to-rose-500" },
-      { label: "工具", value: t, accent: "from-sky-500 to-cyan-500" },
-      { label: "项目", value: j, accent: "from-amber-500 to-orange-500" },
+      { label: "模型", value: m, accent: "from-indigo-500 to-violet-500" },
+      { label: "短评", value: rv, accent: "from-amber-500 to-orange-500" },
     ],
-    [p, u, t, j],
+    [p, u, m, rv],
   );
 
   return (
@@ -77,10 +79,17 @@ export function HomeCinematicHero({ stats }: { stats: Stats }) {
               <span className="text-white/90"> 灵感宇宙</span>
             </h2>
             <p className="mt-2 max-w-[20rem] text-xs leading-relaxed text-zinc-400">
-              双列瀑布 · 热门引擎 · 本地收藏 · 命令面板全局唤起 —— 演示级产品壳，可直接用于路演叙事。
+              没匹配到伙伴也没关系：先看笔记、给大模型打分、参与讨论，把社区热度做起来。
             </p>
           </div>
-          <div className="flex shrink-0 gap-2">
+          <div className="flex shrink-0 flex-wrap gap-2">
+            <Link
+              href="/models"
+              className="inline-flex items-center gap-1 rounded-2xl bg-white/10 px-3 py-2 text-[11px] font-bold text-white ring-1 ring-white/20 backdrop-blur transition hover:bg-white/20"
+            >
+              <Cpu className="h-3.5 w-3.5 text-cyan-300" />
+              模型榜
+            </Link>
             <Link
               href="/workspace"
               className="inline-flex items-center gap-1 rounded-2xl bg-white/10 px-3 py-2 text-[11px] font-bold text-white ring-1 ring-white/20 backdrop-blur transition hover:bg-white/20"

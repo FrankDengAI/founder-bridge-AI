@@ -28,10 +28,16 @@ export async function POST(req: Request) {
   }
   const m = await prisma.marketItem.findUnique({ where: { id: marketId } });
   if (!m) return NextResponse.json({ error: "not found" }, { status: 404 });
-  const order = await prisma.demoOrder.create({
-    data: { userId, marketId, status: "DEMO_PAID" },
+  const existing = await prisma.demoOrder.findFirst({
+    where: { userId, marketId },
     include: { market: true },
   });
+  const order =
+    existing ??
+    (await prisma.demoOrder.create({
+      data: { userId, marketId, status: "DEMO_PAID" },
+      include: { market: true },
+    }));
   revalidatePath("/orders");
   return NextResponse.json({ order });
 }

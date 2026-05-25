@@ -18,6 +18,7 @@ function readLs(): ConnState {
   }
 }
 
+/** 演示用 localStorage 状态机；生产环境可替换为 GitHub OAuth App */
 export function GitHubDemoActions() {
   const [state, setState] = useState<ConnState>("disconnected");
 

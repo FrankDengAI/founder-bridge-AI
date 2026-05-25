@@ -12,8 +12,13 @@ import {
   Settings,
   ShoppingBag,
   Sparkles,
+  UserRound,
   Wrench,
 } from "lucide-react";
+import { MeRetentionHub } from "@/components/me/MeRetentionHub";
+import { ActivationJourney } from "@/components/retention/ActivationJourney";
+import { ProfileStrengthCard } from "@/components/retention/ProfileStrengthCard";
+import { PublishDraftBanner } from "@/components/retention/PublishDraftBanner";
 import { PageHeader } from "@/components/PageHeader";
 import { performLogout } from "@/lib/authLogout";
 import { LS_USER_ID, syncLocalUserId } from "@/lib/clientSession";
@@ -26,12 +31,14 @@ const quickLinks = [
   { href: "/workspace", label: "工作台", desc: "统计与收藏", icon: LayoutGrid },
   { href: "/creator", label: "创作者中心", desc: "我的笔记与指标", icon: BadgeCheck },
   { href: "/orders", label: "订单/心愿单", desc: "演示交易数据", icon: ShoppingBag },
-  { href: "/publish", label: "发布", desc: "写入 SQLite", icon: PenSquare },
+  { href: "/publish", label: "发布", desc: "PostgreSQL 入库", icon: PenSquare },
+  { href: "/settings/profile", label: "编辑主页", desc: "资料与技能", icon: UserRound },
   { href: "/search", label: "搜索", desc: "标题检索", icon: Search },
   { href: "/messages", label: "消息", desc: "本地会话", icon: MessageCircle },
   { href: "/match", label: "匹配", desc: "算法推荐", icon: Sparkles },
   { href: "/tools", label: "工具", desc: "导航/商城", icon: Wrench },
   { href: "/settings", label: "设置", desc: "主题/数据", icon: Settings },
+  { href: "/me/achievements", label: "成就墙", desc: "徽章与分享", icon: BadgeCheck },
 ] as const;
 
 export function MePanel() {
@@ -90,7 +97,7 @@ export function MePanel() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ userId: id, password: "" }),
+        body: JSON.stringify({ userId: id, password: "demo" }),
       });
       if (!res.ok) throw new Error("切换失败");
       syncLocalUserId(id);
@@ -107,6 +114,11 @@ export function MePanel() {
         title="我的"
         subtitle="个人中心 · 快捷入口 · 任意页右上角「账户」也可退出登录。"
       />
+
+      <ProfileStrengthCard />
+      <PublishDraftBanner />
+      <ActivationJourney compact />
+      <MeRetentionHub />
 
       <section className="rounded-3xl border border-rose-200/80 bg-gradient-to-br from-rose-50/90 to-white/80 p-4 shadow-sm ring-1 ring-rose-100/80 dark:border-rose-900/50 dark:from-rose-950/40 dark:to-zinc-950/80 dark:ring-rose-900/40">
         <p className="text-xs font-semibold text-rose-900 dark:text-rose-200">账户与安全</p>
@@ -190,10 +202,10 @@ export function MePanel() {
                 <p className="mt-1 text-xs text-zinc-600">角色定位（来自资料库）</p>
               </div>
               <Link
-                href="/match"
+                href="/settings/profile"
                 className="rounded-full bg-brand-50 px-3 py-1 text-[11px] font-semibold text-brand-900 ring-1 ring-brand-200/70 hover:bg-white"
               >
-                去编辑
+                编辑主页
               </Link>
             </div>
             <div className="mt-3 flex flex-wrap gap-2">

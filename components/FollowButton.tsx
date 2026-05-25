@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
+import { completeActivationStep } from "@/lib/activation";
+import { recordGamifyEvent } from "@/lib/gamification";
+import { completeMission } from "@/lib/retention";
 
 type Props = {
   targetUserId: string;
@@ -34,6 +37,11 @@ export function FollowButton({ targetUserId, viewerId, initialFollowing }: Props
       if (!res.ok) {
         setFollowing(!next);
         return;
+      }
+      if (next) {
+        recordGamifyEvent("follow_first");
+        completeActivationStep("first_follow");
+        completeMission("follow_one");
       }
       router.refresh();
     } finally {

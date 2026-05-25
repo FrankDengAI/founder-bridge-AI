@@ -21,11 +21,16 @@ export default async function CreatorPage() {
     );
   }
 
-  const [posts, postCount, sumLikes, sumSaves] = await Promise.all([
+  const [posts, drafts, postCount, sumLikes, sumSaves] = await Promise.all([
     prisma.post.findMany({
-      where: { authorId: uid },
+      where: { authorId: uid, status: "published" },
       orderBy: { createdAt: "desc" },
       take: 60,
+    }),
+    prisma.post.findMany({
+      where: { authorId: uid, status: "draft" },
+      orderBy: { createdAt: "desc" },
+      take: 20,
     }),
     prisma.post.count({ where: { authorId: uid } }),
     prisma.post.aggregate({
@@ -75,6 +80,25 @@ export default async function CreatorPage() {
           </div>
         ))}
       </section>
+
+      {drafts.length > 0 ? (
+        <section className="space-y-2">
+          <h2 className="text-sm font-semibold text-zinc-900">草稿箱</h2>
+          <ul className="space-y-2">
+            {drafts.map((p) => (
+              <li key={p.id}>
+                <Link
+                  href={`/post/${p.id}`}
+                  className="glass-panel block rounded-shell px-3 py-3 text-sm ring-1 ring-amber-200/70"
+                >
+                  <span className="text-[10px] font-semibold text-amber-800">草稿</span>
+                  <p className="mt-1 font-semibold text-zinc-950">{p.title}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <section className="space-y-2">
         <h2 className="text-sm font-semibold text-zinc-900">我的笔记</h2>

@@ -34,6 +34,61 @@ function mergeProfile(base: ParsedProfile, draft: Draft | undefined): ParsedProf
   };
 }
 
+export const dynamic = "force-dynamic";
+
+export async function GET(req: Request) {
+  const sessionUserId = getUserIdFromCookies();
+  if (!sessionUserId) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+  const { searchParams } = new URL(req.url);
+  if (searchParams.get("daily") !== "1") {
+    return NextResponse.json({ error: "use POST for full match" }, { status: 400 });
+  }
+
+  const meRow = await prisma.user.findUnique({
+    where: { id: sessionUserId },
+    include: { profile: true },
+  });
+  if (!meRow?.profile) {
+    return NextResponse.json({ candidate: null });
+  }
+
+  const me = toParsedProfile(sessionUserId, meRow.profile);
+  const others = await prisma.user.findMany({
+    where: { id: { not: sessionUserId } },
+    include: { profile: true },
+  });
+  const pool = others
+    .filter((u) => u.profile)
+    .map((u) => ({
+      ...toParsedProfile(u.id, u.profile!),
+      updatedAt: u.profile!.updatedAt,
+      displayName: u.displayName,
+      avatarUrl: u.avatarUrl,
+    }));
+
+  const day = new Date().toISOString().slice(0, 10);
+  const seed = `${sessionUserId}:${day}`;
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  const ranked = rankCandidates(me, pool, pool.length);
+  const pick = ranked[hash % Math.max(1, ranked.length)] ?? null;
+
+  return NextResponse.json({
+    candidate: pick
+      ? {
+          userId: pick.userId,
+          displayName: pick.displayName,
+          avatarUrl: pick.avatarUrl,
+          role: pick.role,
+          score: Number(pick.score.toFixed(4)),
+          direction: pick.direction,
+        }
+      : null,
+  });
+}
+
 export async function POST(req: Request) {
   const sessionUserId = getUserIdFromCookies();
   if (!sessionUserId) {

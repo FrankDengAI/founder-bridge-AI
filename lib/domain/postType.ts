@@ -6,6 +6,8 @@ export const POST_TYPES = [
   "REVIEW",
   "IDEA",
   "TUTORIAL",
+  "RECRUIT",
+  "MODEL_DISCUSSION",
 ] as const;
 export type PostType = (typeof POST_TYPES)[number];
 

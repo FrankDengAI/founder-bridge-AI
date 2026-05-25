@@ -8,6 +8,7 @@ import {
   BookOpen,
   ChevronRight,
   Code2,
+  Cpu,
   FileText,
   Flame,
   Heart,
@@ -22,6 +23,8 @@ import { isPostType } from "@/lib/domain/postType";
 import { POST_TYPE_LABEL } from "@/lib/labels";
 import { isPostSaved, readSavedPostIds, toggleSavedPost } from "@/lib/appHub";
 import { syncSaveCountBadge } from "@/lib/gamification";
+import { completeActivationStep } from "@/lib/activation";
+import { completeMission } from "@/lib/retention";
 import clsx from "clsx";
 
 export type FeedCardProps = {
@@ -92,6 +95,18 @@ const TYPE_THEME: Record<
     accent: "ring-indigo-300/50",
     overlay: "code",
   },
+  RECRUIT: {
+    icon: Sparkles,
+    chipBg: "bg-violet-600/95",
+    chipText: "text-white",
+    accent: "ring-violet-400/50",
+  },
+  MODEL_DISCUSSION: {
+    icon: Cpu,
+    chipBg: "bg-gradient-to-r from-violet-600/95 to-fuchsia-600/95",
+    chipText: "text-white",
+    accent: "ring-fuchsia-300/50",
+  },
 };
 
 /** 从标题中抽取技术 / 主题标签做为 mini chips（轻量正则） */
@@ -147,6 +162,10 @@ export function FeedCard(p: FeedCardProps) {
       const next = toggleSavedPost(p.id);
       setSaved(next);
       syncSaveCountBadge(readSavedPostIds().length);
+      if (next) {
+        completeMission("save_post");
+        completeActivationStep("first_save");
+      }
     },
     [p.id],
   );

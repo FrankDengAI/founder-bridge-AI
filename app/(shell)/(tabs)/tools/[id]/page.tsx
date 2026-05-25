@@ -21,6 +21,7 @@ export default async function ToolDetailPage({ params }: Props) {
     userName: r.userName,
     rating: r.rating,
     comment: r.comment,
+    authorReply: r.authorReply || undefined,
     createdAt: r.createdAt.toISOString(),
   }));
 

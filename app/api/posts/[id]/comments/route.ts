@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromCookies } from "@/lib/session";
+import { sanitizeText } from "@/lib/sanitize";
 
 type Ctx = { params: { id: string } };
 
@@ -33,16 +34,16 @@ export async function POST(req: Request, { params }: Ctx) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   const body = (await req.json()) as { body?: string };
-  const text = body.body?.trim() ?? "";
-  if (!text || text.length > 2000) {
-    return NextResponse.json({ error: "invalid body" }, { status: 400 });
+  const text = sanitizeText(body.body, { min: 1, max: 500 });
+  if (!text) {
+    return NextResponse.json({ error: "评论内容无效（1–500 字）" }, { status: 400 });
   }
   const post = await prisma.post.findUnique({ where: { id: params.id } });
   if (!post) {
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
   const c = await prisma.comment.create({
-    data: { postId: params.id, authorId, body: text },
+    data: { postId: params.id, authorId, body: text! },
     include: { author: { select: { id: true, displayName: true, avatarUrl: true } } },
   });
   revalidatePath(`/post/${params.id}`);

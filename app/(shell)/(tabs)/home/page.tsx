@@ -1,6 +1,19 @@
 import { FeedCard } from "@/components/FeedCard";
+import { ContinueReading } from "@/components/home/ContinueReading";
+import { CheckInCalendar } from "@/components/home/CheckInCalendar";
+import { ReplyReturnBanner } from "@/components/home/ReplyReturnBanner";
+import { ActivationJourney } from "@/components/retention/ActivationJourney";
+import { FollowingActivityStrip } from "@/components/retention/FollowingActivityStrip";
+import { PublishDraftBanner } from "@/components/retention/PublishDraftBanner";
+import { SocialProofTicker } from "@/components/retention/SocialProofTicker";
+import { StreakRiskBanner } from "@/components/retention/StreakRiskBanner";
+import { WeekReviewCard } from "@/components/retention/WeekReviewCard";
+import { TodayMissionStrip } from "@/components/home/TodayMissionStrip";
+import { DailyMatchCard } from "@/components/home/DailyMatchCard";
+import { HomeCommunityHub } from "@/components/home/HomeCommunityHub";
 import { HomeCinematicHero } from "@/components/home/HomeCinematicHero";
 import { HomeDiscoveryMeta } from "@/components/home/HomeDiscoveryMeta";
+import { HomeHotRanking } from "@/components/home/HomeHotRanking";
 import { HomeSavedFeed } from "@/components/home/HomeSavedFeed";
 import { HomeToolbar } from "@/components/home/HomeToolbar";
 import { PageHeader } from "@/components/PageHeader";
@@ -32,11 +45,14 @@ export default async function HomePage({
       ? [{ likes: "desc" as const }, { createdAt: "desc" as const }]
       : { createdAt: "desc" as const };
 
-  const [postCount, userCount, toolCount, projectCount] = await Promise.all([
+  const [postCount, userCount, toolCount, projectCount, modelCount, reviewCount] =
+    await Promise.all([
     prisma.post.count(),
     prisma.user.count(),
     prisma.tool.count(),
     prisma.project.count(),
+    prisma.aiModel.count(),
+    prisma.aiModelReview.count(),
   ]);
 
   if (view === "saved") {
@@ -53,6 +69,8 @@ export default async function HomePage({
             users: userCount,
             tools: toolCount,
             projects: projectCount,
+            models: modelCount,
+            reviews: reviewCount,
           }}
         />
         <HomeDiscoveryMeta
@@ -64,8 +82,15 @@ export default async function HomePage({
             users: userCount,
             tools: toolCount,
             projects: projectCount,
+            models: modelCount,
+            reviews: reviewCount,
           }}
         />
+        <HomeCommunityHub modelCount={modelCount} reviewCount={reviewCount} />
+        <ReplyReturnBanner />
+        <StreakRiskBanner />
+        <TodayMissionStrip />
+        <PublishDraftBanner />
         <HomeSavedFeed />
       </div>
     );
@@ -79,7 +104,7 @@ export default async function HomePage({
       ? await prisma.userProfile.findUnique({ where: { userId: uid } })
       : null;
     const pool = await prisma.post.findMany({
-      where: type ? { type } : {},
+      where: { status: "published", ...(type ? { type } : {}) },
       orderBy: { createdAt: "desc" },
       take: 120,
       include: { author: { select: { id: true, displayName: true } } },
@@ -97,7 +122,7 @@ export default async function HomePage({
     }
   } else {
     posts = await prisma.post.findMany({
-      where: type ? { type } : {},
+      where: { status: "published", ...(type ? { type } : {}) },
       orderBy,
       take: 40,
       include: { author: { select: { id: true, displayName: true } } },
@@ -111,7 +136,7 @@ export default async function HomePage({
         subtitle={
           view === "for-you"
             ? "为你推荐：按兴趣标签与技能关键词规则排序（演示级，无 ML）。"
-            : "双列信息流 · 类型筛选 · 最新/热门 · 命令面板 · 收藏 · 通知中心与主题在右上角。"
+            : "笔记 · 工具 · 大模型口碑 · 匹配伙伴 —— 冷启动期也能先留下来。"
         }
         right={<HomeToolbar />}
       />
@@ -122,6 +147,8 @@ export default async function HomePage({
           users: userCount,
           tools: toolCount,
           projects: projectCount,
+          models: modelCount,
+          reviews: reviewCount,
         }}
       />
 
@@ -134,8 +161,24 @@ export default async function HomePage({
           users: userCount,
           tools: toolCount,
           projects: projectCount,
+          models: modelCount,
+          reviews: reviewCount,
         }}
       />
+
+      <HomeCommunityHub modelCount={modelCount} reviewCount={reviewCount} />
+      <ReplyReturnBanner />
+      <StreakRiskBanner />
+      <TodayMissionStrip />
+      <ActivationJourney />
+      <CheckInCalendar />
+      <DailyMatchCard />
+      <WeekReviewCard />
+      <PublishDraftBanner />
+      <SocialProofTicker reviewCount={reviewCount} />
+      <FollowingActivityStrip />
+      <ContinueReading />
+      <HomeHotRanking />
 
       <div className="columns-2 gap-2 space-y-2 [column-fill:_balance]">
         {posts.map((p) => (

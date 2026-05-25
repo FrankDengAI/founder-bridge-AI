@@ -2,22 +2,36 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Compass, GraduationCap, Sparkles, UserRound, Wrench } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Compass,
+  GraduationCap,
+  MessageCircle,
+  Sparkles,
+  UserRound,
+} from "lucide-react";
 import clsx from "clsx";
+import { unreadThreadCount } from "@/lib/threads";
 
 const items = [
   { href: "/home", label: "发现", Icon: Compass, tab: "/home" },
   { href: "/learn", label: "学习", Icon: GraduationCap, tab: "/learn" },
-  { href: "/tools", label: "工具", Icon: Wrench, tab: "/tools" },
   { href: "/match", label: "匹配", Icon: Sparkles, tab: "/match" },
+  {
+    href: "/messages",
+    label: "消息",
+    Icon: MessageCircle,
+    tab: "/messages",
+    unread: true,
+  },
   { href: "/me", label: "我的", Icon: UserRound, tab: "/me" },
 ] as const;
 
 function resolveTab(pathname: string) {
+  if (pathname.startsWith("/messages")) return "/messages";
   if (pathname.startsWith("/match")) return "/match";
   if (
     pathname.startsWith("/me") ||
-    pathname.startsWith("/messages") ||
     pathname.startsWith("/settings") ||
     pathname.startsWith("/creator") ||
     pathname.startsWith("/orders")
@@ -26,16 +40,34 @@ function resolveTab(pathname: string) {
   }
   if (pathname.startsWith("/workspace")) return "/home";
   if (pathname.startsWith("/demo")) return "/home";
-  if (pathname.startsWith("/tools") || pathname.startsWith("/market")) {
-    return "/tools";
+  if (
+    pathname.startsWith("/tools") ||
+    pathname.startsWith("/market") ||
+    pathname.startsWith("/models")
+  ) {
+    return "/learn";
   }
-  if (pathname.startsWith("/learn")) return "/learn";
+  if (pathname.startsWith("/learn") || pathname.startsWith("/templates")) {
+    return "/learn";
+  }
   return "/home";
 }
 
 export function BottomNav() {
   const pathname = usePathname();
   const tab = resolveTab(pathname);
+  const [msgUnread, setMsgUnread] = useState(0);
+
+  useEffect(() => {
+    const refresh = () => setMsgUnread(unreadThreadCount());
+    refresh();
+    window.addEventListener("vibe-threads-updated", refresh);
+    window.addEventListener("vibe-reply-pending", refresh);
+    return () => {
+      window.removeEventListener("vibe-threads-updated", refresh);
+      window.removeEventListener("vibe-reply-pending", refresh);
+    };
+  }, []);
 
   return (
     <nav
@@ -48,27 +80,38 @@ export function BottomNav() {
             {items.map((it) => {
               const active = tab === it.tab;
               const Icon = it.Icon;
+              const showBadge =
+                "unread" in it && it.unread && msgUnread > 0;
               return (
                 <Link
                   key={it.href}
                   href={it.href}
                   aria-current={active ? "page" : undefined}
                   className={clsx(
-                    "relative flex min-w-[56px] flex-1 flex-col items-center gap-1 rounded-2xl py-2 text-[11px] transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+                    "relative flex min-w-[52px] flex-1 flex-col items-center gap-1 rounded-2xl py-2 text-[10px] transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 sm:min-w-[56px] sm:text-[11px]",
                     active
                       ? "bg-gradient-to-br from-violet-600 via-fuchsia-600 to-violet-700 text-white shadow-lg shadow-fuchsia-500/35 ring-1 ring-white/25"
                       : "text-zinc-600 hover:bg-white/60 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900/60 dark:hover:text-zinc-100",
                   )}
                 >
                   {active ? (
-                    <span className="absolute inset-x-3 -top-1 h-1 rounded-full bg-gradient-to-r from-amber-300 via-white to-cyan-200 opacity-90 blur-[2px]" />
+                    <span className="absolute inset-x-2 -top-1 h-1 rounded-full bg-gradient-to-r from-amber-300 via-white to-cyan-200 opacity-90 blur-[2px] sm:inset-x-3" />
                   ) : null}
-                  <Icon
-                    className={clsx(
-                      "h-5 w-5 transition-transform duration-300",
-                      active ? "scale-110 text-white drop-shadow" : "text-zinc-500 dark:text-zinc-500",
-                    )}
-                  />
+                  <span className="relative">
+                    <Icon
+                      className={clsx(
+                        "h-5 w-5 transition-transform duration-300",
+                        active
+                          ? "scale-110 text-white drop-shadow"
+                          : "text-zinc-500 dark:text-zinc-500",
+                      )}
+                    />
+                    {showBadge ? (
+                      <span className="absolute -right-1.5 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-bold text-white ring-2 ring-white">
+                        {msgUnread > 9 ? "9+" : msgUnread}
+                      </span>
+                    ) : null}
+                  </span>
                   <span className={clsx("relative z-[1]", active && "font-bold tracking-wide")}>
                     {it.label}
                   </span>

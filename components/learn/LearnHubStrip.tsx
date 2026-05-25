@@ -5,6 +5,8 @@ import Link from "next/link";
 import { CheckCircle2, Circle } from "lucide-react";
 import { readLearnStepsDone, toggleLearnStepDone } from "@/lib/appHub";
 import { syncLessonProgressGamification } from "@/lib/gamification";
+import { completeActivationStep } from "@/lib/activation";
+import { completeMission } from "@/lib/retention";
 
 const STEP_COUNT = 8;
 
@@ -51,6 +53,8 @@ export function LearnHubStrip() {
         const data = (await res.json()) as { steps: number[] };
         setDone(new Set(data.steps));
         syncLessonProgressGamification(data.steps.length);
+        if (nextDone) completeMission("learn_step");
+        if (data.steps.length >= 3) completeActivationStep("week_publish_or_learn");
       } catch {
         void refreshRemote();
       }
@@ -58,6 +62,8 @@ export function LearnHubStrip() {
       const next = toggleLearnStepDone(step);
       setDone(next);
       syncLessonProgressGamification(next.size);
+      if (next.has(step)) completeMission("learn_step");
+      if (next.size >= 3) completeActivationStep("week_publish_or_learn");
     }
   };
 
@@ -70,7 +76,7 @@ export function LearnHubStrip() {
           <h2 className="text-sm font-semibold text-zinc-950">学习路线进度</h2>
           <p className="mt-1 text-[11px] text-zinc-500">
             {synced && !anonymous
-              ? "已登录：进度写入 SQLite，并与工作台成就同步。"
+              ? "已登录：进度写入 PostgreSQL，并与工作台成就同步。"
               : "未登录：进度仅存于本机；登录后将同步到数据库。"}
           </p>
         </div>

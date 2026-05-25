@@ -158,7 +158,7 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
           演示库实时统计
         </div>
         <p className="mt-1 text-[11px] text-zinc-500">
-          以下为 SQLite 内真实计数，可用于路演/答辩展示「有后端、有数据」。
+          以下为 PostgreSQL 内真实计数，可用于路演/答辩展示「有后端、有数据」。
         </p>
         <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
           {[

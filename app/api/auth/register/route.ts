@@ -3,8 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { isRole } from "@/lib/domain/role";
 import { setSessionOnResponse } from "@/lib/authCookies";
 
-const DEMO_PASSWORD_HINT = "demo";
-
 export async function POST(req: Request) {
   const body = (await req.json()) as {
     displayName?: string;
@@ -54,7 +52,7 @@ export async function POST(req: Request) {
   const res = NextResponse.json({
     ok: true,
     userId: user.id,
-    hint: `演示口令为 ${DEMO_PASSWORD_HINT}，登录时可选用`,
+    hint: "演示口令为 demo",
   });
   setSessionOnResponse(res, user.id);
   return res;

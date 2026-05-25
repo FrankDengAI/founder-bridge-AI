@@ -21,7 +21,7 @@ export function LoginForm() {
 
   const [users, setUsers] = useState<Row[]>([]);
   const [userId, setUserId] = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("demo");
   const [tab, setTab] = useState<Tab>("account");
   const [agree, setAgree] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -134,7 +134,7 @@ export function LoginForm() {
             登录 VibeCoding
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-zinc-500">
-            演示环境：选择账号进入；口令可填{" "}
+            演示环境：选择账号进入；口令为{" "}
             <span className="rounded bg-violet-100 px-1 font-mono text-violet-800">
               demo
             </span>{" "}
@@ -277,13 +277,13 @@ export function LoginForm() {
               </div>
             ) : null}
             <label className="block text-xs font-semibold text-zinc-600">
-              演示口令（可选）
+              演示口令
               <input
                 type="password"
                 className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm text-zinc-900 outline-none ring-violet-500/0 transition placeholder:text-zinc-400 focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="留空或输入 demo"
+                placeholder="输入 demo"
                 autoComplete="off"
               />
             </label>

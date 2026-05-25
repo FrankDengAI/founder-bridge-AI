@@ -58,9 +58,19 @@ export function saveLocalNotifs(items: LocalNotif[]) {
   localStorage.setItem(NOTIFS_STORAGE_KEY, JSON.stringify(items));
 }
 
+export function unreadNotifCount(): number {
+  return loadLocalNotifs().filter((n) => !n.read).length;
+}
+
 /** 插入一条未读通知到列表顶部（供评论等客户端事件调用） */
+export function isNotifyEnabled(): boolean {
+  if (typeof window === "undefined") return true;
+  return localStorage.getItem("vibe_notify") !== "0";
+}
+
 export function prependLocalNotif(item: Omit<LocalNotif, "read"> & { read?: boolean }) {
   if (typeof window === "undefined") return;
+  if (!isNotifyEnabled()) return;
   const next: LocalNotif[] = [
     { ...item, read: item.read ?? false },
     ...loadLocalNotifs().filter((n) => n.id !== item.id),

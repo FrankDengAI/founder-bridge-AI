@@ -17,6 +17,8 @@ type Counts = {
   users: number;
   tools: number;
   projects: number;
+  models?: number;
+  reviews?: number;
 };
 
 type Props = {
@@ -112,18 +114,20 @@ export function HomeDiscoveryMeta({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
         {[
-          { k: "笔记", v: counts.posts },
-          { k: "用户", v: counts.users },
-          { k: "工具", v: counts.tools },
-          { k: "项目", v: counts.projects },
+          { k: "笔记", v: counts.posts, tone: "text-zinc-900" },
+          { k: "用户", v: counts.users, tone: "text-zinc-900" },
+          { k: "工具", v: counts.tools, tone: "text-zinc-900" },
+          { k: "项目", v: counts.projects, tone: "text-zinc-900" },
+          { k: "模型", v: counts.models ?? 0, tone: "text-violet-800" },
+          { k: "短评", v: counts.reviews ?? 0, tone: "text-amber-800" },
         ].map((x) => (
           <div
             key={x.k}
             className="rounded-2xl bg-white/70 px-3 py-2 text-center ring-1 ring-zinc-200/60"
           >
-            <p className="text-lg font-bold tabular-nums text-zinc-900">{x.v}</p>
+            <p className={`text-lg font-bold tabular-nums ${x.tone}`}>{x.v}</p>
             <p className="text-[10px] font-medium text-zinc-500">{x.k}</p>
           </div>
         ))}

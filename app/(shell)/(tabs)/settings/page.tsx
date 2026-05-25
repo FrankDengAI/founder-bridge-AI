@@ -9,6 +9,7 @@ import {
   LS_RECENT_ROUTES,
   LS_SAVED_POSTS,
 } from "@/lib/appHub";
+import { clearRetentionLocalData } from "@/lib/retention";
 import { performLogout } from "@/lib/authLogout";
 import clsx from "clsx";
 
@@ -24,6 +25,7 @@ export default function SettingsPage() {
     const d = localStorage.getItem("vibe_theme") === "dark";
     setDark(d);
     document.documentElement.classList.toggle("dark", d);
+    setNotify(localStorage.getItem("vibe_notify") !== "0");
   }, []);
 
   const toggleDark = () => {
@@ -52,7 +54,11 @@ export default function SettingsPage() {
     localStorage.removeItem(LS_LEARN_STEPS);
     localStorage.removeItem(LS_NOTIFS);
     localStorage.removeItem(LS_GAMIFY);
-    setToast("已清理演示本地数据（线程/聊天/GitHub/工作台缓存）");
+    localStorage.removeItem("vibe_visit_counts");
+    localStorage.removeItem("vibe_activation");
+    localStorage.removeItem("vibe_demo_retention_done");
+    clearRetentionLocalData();
+    setToast("已清理演示本地数据（含留存/签到/激活/线程）");
     window.setTimeout(() => setToast(null), 2000);
   };
 

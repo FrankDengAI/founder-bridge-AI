@@ -39,7 +39,7 @@ export default async function OrdersPage() {
     <div className="space-y-4 pb-10">
       <PageHeader
         title="订单与心愿单"
-        subtitle="演示级：SQLite 存储心愿单与模拟订单，不含真实支付。"
+        subtitle="演示级：PostgreSQL 存储心愿单与模拟订单，不含真实支付。"
         backHref="/tools"
       />
 

@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { LogIn, Sparkles, UserPlus } from "lucide-react";
+import { PersonaQuickPick } from "@/components/welcome/PersonaQuickPick";
 
 const cards = [
   {
     href: "/welcome/login",
     title: "登录",
-    desc: "选择已有演示账号或种子用户，可选口令 demo。",
+    desc: "选择已有演示账号或种子用户，固定口令 demo。",
     icon: LogIn,
     tone: "from-brand-600 to-fuchsia-600",
   },
@@ -50,6 +51,7 @@ export default function WelcomePage() {
           </Link>
         );
       })}
+      <PersonaQuickPick />
     </div>
   );
 }

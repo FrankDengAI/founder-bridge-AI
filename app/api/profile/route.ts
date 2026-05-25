@@ -29,6 +29,10 @@ export async function GET(req: Request) {
       direction: user.profile.direction,
       skillKeywords: JSON.parse(user.profile.skillKeywords || "[]"),
       desiredPartnerRoles: JSON.parse(user.profile.desiredPartnerRoles || "[]"),
+      interestTags: JSON.parse(user.profile.interestTags || "[]"),
+      remoteOk: user.profile.remoteOk,
+      githubUrl: user.profile.githubUrl,
+      verifiedAt: user.profile.verifiedAt,
       updatedAt: user.profile.updatedAt,
     },
   });
@@ -48,6 +52,9 @@ export async function PUT(req: Request) {
     direction?: string;
     skillKeywords?: string[];
     desiredPartnerRoles?: string[];
+    interestTags?: string[];
+    remoteOk?: boolean;
+    githubUrl?: string;
   };
   const claimed = body.userId?.trim();
   if (claimed && claimed !== sessionUserId) {
@@ -80,6 +87,20 @@ export async function PUT(req: Request) {
       body.desiredPartnerRoles !== undefined
         ? JSON.stringify(desired)
         : undefined,
+    interestTags:
+      body.interestTags !== undefined
+        ? JSON.stringify(
+            body.interestTags.filter((x) => typeof x === "string"),
+          )
+        : undefined,
+    remoteOk:
+      typeof body.remoteOk === "boolean" ? body.remoteOk : undefined,
+    githubUrl: body.githubUrl,
+    ...(body.githubUrl !== undefined
+      ? {
+          verifiedAt: body.githubUrl.trim() ? new Date() : null,
+        }
+      : {}),
   };
 
   await prisma.userProfile.upsert({

@@ -7,6 +7,8 @@ import { ROLES, type Role } from "@/lib/domain/role";
 import { ROLE_LABEL } from "@/lib/labels";
 import { INTEREST_OPTIONS } from "@/lib/interestPool";
 import { syncLocalUserId } from "@/lib/clientSession";
+import { roleToPersona, writePersona } from "@/lib/retention";
+import { completeActivationStep } from "@/lib/activation";
 
 const STEPS = ["昵称", "角色", "兴趣"] as const;
 
@@ -44,6 +46,8 @@ export function RegisterWizard() {
       }
       const data = (await res.json()) as { userId: string };
       syncLocalUserId(data.userId);
+      writePersona(roleToPersona(role));
+      completeActivationStep("persona");
       window.location.href = "/home";
     } catch (e) {
       setErr(e instanceof Error ? e.message : "注册失败");

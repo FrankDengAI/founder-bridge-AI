@@ -5,7 +5,22 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { MessageCircle, Send, UserRound } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
-import { loadThreads, upsertThread, type Thread } from "@/lib/threads";
+import {
+  completeMission,
+  dismissPendingReply,
+  MESSAGE_INTENT_TEMPLATES,
+  recordPendingReply,
+} from "@/lib/retention";
+import { prependLocalNotif } from "@/lib/notificationsLocal";
+import {
+  loadThreads,
+  markThreadRead,
+  upsertThread,
+  type Thread,
+} from "@/lib/threads";
+import { completeActivationStep } from "@/lib/activation";
+import { hasBackAndForthChat, threadWarmth, WARMTH_LABEL } from "@/lib/chatRetention";
+import { recordGamifyEvent } from "@/lib/gamification";
 
 type ChatMsg = { id: string; from: "me" | "peer"; text: string; t: number };
 
@@ -36,6 +51,7 @@ function saveChat(peerId: string, msgs: ChatMsg[]) {
 export function MessagesClient() {
   const sp = useSearchParams();
   const peer = sp.get("peer") ?? "";
+  const intentKey = sp.get("intent") ?? "";
 
   const [threads, setThreads] = useState<Thread[]>([]);
   const [draft, setDraft] = useState("");
@@ -47,7 +63,10 @@ export function MessagesClient() {
   );
 
   useEffect(() => {
-    setThreads(loadThreads());
+    const refresh = () => setThreads(loadThreads());
+    refresh();
+    window.addEventListener("vibe-threads-updated", refresh);
+    return () => window.removeEventListener("vibe-threads-updated", refresh);
   }, []);
 
   useEffect(() => {
@@ -55,8 +74,18 @@ export function MessagesClient() {
       setMsgs([]);
       return;
     }
+    markThreadRead(peer);
+    dismissPendingReply();
+    setThreads(loadThreads());
     setMsgs(loadChat(peer));
-  }, [peer]);
+    const threads = loadThreads();
+    const row = threads.find((t) => t.peerId === peer);
+    if (row?.draftMessage && !loadChat(peer).length) {
+      setDraft(row.draftMessage);
+    } else if (intentKey && MESSAGE_INTENT_TEMPLATES[intentKey]) {
+      setDraft(MESSAGE_INTENT_TEMPLATES[intentKey]);
+    }
+  }, [peer, intentKey]);
 
   const send = () => {
     const text = draft.trim();
@@ -78,6 +107,47 @@ export function MessagesClient() {
     });
     setThreads(loadThreads());
     setDraft("");
+    completeMission("send_message");
+    recordGamifyEvent("first_message");
+    completeActivationStep("first_message");
+    prependLocalNotif({
+      id: `msg_sent_${Date.now()}`,
+      title: "消息已发出",
+      body: "对方可能稍后回复，记得回来查看会话。",
+      at: "刚刚",
+    });
+    const peerName = active?.peerName || "对方";
+    window.setTimeout(() => {
+      const reply: ChatMsg = {
+        id: `m_peer_${Date.now()}`,
+        from: "peer",
+        text: `你好！我是${peerName}，看到你的消息了，我们可以约个时间聊聊合作细节。`,
+        t: Date.now(),
+      };
+      const withReply = [...merged, reply];
+      setMsgs(withReply);
+      saveChat(peer, withReply);
+      upsertThread({
+        peerId: peer,
+        peerName,
+        lastMessage: reply.text,
+        updatedAt: Date.now(),
+        unread: true,
+      });
+      recordPendingReply({
+        peerId: peer,
+        peerName,
+        preview: reply.text,
+      });
+      if (hasBackAndForthChat(peer)) recordGamifyEvent("chat_back_and_forth");
+      setThreads(loadThreads());
+      prependLocalNotif({
+        id: `msg_reply_${Date.now()}`,
+        title: `${peerName} 回复了你`,
+        body: reply.text.slice(0, 48) + (reply.text.length > 48 ? "…" : ""),
+        at: "刚刚",
+      });
+    }, 2200);
   };
 
   return (
@@ -85,7 +155,7 @@ export function MessagesClient() {
       <PageHeader
         title="消息"
         subtitle="演示：会话保存在浏览器 localStorage。"
-        backHref="/me"
+        backHref="/home"
       />
 
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-5">
@@ -122,9 +192,30 @@ export function MessagesClient() {
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="truncate text-sm font-semibold text-zinc-950">{t.peerName}</p>
+                      {t.unread ? (
+                        <span className="shrink-0 rounded-full bg-rose-500 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                          新
+                        </span>
+                      ) : null}
+                      {(() => {
+                        const w = threadWarmth(t.peerId);
+                        return (
+                          <span
+                            className={
+                              w === "hot"
+                                ? "shrink-0 rounded-full bg-orange-100 px-2 py-0.5 text-[9px] font-bold text-orange-800"
+                                : w === "warm"
+                                  ? "shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[9px] font-bold text-amber-800"
+                                  : "shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-[9px] font-bold text-zinc-600"
+                            }
+                          >
+                            {WARMTH_LABEL[w]}
+                          </span>
+                        );
+                      })()}
                       {t.source === "match" ? (
                         <span className="shrink-0 rounded-full bg-violet-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-violet-800 ring-1 ring-violet-200/70">
-                          来自匹配
+                          匹配
                         </span>
                       ) : null}
                     </div>
@@ -142,9 +233,11 @@ export function MessagesClient() {
               {peer ? active?.peerName || "会话" : "请选择会话"}
             </p>
             <p className="text-[11px] text-zinc-500">
-              {peer
-                ? `peerId: ${peer}`
-                : "从左侧选择一个对话，或通过匹配跳转带 peer 参数进入。"}
+              {active?.contextTitle
+                ? `上下文：${active.contextTitle}`
+                : peer
+                  ? `peerId: ${peer}`
+                  : "从左侧选择会话，或通过匹配/项目页发起沟通。"}
             </p>
             {peer && active?.source === "match" ? (
               <Link
@@ -199,12 +292,19 @@ export function MessagesClient() {
               </button>
             </div>
             <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
+              {Object.entries(MESSAGE_INTENT_TEMPLATES).map(([k, text]) => (
+                <button
+                  key={k}
+                  type="button"
+                  disabled={!peer}
+                  onClick={() => setDraft(text)}
+                  className="rounded-full bg-violet-50 px-2.5 py-1 font-semibold text-violet-900 ring-1 ring-violet-200/70 disabled:opacity-40"
+                >
+                  {k === "match" ? "合作" : k === "interview" ? "采访" : "项目"}
+                </button>
+              ))}
               <Link className="text-brand-800 hover:underline" href="/tools">
-                分享工具清单
-              </Link>
-              <span className="text-zinc-300">·</span>
-              <Link className="text-brand-800 hover:underline" href="/publish">
-                发送项目笔记
+                工具
               </Link>
             </div>
           </div>

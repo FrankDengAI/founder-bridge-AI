@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import { ExternalLink, FolderGit2, Sparkles } from "lucide-react";
 import { PostComments } from "@/components/PostComments";
 import { PostEngage } from "@/components/PostEngage";
+import { RecordRecentView } from "@/components/RecordRecentView";
 import { PageHeader } from "@/components/PageHeader";
+import { MarkdownBody } from "@/components/MarkdownBody";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromCookies } from "@/lib/session";
 import { isPostType } from "@/lib/domain/postType";
@@ -44,8 +46,18 @@ export default async function PostPage({ params }: Props) {
     tags = [];
   }
 
+  let recruitMeta: Record<string, string> | null = null;
+  if (post.type === "RECRUIT") {
+    try {
+      recruitMeta = JSON.parse(post.meta) as Record<string, string>;
+    } catch {
+      recruitMeta = null;
+    }
+  }
+
   return (
     <article className="space-y-4 pb-10">
+      <RecordRecentView postId={post.id} title={post.title} postType={post.type} />
       <PageHeader title="笔记详情" backHref="/home" />
 
       <div className="overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-zinc-200/70">
@@ -98,6 +110,23 @@ export default async function PostPage({ params }: Props) {
             </Link>
           </div>
 
+          {recruitMeta ? (
+            <div className="rounded-2xl bg-violet-50/80 p-3 text-xs ring-1 ring-violet-200/60">
+              <p className="font-semibold text-violet-950">招募信息</p>
+              <ul className="mt-2 space-y-1 text-violet-900/90">
+                {recruitMeta.recruitRole ? (
+                  <li>需求角色：{recruitMeta.recruitRole}</li>
+                ) : null}
+                {recruitMeta.recruitTime ? (
+                  <li>时间投入：{recruitMeta.recruitTime}</li>
+                ) : null}
+                {recruitMeta.recruitComp ? (
+                  <li>报酬方式：{recruitMeta.recruitComp}</li>
+                ) : null}
+              </ul>
+            </div>
+          ) : null}
+
           <PostEngage
             postId={post.id}
             initialLikes={post.likes}
@@ -108,9 +137,7 @@ export default async function PostPage({ params }: Props) {
 
           <PostComments postId={post.id} viewerId={viewerId} />
 
-          <p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-800">
-            {post.body}
-          </p>
+          <MarkdownBody source={post.body} />
 
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             <Link

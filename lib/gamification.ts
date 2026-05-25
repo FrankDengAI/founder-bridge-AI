@@ -17,6 +17,18 @@ const BADGES: BadgeDef[] = [
   { id: "open_palette", label: "极客", desc: "使用过命令面板 (⌘K)", emoji: "⌘" },
   { id: "lesson_path", label: "路线生", desc: "学习路线至少完成 3 步（入库）", emoji: "🎓" },
   { id: "lesson_master", label: "通关者", desc: "学习路线 8 步全部完成（入库）", emoji: "🏁" },
+  { id: "daily_login", label: "早起鸟", desc: "完成至少 1 次每日签到", emoji: "☀️" },
+  { id: "daily_7", label: "七日燃", desc: "连续签到满 7 天", emoji: "🔥" },
+  { id: "match_3", label: "社交蝶", desc: "打开匹配页 3 次", emoji: "🦋" },
+  { id: "publish_1", label: "发声者", desc: "发布或保存过 1 篇内容", emoji: "📣" },
+  { id: "daily_missions_done", label: "日课达人", desc: "单日完成全部今日任务", emoji: "✅" },
+  { id: "first_message", label: "破冰者", desc: "发出第一条私信", emoji: "💬" },
+  { id: "follow_first", label: "人脉+", desc: "首次关注一位创业者", emoji: "🤝" },
+  { id: "activation_week", label: "七日毕业生", desc: "完成 7 日激活路线", emoji: "🎓" },
+  { id: "chat_back_and_forth", label: "深聊", desc: "与伙伴来回对话各 2 条+", emoji: "🔁" },
+  { id: "streak_freeze_used", label: "补签侠", desc: "使用过一次 streak 保护", emoji: "🛡️" },
+  { id: "model_review_first", label: "模型观察员", desc: "提交第一条大模型评价", emoji: "🔭" },
+  { id: "model_discussion_first", label: "榜单共建者", desc: "首次发起模型讨论帖", emoji: "🏗️" },
 ];
 
 function readEvents(): string[] {
@@ -37,6 +49,26 @@ export function recordGamifyEvent(eventId: string) {
   cur.push(eventId);
   localStorage.setItem(LS, JSON.stringify(cur.slice(-120)));
   window.dispatchEvent(new Event("vibe-badges-updated"));
+}
+
+const LS_VISIT = "vibe_visit_counts";
+
+/** 累计访问次数，达到阈值时解锁徽章（如 match_3） */
+export function bumpVisitCounter(pageId: string, badgeId: string, threshold: number) {
+  if (typeof window === "undefined") return;
+  try {
+    const raw = localStorage.getItem(LS_VISIT);
+    const map = raw ? (JSON.parse(raw) as Record<string, number>) : {};
+    map[pageId] = (map[pageId] ?? 0) + 1;
+    localStorage.setItem(LS_VISIT, JSON.stringify(map));
+    if (map[pageId] >= threshold) recordGamifyEvent(badgeId);
+  } catch {
+    // ignore
+  }
+}
+
+export function getAllBadges(): BadgeDef[] {
+  return BADGES;
 }
 
 export function getUnlockedBadges(): BadgeDef[] {

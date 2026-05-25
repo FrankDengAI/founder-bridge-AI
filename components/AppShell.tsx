@@ -3,8 +3,11 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { CommandPalette } from "@/components/CommandPalette";
+import { MissionCompleteToast } from "@/components/retention/MissionCompleteToast";
 import { recordRouteVisit } from "@/lib/appHub";
-import { recordGamifyEvent } from "@/lib/gamification";
+import { injectDemoRetentionState } from "@/lib/demoRetention";
+import { bumpVisitCounter, recordGamifyEvent } from "@/lib/gamification";
+import { trackEvent } from "@/lib/retention";
 
 export function AppShell() {
   const pathname = usePathname();
@@ -15,7 +18,11 @@ export function AppShell() {
       recordGamifyEvent("visit_home");
     }
     if (pathname.startsWith("/workspace")) recordGamifyEvent("open_workspace");
-    if (pathname.startsWith("/match")) recordGamifyEvent("open_match");
+    if (pathname.startsWith("/match")) {
+      recordGamifyEvent("open_match");
+      bumpVisitCounter("match", "match_3", 3);
+    }
+    trackEvent("page_view", { path: pathname });
   }, [pathname]);
 
   useEffect(() => {
@@ -24,5 +31,14 @@ export function AppShell() {
     return () => window.removeEventListener("vibe-command-palette-opened", onPalette);
   }, []);
 
-  return <CommandPalette />;
+  useEffect(() => {
+    injectDemoRetentionState();
+  }, []);
+
+  return (
+    <>
+      <CommandPalette />
+      <MissionCompleteToast />
+    </>
+  );
 }
