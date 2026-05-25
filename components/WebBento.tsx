@@ -3,12 +3,17 @@
 import { motion } from "framer-motion";
 import {
   Activity,
-  Bookmark,
+  BookOpen,
+  Code2,
+  FileText,
   GitBranch,
   Heart,
+  Layers,
+  PlayCircle,
   Radar,
   ShoppingBag,
   Sparkles,
+  Star,
   Users,
   Zap,
 } from "lucide-react";
@@ -26,7 +31,6 @@ const itemMotion = {
 /** 角色互补矩阵 mini 热图 */
 function RoleMatrixViz() {
   const labels = ["ADC", "JG", "SUP"];
-  // 行=我，列=对方；分数越高越互补
   const matrix = [
     [0.4, 0.92, 0.78],
     [0.92, 0.45, 0.84],
@@ -86,26 +90,141 @@ function RoleMatrixViz() {
   );
 }
 
-/** 信息流 mini 卡片 */
+type FeedMiniCard = {
+  type: string;
+  title: string;
+  tag: string;
+  seed: string;
+  chip: string;
+  icon: typeof FileText;
+  overlay?: "video" | "code" | "longform";
+  hot?: boolean;
+};
+
+const FEED_MINI_ITEMS: FeedMiniCard[] = [
+  {
+    type: "图文",
+    title: "Cursor 多文件 Agent",
+    tag: "Cursor",
+    seed: "vibe-feed-note",
+    chip: "bg-white/95 text-zinc-900",
+    icon: FileText,
+  },
+  {
+    type: "短视频",
+    title: "Claude Code 实战",
+    tag: "02:48",
+    seed: "vibe-feed-video",
+    chip: "bg-rose-500/95 text-white",
+    icon: PlayCircle,
+    overlay: "video",
+    hot: true,
+  },
+  {
+    type: "代码",
+    title: "RAG Agent 模板",
+    tag: ".ts",
+    seed: "vibe-feed-code",
+    chip: "bg-indigo-500/95 text-white",
+    icon: Code2,
+    overlay: "code",
+  },
+  {
+    type: "长文",
+    title: "独立开发工具栈",
+    tag: "8 min",
+    seed: "vibe-feed-article",
+    chip: "bg-cyan-500/95 text-white",
+    icon: BookOpen,
+    overlay: "longform",
+  },
+  {
+    type: "工具评测",
+    title: "Cursor 深度评测",
+    tag: "★ 4.8",
+    seed: "vibe-feed-review",
+    chip: "bg-amber-500/95 text-white",
+    icon: Star,
+  },
+  {
+    type: "项目展示",
+    title: "SaaS 首周复盘",
+    tag: "出海",
+    seed: "vibe-feed-showcase",
+    chip: "bg-fuchsia-500/95 text-white",
+    icon: Layers,
+  },
+];
+
+function FeedMiniCardView({ card }: { card: FeedMiniCard }) {
+  const Icon = card.icon;
+  return (
+    <div className="group relative aspect-[3/4] overflow-hidden rounded-lg border border-white/[0.1] bg-gradient-to-br from-violet-600/35 via-fuchsia-600/25 to-cyan-600/30 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={`https://picsum.photos/seed/${card.seed}/180/240`}
+        alt=""
+        loading="lazy"
+        className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
+        onError={(e) => {
+          e.currentTarget.style.display = "none";
+        }}
+      />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
+
+      <span
+        className={`absolute left-1 top-1 inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[7px] font-semibold shadow-sm backdrop-blur ${card.chip}`}
+      >
+        <Icon className="h-2 w-2 shrink-0" />
+        {card.type}
+      </span>
+
+      {card.hot ? (
+        <Heart className="absolute right-1 top-1 h-2.5 w-2.5 fill-rose-400 text-rose-400 drop-shadow" />
+      ) : null}
+
+      {card.overlay === "video" ? (
+        <span className="absolute inset-0 flex items-center justify-center">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black/50 backdrop-blur">
+            <PlayCircle className="h-3.5 w-3.5 text-white" />
+          </span>
+        </span>
+      ) : null}
+
+      {card.overlay === "code" ? (
+        <span className="absolute right-1 top-5 rounded bg-black/55 px-1 py-0.5 text-[7px] font-mono text-white backdrop-blur">
+          <Code2 className="mr-0.5 inline h-2 w-2" />
+          {card.tag}
+        </span>
+      ) : null}
+
+      {card.overlay === "longform" ? (
+        <span className="absolute right-1 top-5 inline-flex items-center gap-0.5 rounded bg-black/55 px-1 py-0.5 text-[7px] font-mono text-white backdrop-blur">
+          <BookOpen className="h-2 w-2" />
+          {card.tag}
+        </span>
+      ) : null}
+
+      <div className="absolute inset-x-1 bottom-1 space-y-0.5">
+        <p className="line-clamp-2 text-[8px] font-semibold leading-tight text-white drop-shadow">
+          {card.title}
+        </p>
+        {!card.overlay ? (
+          <span className="inline-block rounded bg-black/45 px-1 py-0.5 text-[7px] font-medium text-white/90 backdrop-blur">
+            #{card.tag}
+          </span>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+/** 信息流 mini 卡片 —— 六种内容形态混排预览 */
 function FeedMiniViz() {
-  const tags = ["LLM", "Cursor", "出海", "增长"];
   return (
     <div className="mt-5 grid grid-cols-3 gap-1.5">
-      {[1, 2, 3, 4, 5, 6].map((i) => (
-        <div
-          key={i}
-          className="relative aspect-[3/4] overflow-hidden rounded-lg border border-white/[0.07] bg-gradient-to-br from-violet-500/12 via-fuchsia-500/8 to-cyan-500/12"
-        >
-          <div className="absolute inset-0 dot-grid opacity-50" />
-          {i === 1 ? (
-            <div className="absolute inset-x-1 bottom-1 rounded bg-black/40 px-1 py-0.5 text-[8px] text-white backdrop-blur">
-              {tags[i % tags.length]}
-            </div>
-          ) : null}
-          {i === 3 ? (
-            <Heart className="absolute right-1 top-1 h-2.5 w-2.5 fill-rose-400 text-rose-400" />
-          ) : null}
-        </div>
+      {FEED_MINI_ITEMS.map((card) => (
+        <FeedMiniCardView key={card.title} card={card} />
       ))}
     </div>
   );
@@ -311,7 +430,6 @@ export function WebBento() {
                 {it.desc}
               </p>
               <div className="relative">{it.viz}</div>
-              {/* 角部装饰 */}
               <Sparkles
                 aria-hidden
                 className="pointer-events-none absolute -right-3 -bottom-3 h-12 w-12 rotate-12 text-white/[0.05] transition group-hover:text-white/[0.1]"
