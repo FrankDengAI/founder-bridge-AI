@@ -14,7 +14,7 @@ export default function WelcomeRegisterPage() {
       <AuthCard>
         <h2 className="text-xl font-bold tracking-tight text-zinc-900">注册</h2>
         <p className="mt-2 text-sm leading-relaxed text-zinc-500">
-          三步：昵称 → 创业角色 → 兴趣标签。完成后自动登录。
+          四步：账号密码 → 昵称 → 创业角色 → 兴趣标签。完成后自动登录。
         </p>
         <div className="mt-6">
           <RegisterWizard />

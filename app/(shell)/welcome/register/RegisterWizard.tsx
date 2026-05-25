@@ -50,13 +50,17 @@ export function RegisterWizard() {
           interestTags: tags,
         }),
       });
+      const j = (await res.json().catch(() => ({}))) as { error?: string; userId?: string };
       if (!res.ok) {
-        const j = (await res.json().catch(() => ({}))) as { error?: string };
-        throw new Error(j.error || "注册失败");
+        const hint =
+          j.userId && res.status === 503
+            ? `${j.error ?? "自动登录失败"}（账号已创建，请去登录）`
+            : j.error || (res.status === 503 ? "数据库未连接，请联系管理员配置 DATABASE_URL" : "注册失败");
+        throw new Error(hint);
       }
-      const data = (await res.json()) as { userId: string };
+      if (!j.userId) throw new Error("注册响应无效");
       writePersona(roleToPersona(role));
-      syncLocalUserId(data.userId);
+      syncLocalUserId(j.userId);
       window.location.href = "/home";
     } catch (e) {
       setErr(e instanceof Error ? e.message : "注册失败");

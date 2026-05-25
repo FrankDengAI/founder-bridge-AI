@@ -1,8 +1,11 @@
 /**
- * Vercel / CI 构建入口：
+ * Vercel / CI / Render 构建入口：
  * - 有 DATABASE_URL 时执行 prisma migrate deploy（生产库与迁移一致）
  * - 无 DATABASE_URL 时跳过迁移（避免首次未配库时整段构建失败），仍执行 generate + next build
  */
+require("dotenv").config({ path: ".env" });
+require("dotenv").config({ path: ".env.local", override: true });
+
 const { spawnSync } = require("node:child_process");
 
 function run(cmd) {

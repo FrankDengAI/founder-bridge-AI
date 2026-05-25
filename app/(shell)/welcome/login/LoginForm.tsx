@@ -61,15 +61,15 @@ export function LoginForm() {
         credentials: "include",
         body: JSON.stringify({ username: username.trim(), password }),
       });
+      const j = (await res.json().catch(() => ({}))) as { error?: string; userId?: string };
       if (!res.ok) {
-        const j = (await res.json().catch(() => ({}))) as { error?: string };
-        throw new Error(j.error || "登录失败");
+        throw new Error(j.error || (res.status === 503 ? "数据库未连接，请联系管理员配置 DATABASE_URL" : "登录失败"));
       }
-      const data = (await res.json()) as { userId: string };
-      syncLocalUserId(data.userId);
+      if (!j.userId) throw new Error("登录响应无效");
+      syncLocalUserId(j.userId);
       if (embed && typeof window !== "undefined" && window.parent !== window) {
         window.parent.postMessage(
-          { type: VBC_AUTH_POST_MESSAGE, userId: data.userId },
+          { type: VBC_AUTH_POST_MESSAGE, userId: j.userId },
           "*",
         );
       }
