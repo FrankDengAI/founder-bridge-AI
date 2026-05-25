@@ -46,9 +46,8 @@ export default function SettingsPage() {
   };
 
   const clearDemo = () => {
-    localStorage.removeItem("vibe_threads");
-    localStorage.removeItem("vibe_chat_messages");
     localStorage.removeItem("vibe_github_demo_connected");
+    sessionStorage.removeItem("vibe_dismissed_reply_banners");
     localStorage.removeItem(LS_RECENT_ROUTES);
     localStorage.removeItem(LS_SAVED_POSTS);
     localStorage.removeItem(LS_LEARN_STEPS);
@@ -58,7 +57,7 @@ export default function SettingsPage() {
     localStorage.removeItem("vibe_activation");
     localStorage.removeItem("vibe_demo_retention_done");
     clearRetentionLocalData();
-    setToast("已清理演示本地数据（含留存/签到/激活/线程）");
+    setToast("已清理演示本地数据（含留存/签到/激活/会话横幅）");
     window.setTimeout(() => setToast(null), 2000);
   };
 

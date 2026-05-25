@@ -1,11 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { isDemoLoginEnabled } from "@/lib/auth/config";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  if (!isDemoLoginEnabled()) {
+    return NextResponse.json({ users: [] });
+  }
+
   try {
     const users = await prisma.user.findMany({
+      where: { isDemo: true },
       orderBy: { createdAt: "asc" },
       take: 40,
       select: { id: true, displayName: true },
@@ -16,7 +22,7 @@ export async function GET() {
     return NextResponse.json(
       {
         users: [] as { id: string; displayName: string }[],
-        message: "数据库不可用：请检查 DATABASE_URL、迁移与网络（如 Neon 是否允许当前 IP）。",
+        message: "数据库不可用：请检查 DATABASE_URL、迁移与网络。",
       },
       { status: 503 },
     );

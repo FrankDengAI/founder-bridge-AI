@@ -2,10 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Bookmark, Heart } from "lucide-react";
 import clsx from "clsx";
-import { LS_USER_ID } from "@/lib/clientSession";
-import { DEMO_USER_ID } from "@/lib/constants";
+import { useClientUserId } from "@/lib/hooks/useClientUserId";
 
 type Props = {
   postId: string;
@@ -15,11 +15,6 @@ type Props = {
   initiallySaved?: boolean;
 };
 
-function resolveUserId(): string {
-  if (typeof window === "undefined") return DEMO_USER_ID;
-  return localStorage.getItem(LS_USER_ID) || DEMO_USER_ID;
-}
-
 export function PostEngage({
   postId,
   initialLikes,
@@ -28,6 +23,7 @@ export function PostEngage({
   initiallySaved = false,
 }: Props) {
   const router = useRouter();
+  const userId = useClientUserId();
   const [likes, setLikes] = useState(initialLikes);
   const [saves, setSaves] = useState(initialSaves);
   const [liked, setLiked] = useState(initiallyLiked);
@@ -42,10 +38,13 @@ export function PostEngage({
     setSaved(initiallySaved);
   }, [postId, initialLikes, initialSaves, initiallyLiked, initiallySaved]);
 
-  const disabled = useMemo(() => busy !== null, [busy]);
+  const disabled = useMemo(() => busy !== null || !userId, [busy, userId]);
 
   const react = async (action: "like" | "save") => {
-    const userId = resolveUserId();
+    if (!userId) {
+      router.push("/welcome/login");
+      return;
+    }
     const already = action === "like" ? liked : saved;
     if (!already) {
       if (action === "like") {
@@ -63,7 +62,7 @@ export function PostEngage({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ action, userId }),
+        body: JSON.stringify({ action }),
       });
       if (!res.ok) throw new Error("操作失败");
       const data = (await res.json()) as { likes: number; saves: number };
@@ -77,66 +76,66 @@ export function PostEngage({
             ? "你已赞过该笔记"
             : "你已收藏过该笔记"
           : action === "like"
-            ? "已点赞（已写入数据库）"
-            : "已收藏（已写入数据库）",
+            ? "已点赞"
+            : "已收藏",
       );
-      router.refresh();
     } catch {
-      if (!already) {
-        if (action === "like") {
-          setLikes((n) => Math.max(0, n - 1));
-          setLiked(false);
-        } else {
-          setSaves((n) => Math.max(0, n - 1));
-          setSaved(false);
-        }
+      if (action === "like") {
+        setLikes(initialLikes);
+        setLiked(initiallyLiked);
+      } else {
+        setSaves(initialSaves);
+        setSaved(initiallySaved);
       }
-      setToast("网络异常，请稍后再试");
+      setToast("操作失败，请稍后重试");
     } finally {
       setBusy(null);
-      window.setTimeout(() => setToast(null), 2000);
     }
   };
 
   return (
     <div className="space-y-2">
-      <div className="flex gap-2">
+      {!userId ? (
+        <p className="text-xs text-zinc-500">
+          <Link href="/welcome/login" className="font-semibold text-violet-700 hover:underline">
+            登录
+          </Link>{" "}
+          后可点赞与收藏
+        </p>
+      ) : null}
+      <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
           disabled={disabled}
           onClick={() => void react("like")}
-          aria-pressed={liked}
-          aria-label={liked ? "已点赞" : "点赞"}
           className={clsx(
-            "inline-flex flex-1 items-center justify-center gap-2 rounded-2xl px-3 py-3 text-sm font-semibold ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+            "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ring-1 transition",
             liked
-              ? "bg-rose-100 text-rose-900 ring-rose-200/80"
-              : "bg-gradient-to-r from-rose-500 to-orange-500 text-white ring-white/30 hover:brightness-105 disabled:opacity-60",
+              ? "bg-rose-50 text-rose-800 ring-rose-200"
+              : "bg-white/80 text-zinc-700 ring-zinc-200 hover:bg-white",
+            disabled && "opacity-50",
           )}
         >
-          <Heart className={clsx("h-4 w-4", liked && "fill-current")} />
-          点赞 {likes}
+          <Heart className={clsx("h-3.5 w-3.5", liked && "fill-current")} />
+          {likes}
         </button>
         <button
           type="button"
           disabled={disabled}
           onClick={() => void react("save")}
-          aria-pressed={saved}
-          aria-label={saved ? "已收藏" : "收藏"}
           className={clsx(
-            "inline-flex flex-1 items-center justify-center gap-2 rounded-2xl px-3 py-3 text-sm font-semibold ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+            "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ring-1 transition",
             saved
-              ? "bg-amber-50 text-amber-900 ring-amber-200/80"
-              : "bg-white text-zinc-900 ring-zinc-200/80 hover:bg-zinc-50 disabled:opacity-60",
+              ? "bg-amber-50 text-amber-900 ring-amber-200"
+              : "bg-white/80 text-zinc-700 ring-zinc-200 hover:bg-white",
+            disabled && "opacity-50",
           )}
         >
-          <Bookmark className={clsx("h-4 w-4", saved && "fill-current text-amber-700")} />
-          收藏 {saves}
+          <Bookmark className={clsx("h-3.5 w-3.5", saved && "fill-current")} />
+          {saves}
         </button>
       </div>
-      {toast ? (
-        <p className="text-center text-[11px] font-medium text-brand-800">{toast}</p>
-      ) : null}
+      {toast ? <p className="text-[11px] font-medium text-brand-800">{toast}</p> : null}
     </div>
   );
 }

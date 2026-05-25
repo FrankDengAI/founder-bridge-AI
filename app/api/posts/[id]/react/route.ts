@@ -6,21 +6,16 @@ import { getUserIdFromCookies } from "@/lib/session";
 type Ctx = { params: { id: string } };
 
 export async function POST(req: Request, { params }: Ctx) {
-  const userId = getUserIdFromCookies();
+  const userId = await getUserIdFromCookies();
   if (!userId) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
   const body = (await req.json()) as {
     action?: "like" | "save";
-    userId?: string;
   };
   if (body.action !== "like" && body.action !== "save") {
     return NextResponse.json({ error: "invalid action" }, { status: 400 });
-  }
-  const claimed = body.userId?.trim();
-  if (claimed && claimed !== userId) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
   const result = await prisma.$transaction(async (tx) => {

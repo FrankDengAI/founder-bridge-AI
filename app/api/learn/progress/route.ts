@@ -6,7 +6,7 @@ const MIN = 1;
 const MAX = 8;
 
 export async function GET() {
-  const userId = getUserIdFromCookies();
+  const userId = await getUserIdFromCookies();
   if (!userId) {
     return NextResponse.json({ steps: [] as number[], anonymous: true });
   }
@@ -21,7 +21,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const userId = getUserIdFromCookies();
+  const userId = await getUserIdFromCookies();
   if (!userId) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }

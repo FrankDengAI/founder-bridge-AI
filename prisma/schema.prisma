@@ -8,13 +8,19 @@ datasource db {
 }
 
 model User {
-  id          String       @id @default(cuid())
-  displayName String
-  avatarUrl   String?
-  createdAt   DateTime     @default(now())
-  profile     UserProfile?
-  posts       Post[]
-  projects    Project[]
+  id              String       @id @default(cuid())
+  username        String       @unique
+  displayName     String
+  avatarUrl       String?
+  email           String?      @unique
+  emailVerifiedAt DateTime?
+  passwordHash    String?
+  isDemo          Boolean      @default(false)
+  accountStatus   String       @default("active")
+  createdAt       DateTime     @default(now())
+  profile         UserProfile?
+  posts           Post[]
+  projects        Project[]
 
   followingEdges Follow[] @relation("FollowOut")
   followerEdges  Follow[] @relation("FollowIn")
@@ -25,6 +31,11 @@ model User {
   wishlistItems  WishlistItem[]
   demoOrders     DemoOrder[]
   lessonProgress UserLessonProgress[]
+
+  authTokens    AuthToken[]
+  sessions      Session[]
+  sentMessages  Message[]                  @relation("MessageSender")
+  conversations ConversationParticipant[]
 }
 
 model UserProfile {
@@ -157,6 +168,7 @@ model ToolReview {
   id          String   @id @default(cuid())
   toolId      String
   tool        Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  userId      String?
   userName    String
   rating      Int
   comment     String   @default("")
@@ -188,6 +200,7 @@ model AiModelReview {
   id        String   @id @default(cuid())
   modelId   String
   model     AiModel  @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  userId    String?
   userName  String
   rating    Int
   pros      String   @default("")
@@ -240,4 +253,61 @@ model UserLessonProgress {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, step])
+}
+
+model AuthToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, type])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Conversation {
+  id           String                    @id @default(cuid())
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+  participants ConversationParticipant[]
+  messages     Message[]
+}
+
+model ConversationParticipant {
+  id             String       @id @default(cuid())
+  conversationId String
+  userId         String
+  lastReadAt     DateTime?
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@index([userId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  senderId       String
+  body           String
+  meta           String       @default("{}")
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
 }

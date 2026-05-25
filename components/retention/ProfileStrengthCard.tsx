@@ -3,15 +3,18 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Gauge } from "lucide-react";
-import { DEMO_USER_ID } from "@/lib/constants";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
 import { profileCompletenessScore } from "@/lib/retention";
 
 export function ProfileStrengthCard() {
-  const userId = useClientUserId(DEMO_USER_ID);
+  const userId = useClientUserId();
   const [score, setScore] = useState(0);
 
   useEffect(() => {
+    if (!userId) {
+      setScore(0);
+      return;
+    }
     void fetch(`/api/profile?userId=${encodeURIComponent(userId)}`, {
       credentials: "include",
     })

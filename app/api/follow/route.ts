@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getUserIdFromCookies } from "@/lib/session";
 
 export async function POST(req: Request) {
-  const followerId = getUserIdFromCookies();
+  const followerId = await getUserIdFromCookies();
   if (!followerId) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  const followerId = getUserIdFromCookies();
+  const followerId = await getUserIdFromCookies();
   if (!followerId) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }

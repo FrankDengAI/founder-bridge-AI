@@ -8,13 +8,20 @@ import { isPostType } from "@/lib/domain/postType";
 export const dynamic = "force-dynamic";
 
 export default async function CreatorPage() {
-  const uid = getUserIdFromCookies();
+  const uid = await getUserIdFromCookies();
   if (!uid) {
     return (
       <div className="space-y-4 pb-10">
-        <PageHeader title="创作者中心" subtitle="请先通过欢迎页登录后再查看你的内容。" backHref="/me" />
+        <PageHeader
+          title="创作者中心"
+          subtitle="请先通过欢迎页登录后再查看你的内容。"
+          backHref="/me"
+        />
         <p className="glass-panel rounded-shell p-4 text-sm text-zinc-600 shadow-panel">
-          未检测到登录会话。请前往 <Link className="font-semibold text-brand-800" href="/welcome">/welcome</Link>{" "}
+          未检测到登录会话。请前往{" "}
+          <Link className="font-semibold text-brand-800" href="/welcome">
+            /welcome
+          </Link>{" "}
           完成登录。
         </p>
       </div>
@@ -127,7 +134,9 @@ export default async function CreatorPage() {
           })}
         </ul>
         {posts.length === 0 ? (
-          <p className="glass-panel rounded-shell p-4 text-xs text-zinc-600 shadow-panel">暂无笔记，去发布一条吧。</p>
+          <p className="glass-panel rounded-shell p-4 text-xs text-zinc-600 shadow-panel">
+            暂无笔记，去发布一条吧。
+          </p>
         ) : null}
       </section>
     </div>

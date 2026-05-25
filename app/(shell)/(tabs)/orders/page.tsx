@@ -10,7 +10,7 @@ function formatPrice(cents: number) {
 }
 
 export default async function OrdersPage() {
-  const uid = getUserIdFromCookies();
+  const uid = await getUserIdFromCookies();
   if (!uid) {
     return (
       <div className="space-y-4 pb-10">

@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/PageHeader";
-import { DEMO_USER_ID } from "@/lib/constants";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
 import type { Role } from "@/lib/domain/role";
 import { ROLES, isRole } from "@/lib/domain/role";
@@ -21,7 +20,7 @@ import {
 
 export function ProfileEditor() {
   const router = useRouter();
-  const userId = useClientUserId(DEMO_USER_ID);
+  const userId = useClientUserId();
   const [role, setRole] = useState<Role>("ADC");
   const [intro, setIntro] = useState("");
   const [direction, setDirection] = useState("");
@@ -33,6 +32,7 @@ export function ProfileEditor() {
   const [msg, setMsg] = useState<string | null>(null);
 
   const load = useCallback(async () => {
+    if (!userId) return;
     const res = await fetch(`/api/profile?userId=${encodeURIComponent(userId)}`, {
       credentials: "include",
     });
@@ -60,6 +60,10 @@ export function ProfileEditor() {
   }, [load]);
 
   const save = async () => {
+    if (!userId) {
+      setMsg("请先登录后再保存");
+      return;
+    }
     setBusy(true);
     setMsg(null);
     try {
@@ -68,7 +72,6 @@ export function ProfileEditor() {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          userId,
           role,
           intro,
           direction,
@@ -101,11 +104,21 @@ export function ProfileEditor() {
   return (
     <div className="space-y-4 pb-10">
       <PageHeader title="编辑主页" backHref="/me" />
-      <p className="text-xs text-zinc-600">
-        独立于匹配页的资料编辑。完善主页可提升匹配质量与他人信任感。
-      </p>
+      {!userId ? (
+        <p className="rounded-2xl bg-white/80 p-4 text-sm text-zinc-600 ring-1 ring-zinc-200">
+          请先{" "}
+          <Link href="/welcome/login" className="font-semibold text-violet-700 hover:underline">
+            登录
+          </Link>{" "}
+          后再编辑资料。
+        </p>
+      ) : (
+        <>
+          <p className="text-xs text-zinc-600">
+            独立于匹配页的资料编辑。完善主页可提升匹配质量与他人信任感。
+          </p>
 
-      <div className="glass-panel space-y-4 rounded-3xl p-4 shadow-sm ring-1 ring-white/70">
+          <div className="glass-panel space-y-4 rounded-3xl p-4 shadow-sm ring-1 ring-white/70">
         <section className="space-y-2">
           <p className="text-xs font-semibold text-zinc-900">角色</p>
           <div className="flex flex-wrap gap-2">
@@ -232,7 +245,9 @@ export function ProfileEditor() {
         >
           前往匹配页调整期望伙伴类型 →
         </Link>
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

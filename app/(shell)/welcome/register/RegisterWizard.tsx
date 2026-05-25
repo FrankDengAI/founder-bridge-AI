@@ -1,19 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Check } from "lucide-react";
 import clsx from "clsx";
 import { ROLES, type Role } from "@/lib/domain/role";
 import { ROLE_LABEL } from "@/lib/labels";
 import { INTEREST_OPTIONS } from "@/lib/interestPool";
-import { syncLocalUserId } from "@/lib/clientSession";
 import { roleToPersona, writePersona } from "@/lib/retention";
-import { completeActivationStep } from "@/lib/activation";
+import { syncLocalUserId } from "@/lib/clientSession";
 
-const STEPS = ["昵称", "角色", "兴趣"] as const;
+const STEPS = ["账号", "昵称", "角色", "兴趣"] as const;
 
 export function RegisterWizard() {
   const [step, setStep] = useState(0);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [role, setRole] = useState<Role>("ADC");
   const [tags, setTags] = useState<string[]>([]);
@@ -26,6 +29,11 @@ export function RegisterWizard() {
     );
   };
 
+  const canNextStep0 =
+    username.trim().length >= 3 &&
+    password.length >= 8 &&
+    password === confirmPassword;
+
   const submit = async () => {
     setBusy(true);
     setErr(null);
@@ -35,6 +43,8 @@ export function RegisterWizard() {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
+          username: username.trim(),
+          password,
           displayName,
           role,
           interestTags: tags,
@@ -45,9 +55,8 @@ export function RegisterWizard() {
         throw new Error(j.error || "注册失败");
       }
       const data = (await res.json()) as { userId: string };
-      syncLocalUserId(data.userId);
       writePersona(roleToPersona(role));
-      completeActivationStep("persona");
+      syncLocalUserId(data.userId);
       window.location.href = "/home";
     } catch (e) {
       setErr(e instanceof Error ? e.message : "注册失败");
@@ -78,10 +87,49 @@ export function RegisterWizard() {
       </div>
 
       {step === 0 ? (
+        <div className="space-y-3">
+          <label className="block text-xs font-semibold text-zinc-600">
+            账号（字母开头，3–32 位）
+            <input
+              type="text"
+              autoComplete="username"
+              className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="例如：xiaolin"
+            />
+          </label>
+          <label className="block text-xs font-semibold text-zinc-600">
+            密码（至少 8 位）
+            <input
+              type="password"
+              autoComplete="new-password"
+              className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </label>
+          <label className="block text-xs font-semibold text-zinc-600">
+            确认密码
+            <input
+              type="password"
+              autoComplete="new-password"
+              className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </label>
+          {password && confirmPassword && password !== confirmPassword ? (
+            <p className="text-xs text-red-600">两次密码不一致</p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {step === 1 ? (
         <label className="block text-xs font-semibold text-zinc-600">
           昵称
           <input
-            className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm text-zinc-900 outline-none ring-violet-500/0 transition placeholder:text-zinc-400 focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
+            className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm text-zinc-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             placeholder="例如：小林"
@@ -89,7 +137,7 @@ export function RegisterWizard() {
         </label>
       ) : null}
 
-      {step === 1 ? (
+      {step === 2 ? (
         <div className="space-y-2">
           <p className="text-xs font-semibold text-zinc-600">创业角色</p>
           <div className="grid gap-2">
@@ -112,7 +160,7 @@ export function RegisterWizard() {
         </div>
       ) : null}
 
-      {step === 2 ? (
+      {step === 3 ? (
         <div className="space-y-2">
           <p className="text-xs font-semibold text-zinc-600">兴趣标签（多选）</p>
           <div className="flex flex-wrap gap-2">
@@ -149,7 +197,11 @@ export function RegisterWizard() {
         {step < STEPS.length - 1 ? (
           <button
             type="button"
-            disabled={(step === 0 && !displayName.trim()) || busy}
+            disabled={
+              busy ||
+              (step === 0 && !canNextStep0) ||
+              (step === 1 && !displayName.trim())
+            }
             onClick={() => setStep((s) => Math.min(STEPS.length - 1, s + 1))}
             className="flex-1 rounded-full bg-zinc-900 py-3 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:opacity-50"
           >
@@ -162,10 +214,17 @@ export function RegisterWizard() {
             onClick={() => void submit()}
             className="flex-1 rounded-full bg-zinc-900 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-zinc-800 disabled:opacity-50"
           >
-            {busy ? "创建中…" : "完成注册"}
+            {busy ? "注册中…" : "完成注册"}
           </button>
         )}
       </div>
+
+      <p className="text-center text-xs text-zinc-500">
+        已有账号？{" "}
+        <Link href="/welcome/login" className="font-semibold text-violet-700 hover:underline">
+          去登录
+        </Link>
+      </p>
     </div>
   );
 }

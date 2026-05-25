@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { setSessionOnResponse } from "@/lib/authCookies";
+import { isGuestEnabled } from "@/lib/auth/config";
+import { setSessionOnResponse } from "@/lib/auth/sessionStore";
 
 export async function POST(req: Request) {
+  if (!isGuestEnabled()) {
+    return NextResponse.json({ error: "游客模式已关闭" }, { status: 403 });
+  }
   const body = (await req.json()) as { interestTags?: string[] };
   const tags = Array.isArray(body.interestTags)
     ? body.interestTags.filter((t) => typeof t === "string" && t.trim()).map((t) => t.trim())
@@ -36,6 +40,6 @@ export async function POST(req: Request) {
   });
 
   const res = NextResponse.json({ ok: true, userId: user.id });
-  setSessionOnResponse(res, user.id);
+  await setSessionOnResponse(res, user.id);
   return res;
 }

@@ -1,15 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { COOKIE_DONE } from "@/lib/authCookies";
-
-const PUBLIC_PREFIXES = [
-  "/",
-  "/login",
-  "/welcome",
-  "/api",
-  "/_next",
-  "/favicon.ico",
-] as const;
+import { COOKIE_DONE, COOKIE_SESSION, isSessionCookieValid } from "@/lib/auth/sessionCookie";
 
 function isPublicPath(pathname: string) {
   if (pathname === "/") return true;
@@ -21,6 +12,14 @@ function isPublicPath(pathname: string) {
   return false;
 }
 
+function hasValidSession(req: NextRequest): boolean {
+  const session = req.cookies.get(COOKIE_SESSION)?.value;
+  if (isSessionCookieValid(session)) return true;
+  // 兼容旧演示 cookie
+  if (req.cookies.get(COOKIE_DONE)?.value === "1") return true;
+  return false;
+}
+
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
@@ -28,7 +27,7 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  if (req.cookies.get(COOKIE_DONE)?.value === "1") {
+  if (hasValidSession(req)) {
     return NextResponse.next();
   }
 

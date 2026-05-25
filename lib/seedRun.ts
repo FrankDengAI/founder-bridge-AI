@@ -39,7 +39,45 @@ function randomRoles(n: number): Role[] {
   return out;
 }
 
-export async function runSeedDatabase(prisma: PrismaClient) {
+function demoUserIds(): string[] {
+  const ids = [DEMO_USER_ID];
+  for (let i = 0; i < 24; i++) {
+    ids.push(`user_seed_${String(i + 1).padStart(2, "0")}`);
+  }
+  return ids;
+}
+
+async function wipeCatalog(prisma: PrismaClient) {
+  await prisma.demoOrder.deleteMany();
+  await prisma.wishlistItem.deleteMany({ where: { user: { isDemo: true } } });
+  await prisma.userLessonProgress.deleteMany({ where: { user: { isDemo: true } } });
+  await prisma.toolReview.deleteMany();
+  await prisma.aiModelReview.deleteMany();
+  await prisma.aiModel.deleteMany();
+  await prisma.marketItem.deleteMany();
+  await prisma.tool.deleteMany();
+  await prisma.template.deleteMany();
+}
+
+async function wipeDemoUserContent(prisma: PrismaClient) {
+  const demoIds = demoUserIds();
+  await prisma.postLike.deleteMany({
+    where: { OR: [{ userId: { in: demoIds } }, { post: { authorId: { in: demoIds } } }] },
+  });
+  await prisma.postSave.deleteMany({
+    where: { OR: [{ userId: { in: demoIds } }, { post: { authorId: { in: demoIds } } }] },
+  });
+  await prisma.comment.deleteMany({ where: { authorId: { in: demoIds } } });
+  await prisma.follow.deleteMany({
+    where: { OR: [{ followerId: { in: demoIds } }, { followingId: { in: demoIds } }] },
+  });
+  await prisma.post.deleteMany({ where: { authorId: { in: demoIds } } });
+  await prisma.project.deleteMany({ where: { userId: { in: demoIds } } });
+  await prisma.userProfile.deleteMany({ where: { userId: { in: demoIds } } });
+  await prisma.user.deleteMany({ where: { id: { in: demoIds } } });
+}
+
+async function wipeAll(prisma: PrismaClient) {
   await prisma.demoOrder.deleteMany();
   await prisma.wishlistItem.deleteMany();
   await prisma.userLessonProgress.deleteMany();
@@ -57,10 +95,13 @@ export async function runSeedDatabase(prisma: PrismaClient) {
   await prisma.project.deleteMany();
   await prisma.userProfile.deleteMany();
   await prisma.user.deleteMany();
+}
 
+async function insertSeedData(prisma: PrismaClient) {
   await prisma.user.create({
     data: {
       id: DEMO_USER_ID,
+      isDemo: true,
       displayName: "演示用户",
       avatarUrl: "https://i.pravatar.cc/150?u=demo",
       profile: {
@@ -111,6 +152,7 @@ export async function runSeedDatabase(prisma: PrismaClient) {
     await prisma.user.create({
       data: {
         id,
+        isDemo: true,
         displayName: `创业者 ${i + 1}`,
         avatarUrl: `https://i.pravatar.cc/150?u=${id}`,
         profile: {
@@ -504,4 +546,23 @@ export async function runSeedDatabase(prisma: PrismaClient) {
       saves: 18,
     },
   });
+}
+
+export async function runSeedDatabaseUpsert(prisma: PrismaClient) {
+  await wipeDemoUserContent(prisma);
+  await wipeCatalog(prisma);
+  await insertSeedData(prisma);
+}
+
+export async function runSeedDatabaseReset(prisma: PrismaClient) {
+  await wipeAll(prisma);
+  await insertSeedData(prisma);
+}
+
+/** 默认 upsert（生产安全）；SEED_MODE=reset 时全量清空重建 */
+export async function runSeedDatabase(prisma: PrismaClient) {
+  if (process.env.SEED_MODE === "reset") {
+    return runSeedDatabaseReset(prisma);
+  }
+  return runSeedDatabaseUpsert(prisma);
 }

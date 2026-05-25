@@ -5,34 +5,30 @@ import Link from "next/link";
 import { Flame, Sparkles, Trophy } from "lucide-react";
 import { getUnlockedBadges } from "@/lib/gamification";
 import { readCheckIn, readMissionProgress } from "@/lib/retention";
-import { loadThreads } from "@/lib/threads";
-import { unreadThreadCount } from "@/lib/threads";
+import { useConversationStats } from "@/lib/hooks/useConversationStats";
+import { useClientUserId } from "@/lib/hooks/useClientUserId";
 
 export function MeRetentionHub() {
+  const userId = useClientUserId();
   const [streak, setStreak] = useState(0);
   const [missions, setMissions] = useState(0);
   const [badges, setBadges] = useState(0);
-  const [threads, setThreads] = useState(0);
-  const [msgUnread, setMsgUnread] = useState(0);
+  const { total: threads, unread: msgUnread } = useConversationStats(Boolean(userId));
 
   useEffect(() => {
     const refresh = () => {
       setStreak(readCheckIn().streak);
       setMissions(readMissionProgress().total);
       setBadges(getUnlockedBadges().length);
-      setThreads(loadThreads().length);
-      setMsgUnread(unreadThreadCount());
     };
     refresh();
     window.addEventListener("vibe-checkin-updated", refresh);
     window.addEventListener("vibe-missions-updated", refresh);
     window.addEventListener("vibe-badges-updated", refresh);
-    window.addEventListener("vibe-threads-updated", refresh);
     return () => {
       window.removeEventListener("vibe-checkin-updated", refresh);
       window.removeEventListener("vibe-missions-updated", refresh);
       window.removeEventListener("vibe-badges-updated", refresh);
-      window.removeEventListener("vibe-threads-updated", refresh);
     };
   }, []);
 
@@ -57,7 +53,7 @@ export function MeRetentionHub() {
         </div>
         <div className="rounded-2xl bg-cyan-50 px-2 py-2.5 text-center ring-1 ring-cyan-200/60">
           <p className="text-lg font-bold tabular-nums text-zinc-900">{threads}</p>
-          <p className="text-[10px] text-zinc-600">本地会话</p>
+          <p className="text-[10px] text-zinc-600">私聊会话</p>
           {msgUnread > 0 ? (
             <p className="mt-0.5 text-[10px] font-semibold text-rose-600">{msgUnread} 条未读</p>
           ) : null}
@@ -78,7 +74,7 @@ export function MeRetentionHub() {
         </Link>
         <Link
           href="/me/achievements"
-          className="rounded-xl bg-amber-50 px-3 py-1.5 text-[11px] font-semibold text-amber-900 ring-1 ring-amber-200/70"
+          className="rounded-xl bg-white px-3 py-1.5 text-[11px] font-semibold text-zinc-800 ring-1 ring-zinc-200/80"
         >
           成就墙
         </Link>

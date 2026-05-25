@@ -5,7 +5,7 @@ import { getUserIdFromCookies } from "@/lib/session";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
-  const uid = getUserIdFromCookies();
+  const uid = await getUserIdFromCookies();
   if (!uid) {
     return NextResponse.json({ items: [] });
   }

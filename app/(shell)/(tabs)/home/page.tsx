@@ -1,19 +1,18 @@
 import { FeedCard } from "@/components/FeedCard";
-import { ContinueReading } from "@/components/home/ContinueReading";
-import { CheckInCalendar } from "@/components/home/CheckInCalendar";
 import { ReplyReturnBanner } from "@/components/home/ReplyReturnBanner";
+import { ContinueReading } from "@/components/home/ContinueReading";
+import { DailyMatchCard } from "@/components/home/DailyMatchCard";
+import { HomeCommunityHub } from "@/components/home/HomeCommunityHub";
+import { HomeHotRanking } from "@/components/home/HomeHotRanking";
+import { TodayMissionStrip } from "@/components/home/TodayMissionStrip";
 import { ActivationJourney } from "@/components/retention/ActivationJourney";
 import { FollowingActivityStrip } from "@/components/retention/FollowingActivityStrip";
 import { PublishDraftBanner } from "@/components/retention/PublishDraftBanner";
 import { SocialProofTicker } from "@/components/retention/SocialProofTicker";
 import { StreakRiskBanner } from "@/components/retention/StreakRiskBanner";
 import { WeekReviewCard } from "@/components/retention/WeekReviewCard";
-import { TodayMissionStrip } from "@/components/home/TodayMissionStrip";
-import { DailyMatchCard } from "@/components/home/DailyMatchCard";
-import { HomeCommunityHub } from "@/components/home/HomeCommunityHub";
 import { HomeCinematicHero } from "@/components/home/HomeCinematicHero";
 import { HomeDiscoveryMeta } from "@/components/home/HomeDiscoveryMeta";
-import { HomeHotRanking } from "@/components/home/HomeHotRanking";
 import { HomeSavedFeed } from "@/components/home/HomeSavedFeed";
 import { HomeToolbar } from "@/components/home/HomeToolbar";
 import { PageHeader } from "@/components/PageHeader";
@@ -47,13 +46,47 @@ export default async function HomePage({
 
   const [postCount, userCount, toolCount, projectCount, modelCount, reviewCount] =
     await Promise.all([
-    prisma.post.count(),
-    prisma.user.count(),
-    prisma.tool.count(),
-    prisma.project.count(),
-    prisma.aiModel.count(),
-    prisma.aiModelReview.count(),
-  ]);
+      prisma.post.count(),
+      prisma.user.count(),
+      prisma.tool.count(),
+      prisma.project.count(),
+      prisma.aiModel.count(),
+      prisma.aiModelReview.count(),
+    ]);
+
+  const heroStats = {
+    posts: postCount,
+    users: userCount,
+    tools: toolCount,
+    projects: projectCount,
+    models: modelCount,
+    reviews: reviewCount,
+  };
+
+  const metaCounts = {
+    posts: postCount,
+    users: userCount,
+    tools: toolCount,
+    projects: projectCount,
+    models: modelCount,
+    reviews: reviewCount,
+  };
+
+  const retentionBlocks = (
+    <>
+      <HomeCommunityHub modelCount={modelCount} reviewCount={reviewCount} />
+      <StreakRiskBanner />
+      <TodayMissionStrip />
+      <ActivationJourney />
+      <DailyMatchCard />
+      <WeekReviewCard />
+      <PublishDraftBanner />
+      <SocialProofTicker reviewCount={reviewCount} />
+      <FollowingActivityStrip />
+      <ContinueReading />
+      <HomeHotRanking />
+    </>
+  );
 
   if (view === "saved") {
     return (
@@ -63,40 +96,20 @@ export default async function HomePage({
           subtitle="本地收藏视图：数据来自浏览器 localStorage，与卡片右上角书签联动。"
           right={<HomeToolbar />}
         />
-        <HomeCinematicHero
-          stats={{
-            posts: postCount,
-            users: userCount,
-            tools: toolCount,
-            projects: projectCount,
-            models: modelCount,
-            reviews: reviewCount,
-          }}
-        />
+        <HomeCinematicHero stats={heroStats} />
         <HomeDiscoveryMeta
           currentType={type}
           sort={sort}
           currentView="saved"
-          counts={{
-            posts: postCount,
-            users: userCount,
-            tools: toolCount,
-            projects: projectCount,
-            models: modelCount,
-            reviews: reviewCount,
-          }}
+          counts={metaCounts}
         />
-        <HomeCommunityHub modelCount={modelCount} reviewCount={reviewCount} />
-        <ReplyReturnBanner />
-        <StreakRiskBanner />
-        <TodayMissionStrip />
-        <PublishDraftBanner />
+        {retentionBlocks}
         <HomeSavedFeed />
       </div>
     );
   }
 
-  const uid = getUserIdFromCookies();
+  const uid = await getUserIdFromCookies();
   let posts: PostWithAuthor[];
 
   if (view === "for-you") {
@@ -117,7 +130,9 @@ export default async function HomePage({
       });
     posts = scored.slice(0, 40).map((x) => x.p);
     if (posts.length < 12) {
-      const fallback = pool.filter((p) => !posts.some((x) => x.id === p.id)).slice(0, 40 - posts.length);
+      const fallback = pool
+        .filter((p) => !posts.some((x) => x.id === p.id))
+        .slice(0, 40 - posts.length);
       posts = [...posts, ...fallback];
     }
   } else {
@@ -141,44 +156,16 @@ export default async function HomePage({
         right={<HomeToolbar />}
       />
 
-      <HomeCinematicHero
-        stats={{
-          posts: postCount,
-          users: userCount,
-          tools: toolCount,
-          projects: projectCount,
-          models: modelCount,
-          reviews: reviewCount,
-        }}
-      />
+      <HomeCinematicHero stats={heroStats} />
 
       <HomeDiscoveryMeta
         currentType={type}
         sort={sort}
         currentView={view === "for-you" ? "for-you" : "default"}
-        counts={{
-          posts: postCount,
-          users: userCount,
-          tools: toolCount,
-          projects: projectCount,
-          models: modelCount,
-          reviews: reviewCount,
-        }}
+        counts={metaCounts}
       />
 
-      <HomeCommunityHub modelCount={modelCount} reviewCount={reviewCount} />
-      <ReplyReturnBanner />
-      <StreakRiskBanner />
-      <TodayMissionStrip />
-      <ActivationJourney />
-      <CheckInCalendar />
-      <DailyMatchCard />
-      <WeekReviewCard />
-      <PublishDraftBanner />
-      <SocialProofTicker reviewCount={reviewCount} />
-      <FollowingActivityStrip />
-      <ContinueReading />
-      <HomeHotRanking />
+      {retentionBlocks}
 
       <div className="columns-2 gap-2 space-y-2 [column-fill:_balance]">
         {posts.map((p) => (

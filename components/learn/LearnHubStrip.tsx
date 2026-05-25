@@ -7,8 +7,9 @@ import { readLearnStepsDone, toggleLearnStepDone } from "@/lib/appHub";
 import { syncLessonProgressGamification } from "@/lib/gamification";
 import { completeActivationStep } from "@/lib/activation";
 import { completeMission } from "@/lib/retention";
+import { LEARN_STEPS } from "@/lib/learnSteps";
 
-const STEP_COUNT = 8;
+const STEP_COUNT = LEARN_STEPS.length;
 
 export function LearnHubStrip() {
   const [done, setDone] = useState<Set<number>>(new Set());
@@ -71,18 +72,27 @@ export function LearnHubStrip() {
 
   return (
     <section className="glass-panel rounded-shell p-4 shadow-panel ring-1 ring-white/70">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
           <h2 className="text-sm font-semibold text-zinc-950">学习路线进度</h2>
-          <p className="mt-1 text-[11px] text-zinc-500">
+          <p className="mt-1 text-[11px] leading-relaxed text-zinc-600">
+            8 步走完「想法 → 需求 → 提示词 → 代码 → 设计 → GitHub → 部署 → 反馈」的
+            Vibe Coding 闭环。点击圆圈标记完成，或点步骤名进入详情按清单实操。
+          </p>
+          <p className="mt-1 text-[10px] text-zinc-500">
             {synced && !anonymous
-              ? "已登录：进度写入 PostgreSQL，并与工作台成就同步。"
-              : "未登录：进度仅存于本机；登录后将同步到数据库。"}
+              ? "已登录：进度写入数据库，并与工作台成就（路线生 / 通关者）同步。"
+              : "未登录：进度仅保存在本机；登录后写入数据库并解锁成就。"}
           </p>
         </div>
-        <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-900 ring-1 ring-brand-200/70">
-          {pct}%
-        </span>
+        <div className="text-right">
+          <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-900 ring-1 ring-brand-200/70">
+            {pct}%
+          </span>
+          <p className="mt-1 text-[10px] text-zinc-500">
+            {done.size}/{STEP_COUNT} 步
+          </p>
+        </div>
       </div>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-zinc-100">
         <div
@@ -90,16 +100,20 @@ export function LearnHubStrip() {
           style={{ width: `${pct}%` }}
         />
       </div>
-      <ol className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-8">
-        {Array.from({ length: STEP_COUNT }, (_, i) => i + 1).map((step) => {
-          const isDone = done.has(step);
+      <ol className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
+        {LEARN_STEPS.map((step, i) => {
+          const n = i + 1;
+          const isDone = done.has(n);
           return (
-            <li key={step} className="flex flex-col items-center gap-1">
+            <li
+              key={step.title}
+              className="flex flex-col items-center rounded-2xl bg-white/50 p-2 ring-1 ring-zinc-200/60"
+            >
               <button
                 type="button"
-                title={isDone ? "标记未完成" : "标记已完成"}
+                title={isDone ? "标记为未完成" : "标记为已完成"}
                 aria-pressed={isDone}
-                onClick={() => void toggle(step)}
+                onClick={() => void toggle(n)}
                 className="flex flex-col items-center gap-1 rounded-xl p-1 transition hover:bg-white/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               >
                 {isDone ? (
@@ -107,13 +121,14 @@ export function LearnHubStrip() {
                 ) : (
                   <Circle className="h-6 w-6 text-zinc-300" />
                 )}
-                <span className="text-[10px] font-semibold text-zinc-600">{step}</span>
+                <span className="text-[10px] font-bold text-zinc-500">{n}</span>
               </button>
               <Link
-                href={`/learn/step/${step}`}
-                className="text-[9px] font-medium text-brand-800 hover:underline"
+                href={`/learn/step/${n}`}
+                className="mt-1 line-clamp-2 text-center text-[10px] font-semibold leading-tight text-brand-900 hover:underline"
+                title={step.summary}
               >
-                打开
+                {step.title}
               </Link>
             </li>
           );

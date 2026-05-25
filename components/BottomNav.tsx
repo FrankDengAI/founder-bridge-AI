@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import {
   Compass,
   GraduationCap,
@@ -11,7 +10,8 @@ import {
   UserRound,
 } from "lucide-react";
 import clsx from "clsx";
-import { unreadThreadCount } from "@/lib/threads";
+import { useClientUserId } from "@/lib/hooks/useClientUserId";
+import { useConversationStats } from "@/lib/hooks/useConversationStats";
 
 const items = [
   { href: "/home", label: "发现", Icon: Compass, tab: "/home" },
@@ -56,18 +56,8 @@ function resolveTab(pathname: string) {
 export function BottomNav() {
   const pathname = usePathname();
   const tab = resolveTab(pathname);
-  const [msgUnread, setMsgUnread] = useState(0);
-
-  useEffect(() => {
-    const refresh = () => setMsgUnread(unreadThreadCount());
-    refresh();
-    window.addEventListener("vibe-threads-updated", refresh);
-    window.addEventListener("vibe-reply-pending", refresh);
-    return () => {
-      window.removeEventListener("vibe-threads-updated", refresh);
-      window.removeEventListener("vibe-reply-pending", refresh);
-    };
-  }, []);
+  const userId = useClientUserId();
+  const { unread: msgUnread } = useConversationStats(Boolean(userId));
 
   return (
     <nav

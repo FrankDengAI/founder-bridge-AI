@@ -5,14 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Sparkles } from "lucide-react";
-import { DEMO_USER_ID } from "@/lib/constants";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
 import {
   hasDailyMatchContactedToday,
   markDailyMatchContacted,
   MESSAGE_INTENT_TEMPLATES,
 } from "@/lib/retention";
-import { upsertThread } from "@/lib/threads";
+import { startConversation } from "@/lib/chat/client";
 import { ROLE_LABEL } from "@/lib/labels";
 import { isRole } from "@/lib/domain/role";
 
@@ -27,13 +26,17 @@ type Candidate = {
 
 export function DailyMatchCard() {
   const router = useRouter();
-  const userId = useClientUserId(DEMO_USER_ID);
+  const userId = useClientUserId();
   const [c, setC] = useState<Candidate | null>(null);
   const [loading, setLoading] = useState(true);
   const [needProfile, setNeedProfile] = useState(false);
   const [contacted, setContacted] = useState(false);
 
   useEffect(() => {
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
     void Promise.all([
       fetch("/api/match?daily=1", { credentials: "include" }).then((r) =>
         r.ok ? r.json() : null,
@@ -132,16 +135,13 @@ export function DailyMatchCard() {
             const intent = `${MESSAGE_INTENT_TEMPLATES.match}${c.displayName}。`;
             markDailyMatchContacted(c.userId);
             setContacted(true);
-            upsertThread({
-              peerId: c.userId,
-              peerName: c.displayName,
-              lastMessage: intent,
-              updatedAt: Date.now(),
+            void startConversation(c.userId, {
               source: "match",
               contextTitle: "今日一人",
               draftMessage: intent,
+            }).then(() => {
+              router.push(`/messages?peer=${encodeURIComponent(c.userId)}&intent=match`);
             });
-            router.push(`/messages?peer=${encodeURIComponent(c.userId)}&intent=match`);
           }}
         >
           打个招呼

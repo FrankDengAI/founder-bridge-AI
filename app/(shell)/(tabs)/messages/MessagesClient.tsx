@@ -1,61 +1,42 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { MessageCircle, Send, UserRound } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
-import {
-  completeMission,
-  dismissPendingReply,
-  MESSAGE_INTENT_TEMPLATES,
-  recordPendingReply,
-} from "@/lib/retention";
+import { completeMission, MESSAGE_INTENT_TEMPLATES } from "@/lib/retention";
 import { prependLocalNotif } from "@/lib/notificationsLocal";
 import {
-  loadThreads,
-  markThreadRead,
-  upsertThread,
-  type Thread,
-} from "@/lib/threads";
+  fetchMessages,
+  markConversationRead,
+  sendMessage,
+  startConversation,
+  type ApiMessage,
+} from "@/lib/chat/client";
 import { completeActivationStep } from "@/lib/activation";
-import { hasBackAndForthChat, threadWarmth, WARMTH_LABEL } from "@/lib/chatRetention";
 import { recordGamifyEvent } from "@/lib/gamification";
+import { useClientUserId } from "@/lib/hooks/useClientUserId";
+import {
+  notifyConversationsUpdated,
+  useConversations,
+} from "@/lib/hooks/useConversationStats";
 
-type ChatMsg = { id: string; from: "me" | "peer"; text: string; t: number };
-
-const CHAT_KEY = "vibe_chat_messages";
-
-function loadChat(peerId: string): ChatMsg[] {
-  try {
-    const raw = localStorage.getItem(CHAT_KEY);
-    if (!raw) return [];
-    const all = JSON.parse(raw) as Record<string, ChatMsg[]>;
-    return Array.isArray(all[peerId]) ? all[peerId] : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveChat(peerId: string, msgs: ChatMsg[]) {
-  try {
-    const raw = localStorage.getItem(CHAT_KEY);
-    const all = (raw ? JSON.parse(raw) : {}) as Record<string, ChatMsg[]>;
-    all[peerId] = msgs.slice(-200);
-    localStorage.setItem(CHAT_KEY, JSON.stringify(all));
-  } catch {
-    // ignore
-  }
-}
+const MSG_POLL_VISIBLE_MS = 5000;
+const MSG_POLL_HIDDEN_MS = 20000;
 
 export function MessagesClient() {
+  const userId = useClientUserId();
   const sp = useSearchParams();
   const peer = sp.get("peer") ?? "";
   const intentKey = sp.get("intent") ?? "";
 
-  const [threads, setThreads] = useState<Thread[]>([]);
+  const { conversations: threads, refresh: refreshThreads } = useConversations(Boolean(userId));
+  const [convId, setConvId] = useState<string | null>(null);
+  const convIdRef = useRef<string | null>(null);
   const [draft, setDraft] = useState("");
-  const [msgs, setMsgs] = useState<ChatMsg[]>([]);
+  const [msgs, setMsgs] = useState<ApiMessage[]>([]);
+  const [loadingPeer, setLoadingPeer] = useState(false);
 
   const active = useMemo(
     () => threads.find((t) => t.peerId === peer) ?? null,
@@ -63,50 +44,89 @@ export function MessagesClient() {
   );
 
   useEffect(() => {
-    const refresh = () => setThreads(loadThreads());
-    refresh();
-    window.addEventListener("vibe-threads-updated", refresh);
-    return () => window.removeEventListener("vibe-threads-updated", refresh);
-  }, []);
+    convIdRef.current = convId;
+  }, [convId]);
 
   useEffect(() => {
-    if (!peer) {
+    setDraft("");
+  }, [peer, intentKey]);
+
+  useEffect(() => {
+    if (!userId || !peer) {
+      setConvId(null);
       setMsgs([]);
       return;
     }
-    markThreadRead(peer);
-    dismissPendingReply();
-    setThreads(loadThreads());
-    setMsgs(loadChat(peer));
-    const threads = loadThreads();
-    const row = threads.find((t) => t.peerId === peer);
-    if (row?.draftMessage && !loadChat(peer).length) {
-      setDraft(row.draftMessage);
-    } else if (intentKey && MESSAGE_INTENT_TEMPLATES[intentKey]) {
-      setDraft(MESSAGE_INTENT_TEMPLATES[intentKey]);
-    }
-  }, [peer, intentKey]);
 
-  const send = () => {
-    const text = draft.trim();
-    if (!text || !peer) return;
-    const next: ChatMsg = {
-      id: `m_${Date.now()}`,
-      from: "me",
-      text,
-      t: Date.now(),
+    let cancelled = false;
+    setLoadingPeer(true);
+
+    void (async () => {
+      const opened = await startConversation(peer, {
+        source: intentKey === "match" ? "match" : undefined,
+        contextTitle: intentKey === "match" ? "创业伙伴匹配" : undefined,
+      });
+      if (cancelled || !opened) {
+        setLoadingPeer(false);
+        return;
+      }
+
+      setConvId(opened.conversationId);
+      convIdRef.current = opened.conversationId;
+      await markConversationRead(opened.conversationId);
+      notifyConversationsUpdated();
+      const list = await fetchMessages(opened.conversationId);
+      if (!cancelled) {
+        setMsgs(list);
+        if (intentKey && MESSAGE_INTENT_TEMPLATES[intentKey] && list.length === 0) {
+          setDraft(MESSAGE_INTENT_TEMPLATES[intentKey]);
+        }
+        setLoadingPeer(false);
+      }
+      await refreshThreads();
+    })();
+
+    let intervalId = 0;
+    const armPoll = () => {
+      window.clearInterval(intervalId);
+      const ms = document.hidden ? MSG_POLL_HIDDEN_MS : MSG_POLL_VISIBLE_MS;
+      intervalId = window.setInterval(async () => {
+        const id = convIdRef.current;
+        if (!id || cancelled) return;
+        const list = await fetchMessages(id);
+        if (!cancelled) {
+          setMsgs(list);
+          const last = list[list.length - 1];
+          if (last && last.senderId !== userId) {
+            await markConversationRead(id);
+            notifyConversationsUpdated();
+          }
+        }
+      }, ms);
     };
-    const merged = [...msgs, next];
-    setMsgs(merged);
-    saveChat(peer, merged);
-    upsertThread({
-      peerId: peer,
-      peerName: active?.peerName || "对方",
-      lastMessage: text,
-      updatedAt: Date.now(),
-    });
-    setThreads(loadThreads());
+    armPoll();
+    const onVisibility = () => armPoll();
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [userId, peer, intentKey, refreshThreads]);
+
+  const send = async () => {
+    const text = draft.trim();
+    if (!text || !convId || !userId) return;
+
+    const ok = await sendMessage(convId, text);
+    if (!ok) return;
+
     setDraft("");
+    const list = await fetchMessages(convId);
+    setMsgs(list);
+    await refreshThreads();
+    notifyConversationsUpdated();
     completeMission("send_message");
     recordGamifyEvent("first_message");
     completeActivationStep("first_message");
@@ -116,56 +136,32 @@ export function MessagesClient() {
       body: "对方可能稍后回复，记得回来查看会话。",
       at: "刚刚",
     });
-    const peerName = active?.peerName || "对方";
-    window.setTimeout(() => {
-      const reply: ChatMsg = {
-        id: `m_peer_${Date.now()}`,
-        from: "peer",
-        text: `你好！我是${peerName}，看到你的消息了，我们可以约个时间聊聊合作细节。`,
-        t: Date.now(),
-      };
-      const withReply = [...merged, reply];
-      setMsgs(withReply);
-      saveChat(peer, withReply);
-      upsertThread({
-        peerId: peer,
-        peerName,
-        lastMessage: reply.text,
-        updatedAt: Date.now(),
-        unread: true,
-      });
-      recordPendingReply({
-        peerId: peer,
-        peerName,
-        preview: reply.text,
-      });
-      if (hasBackAndForthChat(peer)) recordGamifyEvent("chat_back_and_forth");
-      setThreads(loadThreads());
-      prependLocalNotif({
-        id: `msg_reply_${Date.now()}`,
-        title: `${peerName} 回复了你`,
-        body: reply.text.slice(0, 48) + (reply.text.length > 48 ? "…" : ""),
-        at: "刚刚",
-      });
-    }, 2200);
   };
+
+  if (!userId) {
+    return (
+      <div className="space-y-3 pb-4">
+        <PageHeader title="消息" subtitle="登录后可使用私聊" backHref="/home" />
+        <p className="rounded-2xl bg-white/80 p-4 text-sm text-zinc-600 ring-1 ring-zinc-200">
+          请先{" "}
+          <Link href="/welcome/login" className="font-semibold text-violet-700 hover:underline">
+            登录
+          </Link>{" "}
+          后再查看消息。
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3 pb-4">
-      <PageHeader
-        title="消息"
-        subtitle="演示：会话保存在浏览器 localStorage。"
-        backHref="/home"
-      />
+      <PageHeader title="消息" subtitle="会话保存在服务器，多端同步。" backHref="/home" />
 
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-5">
         <aside className="glass-panel rounded-3xl p-3 shadow-sm lg:col-span-2">
           <div className="flex items-center justify-between px-1 pb-2">
             <p className="text-xs font-semibold text-zinc-900">会话</p>
-            <Link
-              href="/match"
-              className="text-[11px] font-semibold text-brand-800 hover:underline"
-            >
+            <Link href="/match" className="text-[11px] font-semibold text-brand-800 hover:underline">
               去匹配
             </Link>
           </div>
@@ -176,7 +172,7 @@ export function MessagesClient() {
               </li>
             ) : null}
             {threads.map((t) => (
-              <li key={t.peerId}>
+              <li key={t.id}>
                 <Link
                   href={`/messages?peer=${encodeURIComponent(t.peerId)}`}
                   className={[
@@ -197,27 +193,6 @@ export function MessagesClient() {
                           新
                         </span>
                       ) : null}
-                      {(() => {
-                        const w = threadWarmth(t.peerId);
-                        return (
-                          <span
-                            className={
-                              w === "hot"
-                                ? "shrink-0 rounded-full bg-orange-100 px-2 py-0.5 text-[9px] font-bold text-orange-800"
-                                : w === "warm"
-                                  ? "shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[9px] font-bold text-amber-800"
-                                  : "shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-[9px] font-bold text-zinc-600"
-                            }
-                          >
-                            {WARMTH_LABEL[w]}
-                          </span>
-                        );
-                      })()}
-                      {t.source === "match" ? (
-                        <span className="shrink-0 rounded-full bg-violet-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-violet-800 ring-1 ring-violet-200/70">
-                          匹配
-                        </span>
-                      ) : null}
                     </div>
                     <p className="truncate text-[11px] text-zinc-600">{t.lastMessage}</p>
                   </div>
@@ -233,79 +208,60 @@ export function MessagesClient() {
               {peer ? active?.peerName || "会话" : "请选择会话"}
             </p>
             <p className="text-[11px] text-zinc-500">
-              {active?.contextTitle
-                ? `上下文：${active.contextTitle}`
-                : peer
-                  ? `peerId: ${peer}`
-                  : "从左侧选择会话，或通过匹配/项目页发起沟通。"}
+              {peer
+                ? loadingPeer
+                  ? "加载中…"
+                  : active?.contextTitle
+                    ? `上下文：${active.contextTitle}`
+                    : `peerId: ${peer}`
+                : "从左侧选择会话，或通过匹配页发起沟通。"}
             </p>
-            {peer && active?.source === "match" ? (
-              <Link
-                href="/match"
-                className="mt-2 inline-flex text-[11px] font-semibold text-violet-800 hover:underline"
-              >
-                ← 返回匹配页继续找人
-              </Link>
-            ) : null}
           </div>
 
           <div className="flex-1 space-y-2 overflow-y-auto px-4 py-3">
             {!peer ? (
               <div className="mt-10 text-center text-sm text-zinc-600">
                 <MessageCircle className="mx-auto mb-2 h-8 w-8 text-zinc-400" />
-                选择左侧会话开始聊天（演示）。
+                选择左侧会话开始聊天。
               </div>
             ) : null}
-            {msgs.map((m) => (
-              <div
-                key={m.id}
-                className={[
-                  "max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed shadow-sm",
-                  m.from === "me"
-                    ? "ml-auto bg-gradient-to-r from-brand-600 to-fuchsia-600 text-white"
-                    : "mr-auto bg-white text-zinc-900 ring-1 ring-zinc-200/70",
-                ].join(" ")}
-              >
-                {m.text}
-              </div>
-            ))}
+            {msgs.map((m) => {
+              const mine = m.senderId === userId;
+              return (
+                <div
+                  key={m.id}
+                  className={[
+                    "max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed shadow-sm",
+                    mine
+                      ? "ml-auto bg-gradient-to-r from-brand-600 to-fuchsia-600 text-white"
+                      : "mr-auto bg-white text-zinc-900 ring-1 ring-zinc-200/70",
+                  ].join(" ")}
+                >
+                  {m.body}
+                </div>
+              );
+            })}
           </div>
 
           <div className="border-t border-zinc-200/70 p-3">
             <div className="flex gap-2">
               <input
-                disabled={!peer}
+                disabled={!peer || !convId}
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && send()}
+                onKeyDown={(e) => e.key === "Enter" && void send()}
                 placeholder={peer ? "输入消息…" : "先选择会话"}
                 className="flex-1 rounded-2xl border border-zinc-200/90 bg-white/80 px-3 py-2 text-sm outline-none disabled:opacity-50"
               />
               <button
                 type="button"
-                disabled={!peer}
-                onClick={send}
+                disabled={!peer || !convId}
+                onClick={() => void send()}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-zinc-950 text-white disabled:opacity-40"
                 aria-label="发送"
               >
                 <Send className="h-4 w-4" />
               </button>
-            </div>
-            <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
-              {Object.entries(MESSAGE_INTENT_TEMPLATES).map(([k, text]) => (
-                <button
-                  key={k}
-                  type="button"
-                  disabled={!peer}
-                  onClick={() => setDraft(text)}
-                  className="rounded-full bg-violet-50 px-2.5 py-1 font-semibold text-violet-900 ring-1 ring-violet-200/70 disabled:opacity-40"
-                >
-                  {k === "match" ? "合作" : k === "interview" ? "采访" : "项目"}
-                </button>
-              ))}
-              <Link className="text-brand-800 hover:underline" href="/tools">
-                工具
-              </Link>
             </div>
           </div>
         </section>

@@ -17,7 +17,7 @@ type Props = { params: { id: string } };
 export const dynamic = "force-dynamic";
 
 export default async function PostPage({ params }: Props) {
-  const viewerId = getUserIdFromCookies();
+  const viewerId = await getUserIdFromCookies();
   const post = await prisma.post.findUnique({
     where: { id: params.id },
     include: { author: true },

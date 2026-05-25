@@ -37,7 +37,7 @@ function mergeProfile(base: ParsedProfile, draft: Draft | undefined): ParsedProf
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
-  const sessionUserId = getUserIdFromCookies();
+  const sessionUserId = await getUserIdFromCookies();
   if (!sessionUserId) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
@@ -90,20 +90,15 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const sessionUserId = getUserIdFromCookies();
+  const sessionUserId = await getUserIdFromCookies();
   if (!sessionUserId) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
   const body = (await req.json()) as {
-    userId?: string;
     limit?: number;
     draft?: Draft;
   };
-  const claimed = body.userId?.trim();
-  if (claimed && claimed !== sessionUserId) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
   const userId = sessionUserId;
   const limit = Math.min(20, Math.max(1, body.limit ?? 10));
 

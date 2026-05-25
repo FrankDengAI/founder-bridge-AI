@@ -29,7 +29,7 @@ export async function GET(req: Request, { params }: Ctx) {
 }
 
 export async function POST(req: Request, { params }: Ctx) {
-  const authorId = getUserIdFromCookies();
+  const authorId = await getUserIdFromCookies();
   if (!authorId) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }

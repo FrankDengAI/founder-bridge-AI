@@ -3,6 +3,16 @@ import { prisma } from "@/lib/prisma";
 import { isRole } from "@/lib/domain/role";
 import { getUserIdFromCookies } from "@/lib/session";
 
+function parseJsonArray(raw: string | null | undefined): string[] {
+  if (!raw) return [];
+  try {
+    const v = JSON.parse(raw) as unknown;
+    return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId");
@@ -27,9 +37,9 @@ export async function GET(req: Request) {
       budgetTier: user.profile.budgetTier,
       intro: user.profile.intro,
       direction: user.profile.direction,
-      skillKeywords: JSON.parse(user.profile.skillKeywords || "[]"),
-      desiredPartnerRoles: JSON.parse(user.profile.desiredPartnerRoles || "[]"),
-      interestTags: JSON.parse(user.profile.interestTags || "[]"),
+      skillKeywords: parseJsonArray(user.profile.skillKeywords),
+      desiredPartnerRoles: parseJsonArray(user.profile.desiredPartnerRoles),
+      interestTags: parseJsonArray(user.profile.interestTags),
       remoteOk: user.profile.remoteOk,
       githubUrl: user.profile.githubUrl,
       verifiedAt: user.profile.verifiedAt,
@@ -39,13 +49,12 @@ export async function GET(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  const sessionUserId = getUserIdFromCookies();
+  const sessionUserId = await getUserIdFromCookies();
   if (!sessionUserId) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
   const body = (await req.json()) as {
-    userId?: string;
     role?: string;
     budgetTier?: number;
     intro?: string;
@@ -56,10 +65,6 @@ export async function PUT(req: Request) {
     remoteOk?: boolean;
     githubUrl?: string;
   };
-  const claimed = body.userId?.trim();
-  if (claimed && claimed !== sessionUserId) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
   const userId = sessionUserId;
   if (body.role && !isRole(body.role)) {
     return NextResponse.json({ error: "invalid role" }, { status: 400 });

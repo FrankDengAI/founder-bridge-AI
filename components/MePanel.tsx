@@ -21,8 +21,8 @@ import { ProfileStrengthCard } from "@/components/retention/ProfileStrengthCard"
 import { PublishDraftBanner } from "@/components/retention/PublishDraftBanner";
 import { PageHeader } from "@/components/PageHeader";
 import { performLogout } from "@/lib/authLogout";
-import { LS_USER_ID, syncLocalUserId } from "@/lib/clientSession";
-import { DEMO_USER_ID } from "@/lib/constants";
+import { syncLocalUserId } from "@/lib/clientSession";
+import { useCurrentUser } from "@/lib/hooks/useClientUserId";
 import type { Role } from "@/lib/domain/role";
 import { ROLES, isRole } from "@/lib/domain/role";
 import { ROLE_LABEL } from "@/lib/labels";
@@ -34,7 +34,7 @@ const quickLinks = [
   { href: "/publish", label: "发布", desc: "PostgreSQL 入库", icon: PenSquare },
   { href: "/settings/profile", label: "编辑主页", desc: "资料与技能", icon: UserRound },
   { href: "/search", label: "搜索", desc: "标题检索", icon: Search },
-  { href: "/messages", label: "消息", desc: "本地会话", icon: MessageCircle },
+  { href: "/messages", label: "消息", desc: "私聊会话", icon: MessageCircle },
   { href: "/match", label: "匹配", desc: "算法推荐", icon: Sparkles },
   { href: "/tools", label: "工具", desc: "导航/商城", icon: Wrench },
   { href: "/settings", label: "设置", desc: "主题/数据", icon: Settings },
@@ -42,7 +42,8 @@ const quickLinks = [
 ] as const;
 
 export function MePanel() {
-  const [userId, setUserId] = useState(DEMO_USER_ID);
+  const { user, loading: authLoading } = useCurrentUser();
+  const userId = user?.userId ?? "";
   const [displayName, setDisplayName] = useState("");
   const [role, setRole] = useState<Role | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -68,45 +69,15 @@ export function MePanel() {
   }, []);
 
   useEffect(() => {
-    void (async () => {
-      try {
-        const r = await fetch("/api/me", { credentials: "include" });
-        const j = (await r.json()) as { userId: string | null };
-        if (j.userId) {
-          setUserId(j.userId);
-          syncLocalUserId(j.userId);
-          await load(j.userId);
-          return;
-        }
-      } catch {
-        // ignore
-      }
-      const stored =
-        typeof window !== "undefined" ? localStorage.getItem(LS_USER_ID) : null;
-      const id = stored || DEMO_USER_ID;
-      setUserId(id);
-      await load(id);
-    })();
-  }, [load]);
-
-  const saveUserId = async () => {
-    const id = userId.trim();
-    if (!id) return;
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ userId: id, password: "demo" }),
-      });
-      if (!res.ok) throw new Error("切换失败");
-      syncLocalUserId(id);
-      setMsg("已切换账号并同步登录会话。");
-      void load(id);
-    } catch {
-      setMsg("切换失败：请确认该用户存在于数据库中。");
+    if (authLoading) return;
+    if (!user?.userId) {
+      setMsg("请先登录后查看个人资料");
+      setLoading(false);
+      return;
     }
-  };
+    syncLocalUserId(user.userId);
+    void load(user.userId);
+  }, [authLoading, user?.userId, load]);
 
   return (
     <div className="space-y-4 pb-4">
@@ -170,35 +141,15 @@ export function MePanel() {
       </section>
 
       <section className="glass-panel rounded-3xl p-4 shadow-sm ring-1 ring-white/70">
-        <p className="text-xs font-semibold text-zinc-900">当前用户 ID（Cookie + localStorage）</p>
-        <div className="mt-2 flex gap-2">
-          <input
-            className="flex-1 rounded-2xl border border-zinc-200/90 bg-white/80 px-3 py-2 font-mono text-xs outline-none"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-          />
-          <button
-            type="button"
-            onClick={() => void saveUserId()}
-            className="rounded-2xl bg-zinc-950 px-3 py-2 text-xs font-semibold text-white hover:bg-zinc-800"
-          >
-            保存
-          </button>
-        </div>
-        <p className="mt-2 text-[10px] leading-relaxed text-zinc-500">
-          默认 <span className="font-mono">{DEMO_USER_ID}</span>
-          。也可切换到 <span className="font-mono">user_seed_01</span> 等种子用户体验不同画像。
-        </p>
-      </section>
-
-      <section className="glass-panel rounded-3xl p-4 shadow-sm ring-1 ring-white/70">
         {loading ? (
           <p className="text-sm text-zinc-600">加载中…</p>
         ) : (
           <>
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold text-zinc-950">{displayName}</p>
+                <p className="text-sm font-semibold text-zinc-950">
+                  {displayName || user?.displayName || "用户"}
+                </p>
                 <p className="mt-1 text-xs text-zinc-600">角色定位（来自资料库）</p>
               </div>
               <Link
@@ -233,12 +184,21 @@ export function MePanel() {
             <h2 className="text-sm font-semibold text-zinc-950">我的主页</h2>
             <p className="mt-1 text-xs text-zinc-600">查看笔记/项目聚合展示。</p>
           </div>
-          <Link
-            href={`/user/${encodeURIComponent(userId)}`}
-            className="rounded-2xl bg-gradient-to-r from-brand-600 to-fuchsia-600 px-3 py-2 text-xs font-semibold text-white shadow-glow"
-          >
-            打开
-          </Link>
+          {userId ? (
+            <Link
+              href={`/user/${encodeURIComponent(userId)}`}
+              className="rounded-2xl bg-gradient-to-r from-brand-600 to-fuchsia-600 px-3 py-2 text-xs font-semibold text-white shadow-glow"
+            >
+              打开
+            </Link>
+          ) : (
+            <Link
+              href="/welcome/login"
+              className="rounded-2xl bg-zinc-200 px-3 py-2 text-xs font-semibold text-zinc-700"
+            >
+              请先登录
+            </Link>
+          )}
         </div>
       </section>
     </div>

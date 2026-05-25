@@ -7,7 +7,7 @@ import { sanitizeText } from "@/lib/sanitize";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const sessionUserId = getUserIdFromCookies();
+  const sessionUserId = await getUserIdFromCookies();
   const idsRaw = (searchParams.get("ids") ?? "").trim();
   const q = (searchParams.get("q") ?? "").trim();
   const type = searchParams.get("type");
@@ -49,7 +49,7 @@ export async function GET(req: Request) {
         includeDrafts ? { authorId: sessionUserId ?? undefined } : {},
       ],
     },
-    /** 按 id 批量拉取时由应用层保序，避免多余排序开销 */
+    /** 按 id 列表查询时禁用 orderBy，保持请求顺序 */
     orderBy: idList.length ? undefined : orderBy,
     take: idList.length ? idList.length : take,
     include: { author: { select: { id: true, displayName: true } } },
@@ -69,13 +69,12 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const sessionUserId = getUserIdFromCookies();
+  const sessionUserId = await getUserIdFromCookies();
   if (!sessionUserId) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
   const body = (await req.json()) as {
-    userId?: string;
     title?: string;
     excerpt?: string;
     body?: string;
@@ -91,12 +90,7 @@ export async function POST(req: Request) {
 
   const title = sanitizeText(body.title, { min: 1, max: 120 });
   if (!title) {
-    return NextResponse.json({ error: "标题无效（1–120 字）" }, { status: 400 });
-  }
-
-  const claimed = body.userId?.trim();
-  if (claimed && claimed !== sessionUserId) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    return NextResponse.json({ error: "标题不能为空，长度 1–120 字" }, { status: 400 });
   }
 
   const user = await prisma.user.findUnique({ where: { id: sessionUserId } });

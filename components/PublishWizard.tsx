@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Check, ImagePlus, NotebookPen } from "lucide-react";
 import clsx from "clsx";
 import { MarkdownPreview } from "@/components/MarkdownPreview";
-import { DEMO_USER_ID } from "@/lib/constants";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
 import { POST_TYPES, isPostType } from "@/lib/domain/postType";
 import { completeActivationStep } from "@/lib/activation";
@@ -22,7 +22,7 @@ const STEPS = ["类型", "内容", "封面", "发布"] as const;
 export function PublishWizard() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const userId = useClientUserId(DEMO_USER_ID);
+  const userId = useClientUserId();
   const [step, setStep] = useState(0);
   const [type, setType] = useState<string>("NOTE");
   const [linkedModelId, setLinkedModelId] = useState("");
@@ -79,6 +79,11 @@ export function PublishWizard() {
   }, [isRecruit, recruitRole, recruitTime, recruitComp]);
 
   const submit = async (asDraft: boolean) => {
+    if (!userId) {
+      setErr("请先登录后再发布");
+      router.push("/welcome/login");
+      return;
+    }
     setBusy(true);
     setErr(null);
     setToast(null);
@@ -90,7 +95,6 @@ export function PublishWizard() {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          userId,
           title,
           excerpt,
           body,
@@ -300,11 +304,23 @@ export function PublishWizard() {
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-zinc-900">确认发布</p>
                 <p className="mt-1 text-xs leading-relaxed text-zinc-600">
-                  将使用当前用户{" "}
-                  <span className="rounded bg-white px-1 font-mono text-[11px] ring-1 ring-zinc-200">
-                    {userId}
-                  </span>{" "}
-                  作为作者。也可先保存草稿。
+                  {userId ? (
+                    <>
+                      将使用当前登录账号{" "}
+                      <span className="rounded bg-white px-1 font-mono text-[11px] ring-1 ring-zinc-200">
+                        {userId}
+                      </span>{" "}
+                      作为作者。也可先保存草稿。
+                    </>
+                  ) : (
+                    <>
+                      请先{" "}
+                      <Link href="/welcome/login" className="font-semibold text-violet-700 hover:underline">
+                        登录
+                      </Link>{" "}
+                      后再发布。
+                    </>
+                  )}
                 </p>
               </div>
             </div>

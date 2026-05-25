@@ -1,6 +1,7 @@
 import { WebNav } from "@/components/WebNav";
 import { WebHero } from "@/components/WebHero";
 import { WebBento } from "@/components/WebBento";
+import { WebShowcaseJumpStrip } from "@/components/WebShowcaseJumpStrip";
 import { WebMatchPreview } from "@/components/WebMatchPreview";
 import { WebPulse } from "@/components/WebPulse";
 import { WebMarket } from "@/components/WebMarket";
@@ -15,6 +16,7 @@ export default function HomePage() {
       <main>
         <WebHero />
         <WebBento />
+        <WebShowcaseJumpStrip />
         <WebMatchPreview />
         <WebPulse />
         <WebMarket />

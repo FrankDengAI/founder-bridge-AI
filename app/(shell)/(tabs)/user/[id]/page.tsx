@@ -24,7 +24,7 @@ function parseJsonArray(raw: string): string[] {
 }
 
 export default async function UserPage({ params }: Props) {
-  const viewerId = getUserIdFromCookies();
+  const viewerId = await getUserIdFromCookies();
   const user = await prisma.user.findUnique({
     where: { id: params.id },
     include: {

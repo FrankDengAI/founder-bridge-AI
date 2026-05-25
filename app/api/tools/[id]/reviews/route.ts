@@ -6,7 +6,7 @@ import { getUserIdFromCookies } from "@/lib/session";
 type Ctx = { params: { id: string } };
 
 export async function POST(req: Request, { params }: Ctx) {
-  const sessionUserId = getUserIdFromCookies();
+  const sessionUserId = await getUserIdFromCookies();
   if (!sessionUserId) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
@@ -44,7 +44,7 @@ export async function POST(req: Request, { params }: Ctx) {
 }
 
 export async function PATCH(req: Request, { params }: Ctx) {
-  const sessionUserId = getUserIdFromCookies();
+  const sessionUserId = await getUserIdFromCookies();
   if (!sessionUserId) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }

@@ -11,7 +11,6 @@ import {
   Target,
   Users,
 } from "lucide-react";
-import { DEMO_USER_ID } from "@/lib/constants";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
 import type { Role } from "@/lib/domain/role";
 import { ROLES, isRole } from "@/lib/domain/role";
@@ -28,7 +27,7 @@ import {
 } from "@/lib/matchUiCopy";
 import { completeActivationStep } from "@/lib/activation";
 import { completeMission, trackEvent } from "@/lib/retention";
-import { upsertThread } from "@/lib/threads";
+import { startConversation } from "@/lib/chat/client";
 import { PageHeader } from "@/components/PageHeader";
 import { MatchProgress } from "./MatchProgress";
 
@@ -196,7 +195,7 @@ const BUDGET_OPTIONS = [
 
 export function MatchExperience() {
   const router = useRouter();
-  const userId = useClientUserId(DEMO_USER_ID);
+  const userId = useClientUserId();
   const [kwInput, setKwInput] = useState("");
   const [form, setForm] = useState<ProfilePayload>({
     role: "ADC",
@@ -230,6 +229,10 @@ export function MatchExperience() {
   );
 
   const refreshProfile = useCallback(async () => {
+    if (!userId) {
+      setLoadingProfile(false);
+      return;
+    }
     setLoadingProfile(true);
     setError(null);
     try {
@@ -289,6 +292,10 @@ export function MatchExperience() {
   };
 
   const startMatch = async () => {
+    if (!userId) {
+      setError("请先登录后再匹配");
+      return;
+    }
     setError(null);
     setResults(null);
     setPendingResult(null);
@@ -297,7 +304,7 @@ export function MatchExperience() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ userId, ...form }),
+        body: JSON.stringify({ ...form }),
       });
       if (!put.ok) throw new Error("保存资料失败");
       trackEvent("match_run");
@@ -308,7 +315,7 @@ export function MatchExperience() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ userId, limit: 10 }),
+        body: JSON.stringify({ limit: 10 }),
       })
         .then(async (res) => {
           if (!res.ok) throw new Error("匹配请求失败");
@@ -339,7 +346,7 @@ export function MatchExperience() {
     <div className="space-y-4 pb-28">
       <PageHeader
         title="创业伙伴匹配"
-        subtitle={`多维度互补评分 · 支持快速/仪式感动效 · 当前会话：${userId}`}
+        subtitle={`多维度互补评分 · 支持快速/仪式感动效${userId ? ` · 当前会话：${userId}` : ""}`}
         right={
           <Link
             href="/messages"
@@ -715,18 +722,15 @@ export function MatchExperience() {
                         className="rounded-2xl bg-zinc-950 px-3 py-2.5 text-xs font-semibold text-white hover:bg-zinc-800"
                         onClick={() => {
                           const intent = `你好 ${c.displayName}，我在 VibeHub 匹配里看到你的资料（${isRole(c.role) ? ROLE_LABEL[c.role] : c.role}），想聊聊合作可能性。`;
-                          upsertThread({
-                            peerId: c.userId,
-                            peerName: c.displayName,
-                            lastMessage: intent,
-                            updatedAt: Date.now(),
+                          void startConversation(c.userId, {
                             source: "match",
                             contextTitle: "创业伙伴匹配",
                             draftMessage: intent,
+                          }).then(() => {
+                            router.push(
+                              `/messages?peer=${encodeURIComponent(c.userId)}&intent=match`,
+                            );
                           });
-                          router.push(
-                            `/messages?peer=${encodeURIComponent(c.userId)}&intent=match`,
-                          );
                         }}
                       >
                         发起沟通
