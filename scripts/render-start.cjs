@@ -1,6 +1,12 @@
 /**
  * Render 启动：migrate deploy → 空库 seed → next start
  */
+require("dotenv").config({ path: ".env" });
+require("dotenv").config({ path: ".env.local", override: true });
+
+const { ensurePrismaEnv } = require("./ensure-prisma-env.cjs");
+ensurePrismaEnv();
+
 const { spawnSync } = require("node:child_process");
 
 function run(cmd) {
