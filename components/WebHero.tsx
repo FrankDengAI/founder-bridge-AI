@@ -13,7 +13,7 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
-import { appDemoReady, appShellHref, isExternalMiniapp } from "@/lib/miniappOrigin";
+import { appDemoReady, appEntryHref, isExternalMiniapp } from "@/lib/miniappOrigin";
 
 const HERO_STATS = [
   { v: "30s", k: "极速匹配", sub: "约 30 秒仪式动效" },
@@ -29,7 +29,7 @@ const FLOATING_TICKERS = [
 ];
 
 export function WebHero() {
-  const homeHref = appShellHref("/home");
+  const homeHref = appEntryHref("/home");
   const external = isExternalMiniapp();
   const appReady = appDemoReady();
 
@@ -41,7 +41,7 @@ export function WebHero() {
       {/* 巨型水印 */}
       <p
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-[6%] -translate-x-1/2 select-none font-display text-[clamp(4rem,18vw,14rem)] font-black leading-none text-white/[0.035] sm:top-[10%]"
+        className="pointer-events-none absolute left-1/2 top-[6%] -translate-x-1/2 select-none font-display text-[clamp(4rem,18vw,14rem)] font-black leading-none text-violet-500/[0.06] sm:top-[10%]"
       >
         Vibe
       </p>
@@ -72,7 +72,7 @@ export function WebHero() {
             <Sparkles className="h-3.5 w-3.5" />
             内容 · 工具 · 创业匹配 · 一体化 Vibe Coding 社区
           </p>
-          <h1 className="mt-5 font-display text-4xl font-extrabold leading-[1.06] tracking-tight text-white sm:text-5xl lg:text-[3.6rem]">
+          <h1 className="mt-5 font-display text-4xl font-extrabold leading-[1.06] tracking-tight text-zinc-900 sm:text-5xl lg:text-[3.6rem]">
             把
             <span className="text-gradient-anim"> 创业社交 </span>
             <br />
@@ -80,9 +80,9 @@ export function WebHero() {
             <br className="sm:hidden" />
             <span className="text-gradient-cool">可生长的协作演出</span>
           </h1>
-          <p className="mt-6 max-w-xl text-base leading-relaxed text-slate-300/85 sm:text-lg">
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-zinc-600 sm:text-lg">
             来自笔记、工具、项目与个人画像的多维信号，被一个可解释的匹配引擎实时编织——
-            让你在 30 秒内遇到那位 <span className="text-white font-semibold">真正能开工</span> 的伙伴。
+            让你在 30 秒内遇到那位 <span className="font-semibold text-zinc-900">真正能开工</span> 的伙伴。
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -120,22 +120,22 @@ export function WebHero() {
           </div>
 
           {/* 4 列统计 */}
-          <dl className="mt-12 grid grid-cols-2 gap-3 border-t border-white/[0.06] pt-10 sm:grid-cols-4 sm:gap-4">
+          <dl className="mt-12 grid grid-cols-2 gap-3 border-t border-violet-200/50 pt-10 sm:grid-cols-4 sm:gap-4">
             {HERO_STATS.map((s, i) => (
               <motion.div
                 key={s.k}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + i * 0.06, duration: 0.5 }}
-                className="group relative rounded-2xl border border-white/[0.06] bg-white/[0.025] p-3 backdrop-blur-md transition hover:border-violet-400/30 hover:bg-white/[0.05]"
+                className="group relative rounded-2xl border border-violet-200/50 bg-white/70 p-3 shadow-sm backdrop-blur-md transition hover:border-violet-300/60 hover:shadow-md"
               >
-                <dt className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                <dt className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
                   {s.k}
                 </dt>
-                <dd className="mt-1 font-display text-2xl font-bold text-white num-tab">
+                <dd className="mt-1 font-display text-2xl font-bold text-zinc-900 num-tab">
                   {s.v}
                 </dd>
-                <p className="mt-1 text-[10px] leading-snug text-slate-500">
+                <p className="mt-1 text-[10px] leading-snug text-zinc-500">
                   {s.sub}
                 </p>
               </motion.div>
@@ -168,23 +168,23 @@ export function WebHero() {
 
             <div className="relative flex h-full flex-col p-5 sm:p-6">
               {/* 顶栏 */}
-              <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-slate-400">
+              <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-zinc-500">
                 <span className="flex items-center gap-2">
-                  <Radar className="h-3.5 w-3.5 text-violet-300" />
+                  <Radar className="h-3.5 w-3.5 text-violet-500" />
                   match.engine · v2
                 </span>
-                <span className="flex items-center gap-1.5 text-emerald-300">
-                  <span className="pulse-dot text-emerald-400" />
+                <span className="flex items-center gap-1.5 text-emerald-600">
+                  <span className="pulse-dot text-emerald-500" />
                   online
                 </span>
               </div>
 
               {/* 标题 */}
               <div className="mt-6">
-                <p className="font-display text-2xl font-bold leading-tight text-white sm:text-[1.7rem]">
+                <p className="font-display text-2xl font-bold leading-tight text-zinc-900 sm:text-[1.7rem]">
                   今日匹配池
                 </p>
-                <p className="mt-1 text-sm text-slate-400">
+                <p className="mt-1 text-sm text-zinc-600">
                   <span className="text-gradient">角色 × 兴趣向量 × 方向语义</span>
                 </p>
               </div>
@@ -216,33 +216,33 @@ export function WebHero() {
                     initial={{ x: -16, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.5 + i * 0.12, duration: 0.5 }}
-                    className={`group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br ${row.color} px-3.5 py-2.5 backdrop-blur`}
+                    className={`group relative overflow-hidden rounded-2xl border border-violet-200/50 bg-gradient-to-br ${row.color} px-3.5 py-2.5 backdrop-blur`}
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-semibold text-white">
+                        <p className="text-sm font-semibold text-zinc-900">
                           {row.title}
                         </p>
-                        <p className="text-[10px] text-slate-300/80">
+                        <p className="text-[10px] text-zinc-600">
                           {row.sub}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-mono text-xs text-white num-tab">
+                        <p className="font-mono text-xs text-violet-800 num-tab">
                           {Math.round(row.score * 100)}
                         </p>
-                        <p className="text-[9px] uppercase tracking-wider text-white/60">
+                        <p className="text-[9px] uppercase tracking-wider text-zinc-500">
                           score
                         </p>
                       </div>
                     </div>
                     {/* 评分进度条 */}
-                    <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
+                    <div className="mt-2 h-1 overflow-hidden rounded-full bg-violet-100">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${row.score * 100}%` }}
                         transition={{ delay: 0.7 + i * 0.12, duration: 0.9, ease: "easeOut" }}
-                        className="h-full rounded-full bg-gradient-to-r from-white/90 via-fuchsia-200 to-cyan-200"
+                        className="h-full rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400"
                       />
                     </div>
                   </motion.div>
@@ -250,17 +250,17 @@ export function WebHero() {
               </div>
 
               {/* 底部 mini 指标 */}
-              <div className="mt-auto grid grid-cols-3 gap-2 border-t border-white/[0.06] pt-4">
+              <div className="mt-auto grid grid-cols-3 gap-2 border-t border-violet-200/50 pt-4">
                 <div className="text-center">
-                  <p className="text-[9px] uppercase tracking-wider text-slate-500">
+                  <p className="text-[9px] uppercase tracking-wider text-zinc-500">
                     候选池
                   </p>
-                  <p className="mt-0.5 font-mono text-sm font-bold text-white num-tab">
+                  <p className="mt-0.5 font-mono text-sm font-bold text-zinc-900 num-tab">
                     1,284
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-[9px] uppercase tracking-wider text-slate-500">
+                  <p className="text-[9px] uppercase tracking-wider text-zinc-500">
                     平均分
                   </p>
                   <p className="mt-0.5 font-mono text-sm font-bold text-gradient num-tab">
@@ -268,10 +268,10 @@ export function WebHero() {
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-[9px] uppercase tracking-wider text-slate-500">
+                  <p className="text-[9px] uppercase tracking-wider text-zinc-500">
                     新会话
                   </p>
-                  <p className="mt-0.5 font-mono text-sm font-bold text-cyan-300 num-tab">
+                  <p className="mt-0.5 font-mono text-sm font-bold text-cyan-600 num-tab">
                     +18
                   </p>
                 </div>
@@ -287,7 +287,7 @@ export function WebHero() {
             className="absolute -bottom-6 -left-4 hidden w-[10.5rem] sm:block lg:-left-10"
           >
             <div className="glass-v2 rounded-2xl p-3 float-y">
-              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-emerald-300">
+              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-emerald-600">
                 <TrendingUp className="h-3 w-3" />
                 live ticker
               </div>
@@ -297,8 +297,8 @@ export function WebHero() {
                     key={t.label}
                     className="flex items-center justify-between text-[11px]"
                   >
-                    <span className="text-slate-400">{t.label}</span>
-                    <span className="font-mono font-bold text-white num-tab">
+                    <span className="text-zinc-500">{t.label}</span>
+                    <span className="font-mono font-bold text-zinc-900 num-tab">
                       {t.value}
                     </span>
                   </div>
@@ -314,8 +314,8 @@ export function WebHero() {
             transition={{ delay: 0.75, duration: 0.6 }}
             className="absolute -right-4 -top-4 hidden sm:block lg:-right-8"
           >
-            <div className="glass-v2 flex items-center gap-2 rounded-full px-3.5 py-2 text-xs font-semibold text-slate-200">
-              <Github className="h-3.5 w-3.5 text-cyan-300" />
+            <div className="glass-v2 flex items-center gap-2 rounded-full px-3.5 py-2 text-xs font-semibold text-zinc-700">
+              <Github className="h-3.5 w-3.5 text-cyan-600" />
               GitHub 已直连
               <span className="pulse-dot text-cyan-400" />
             </div>

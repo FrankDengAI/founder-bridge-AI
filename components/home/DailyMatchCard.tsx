@@ -2,17 +2,17 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Sparkles } from "lucide-react";
-import { useClientUserId } from "@/lib/hooks/useClientUserId";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
+import { useClientUserId, useClientUserReady } from "@/lib/hooks/useClientUserId";
 import {
   hasDailyMatchContactedToday,
   markDailyMatchContacted,
   MESSAGE_INTENT_TEMPLATES,
 } from "@/lib/retention";
 import { startConversation } from "@/lib/chat/client";
-import { ROLE_LABEL } from "@/lib/labels";
+import { getRoleLabel } from "@/lib/labels";
 import { isRole } from "@/lib/domain/role";
 
 type Candidate = {
@@ -25,18 +25,23 @@ type Candidate = {
 };
 
 export function DailyMatchCard() {
+  const t = useTranslations("home");
+  const tRoles = useTranslations("roles");
   const router = useRouter();
   const userId = useClientUserId();
+  const ready = useClientUserReady();
   const [c, setC] = useState<Candidate | null>(null);
   const [loading, setLoading] = useState(true);
   const [needProfile, setNeedProfile] = useState(false);
   const [contacted, setContacted] = useState(false);
 
   useEffect(() => {
+    if (!ready) return;
     if (!userId) {
       setLoading(false);
       return;
     }
+    setLoading(true);
     void Promise.all([
       fetch("/api/match?daily=1", { credentials: "include" }).then((r) =>
         r.ok ? r.json() : null,
@@ -58,7 +63,7 @@ export function DailyMatchCard() {
         }
       })
       .finally(() => setLoading(false));
-  }, [userId]);
+  }, [userId, ready]);
 
   useEffect(() => {
     const refresh = () => setContacted(hasDailyMatchContactedToday());
@@ -67,39 +72,55 @@ export function DailyMatchCard() {
     return () => window.removeEventListener("vibe-daily-match-updated", refresh);
   }, []);
 
-  if (loading) {
+  if (!ready || loading) {
     return (
       <div className="rounded-2xl bg-violet-50/50 p-3 text-[11px] text-zinc-500 ring-1 ring-violet-200/50">
-        加载今日推荐…
+        {t("loadingDaily")}
       </div>
     );
   }
-  if (!c) {
+
+  if (!userId) {
     return (
       <section className="rounded-2xl border border-dashed border-violet-300/80 bg-violet-50/40 p-3 ring-1 ring-violet-200/50">
-        <p className="text-xs font-semibold text-violet-950">今日一人 · 待解锁</p>
+        <p className="text-xs font-semibold text-violet-950">{t("dailyMatchLocked")}</p>
         <p className="mt-1 text-[11px] leading-relaxed text-violet-900/80">
-          {needProfile
-            ? "完善主页（方向 + 2 个技能词 + 简介）后，明天会为你推荐最值得聊的伙伴。"
-            : "登录并保存匹配画像后，每日会固定推荐 1 位高匹配候选人。"}
+          {t("dailyMatchLoginHint")}
         </p>
         <Link
-          href={needProfile ? "/settings/profile" : "/match"}
+          href="/welcome/login"
           className="mt-2 inline-flex rounded-xl bg-violet-600 px-3 py-2 text-[11px] font-semibold text-white"
         >
-          {needProfile ? "去完善资料" : "去匹配页"}
+          {t("goLogin")}
         </Link>
       </section>
     );
   }
 
-  const roleLabel = isRole(c.role) ? ROLE_LABEL[c.role] : c.role;
+  if (!c) {
+    return (
+      <section className="rounded-2xl border border-dashed border-violet-300/80 bg-violet-50/40 p-3 ring-1 ring-violet-200/50">
+        <p className="text-xs font-semibold text-violet-950">{t("dailyMatchEmpty")}</p>
+        <p className="mt-1 text-[11px] leading-relaxed text-violet-900/80">
+          {needProfile ? t("dailyMatchProfileHint") : t("dailyMatchPoolHint")}
+        </p>
+        <Link
+          href={needProfile ? "/settings/profile" : "/match"}
+          className="mt-2 inline-flex rounded-xl bg-violet-600 px-3 py-2 text-[11px] font-semibold text-white"
+        >
+          {needProfile ? t("goProfile") : t("goMatch")}
+        </Link>
+      </section>
+    );
+  }
+
+  const roleLabel = isRole(c.role) ? getRoleLabel(tRoles, c.role) : c.role;
 
   return (
     <section className="rounded-2xl bg-gradient-to-br from-violet-600/10 to-fuchsia-600/10 p-3 ring-1 ring-violet-200/60">
       <p className="flex items-center gap-1.5 text-xs font-semibold text-violet-950">
         <Sparkles className="h-3.5 w-3.5" />
-        今日一人 · 最值得聊
+        {t("dailyPick")}
       </p>
       <div className="mt-2 flex items-center gap-3">
         <div className="relative h-12 w-12 overflow-hidden rounded-2xl bg-violet-100">
@@ -118,19 +139,19 @@ export function DailyMatchCard() {
             {c.direction ? ` · ${c.direction}` : ""}
           </p>
           <p className="text-[10px] font-mono text-violet-700">
-            匹配分 {Math.round(c.score * 100)}
+            {t("matchScore", { score: Math.round(c.score * 100) })}
           </p>
         </div>
       </div>
       {!contacted ? (
         <p className="mt-2 rounded-xl bg-amber-100/90 px-2.5 py-1.5 text-[10px] font-semibold text-amber-950 ring-1 ring-amber-300/60">
-          今日推荐还在等你 — 打个招呼开启对话
+          {t("dailyNudge")}
         </p>
       ) : null}
       <div className="mt-2 flex gap-2">
         <button
           type="button"
-          className="flex-1 rounded-xl bg-zinc-950 py-2 text-[11px] font-semibold text-white"
+          className="flex-1 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 py-2 text-[11px] font-semibold text-white active:scale-[0.98]"
           onClick={() => {
             const intent = `${MESSAGE_INTENT_TEMPLATES.match}${c.displayName}。`;
             markDailyMatchContacted(c.userId);
@@ -144,13 +165,13 @@ export function DailyMatchCard() {
             });
           }}
         >
-          打个招呼
+          {t("sayHi")}
         </button>
         <Link
           href={`/user/${c.userId}`}
           className="rounded-xl bg-white px-3 py-2 text-[11px] font-semibold text-zinc-800 ring-1 ring-zinc-200/80"
         >
-          主页
+          {t("profile")}
         </Link>
       </div>
     </section>

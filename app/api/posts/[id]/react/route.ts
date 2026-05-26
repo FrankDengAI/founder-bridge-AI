@@ -21,9 +21,9 @@ export async function POST(req: Request, { params }: Ctx) {
   const result = await prisma.$transaction(async (tx) => {
     const postRow = await tx.post.findUnique({
       where: { id: params.id },
-      select: { id: true },
+      select: { id: true, status: true },
     });
-    if (!postRow) return null;
+    if (!postRow || postRow.status !== "published") return null;
 
     const existing =
       body.action === "like"
@@ -35,8 +35,24 @@ export async function POST(req: Request, { params }: Ctx) {
           });
 
     if (existing) {
-      const post = await tx.post.findUnique({ where: { id: params.id } });
-      return post ? { post, already: true as const } : null;
+      if (body.action === "like") {
+        await tx.postLike.delete({
+          where: { userId_postId: { userId, postId: params.id } },
+        });
+        const post = await tx.post.update({
+          where: { id: params.id },
+          data: { likes: { decrement: 1 } },
+        });
+        return { post, active: false as const };
+      }
+      await tx.postSave.delete({
+        where: { userId_postId: { userId, postId: params.id } },
+      });
+      const post = await tx.post.update({
+        where: { id: params.id },
+        data: { saves: { decrement: 1 } },
+      });
+      return { post, active: false as const };
     }
 
     if (body.action === "like") {
@@ -45,14 +61,14 @@ export async function POST(req: Request, { params }: Ctx) {
         where: { id: params.id },
         data: { likes: { increment: 1 } },
       });
-      return { post, already: false as const };
+      return { post, active: true as const };
     }
     await tx.postSave.create({ data: { userId, postId: params.id } });
     const post = await tx.post.update({
       where: { id: params.id },
       data: { saves: { increment: 1 } },
     });
-    return { post, already: false as const };
+    return { post, active: true as const };
   });
 
   if (!result) {
@@ -62,8 +78,8 @@ export async function POST(req: Request, { params }: Ctx) {
   revalidatePath("/home");
   revalidatePath(`/post/${params.id}`);
   return NextResponse.json({
-    likes: result.post.likes,
-    saves: result.post.saves,
-    already: result.already,
+    likes: Math.max(0, result.post.likes),
+    saves: Math.max(0, result.post.saves),
+    active: result.active,
   });
 }

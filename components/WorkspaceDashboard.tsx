@@ -17,6 +17,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { LearnProgressCard } from "@/components/learn/LearnProgressCard";
 import { performLogout } from "@/lib/authLogout";
 import { readSavedPostIds } from "@/lib/appHub";
 import { POST_TYPE_LABEL } from "@/lib/labels";
@@ -108,6 +109,8 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
         backHref="/home"
       />
 
+      <LearnProgressCard variant="full" />
+
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {[
           {
@@ -143,10 +146,10 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
             key={b.title}
             className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${b.from} ${b.to} p-[1px] shadow-lg`}
           >
-            <div className="h-full rounded-[15px] bg-zinc-950/90 px-3 py-3 text-white ring-1 ring-white/10 backdrop-blur-sm">
-              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">{b.label}</p>
+            <div className="h-full rounded-[15px] bg-white/95 px-3 py-3 text-zinc-900 ring-1 ring-violet-100 backdrop-blur-sm">
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-violet-600/80">{b.label}</p>
               <p className="mt-1 text-sm font-black">{b.title}</p>
-              <p className="text-[10px] text-white/60">{b.sub}</p>
+              <p className="text-[10px] text-zinc-500">{b.sub}</p>
             </div>
           </div>
         ))}
@@ -196,7 +199,7 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
           <button
             type="button"
             onClick={() => window.dispatchEvent(new Event("vibe-open-command-palette"))}
-            className="flex items-center gap-2 rounded-2xl bg-zinc-950 px-3 py-3 text-xs font-semibold text-white transition hover:bg-zinc-800"
+            className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 py-3 text-xs font-semibold text-white transition hover:opacity-95"
           >
             <Command className="h-4 w-4" />
             命令面板
@@ -258,15 +261,15 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
         )}
       </section>
 
-      <section className="glass-panel rounded-3xl p-4 shadow-soft ring-1 ring-white/70 dark:ring-zinc-800/80">
-        <p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">会话</p>
-        <p className="mt-1 text-[11px] text-zinc-600 dark:text-zinc-400">
+      <section className="glass-panel rounded-3xl p-4 shadow-soft ring-1 ring-white/70">
+        <p className="text-xs font-semibold text-zinc-900">会话</p>
+        <p className="mt-1 text-[11px] text-zinc-600">
           换设备或演示结束时请退出，避免他人继续使用你的本地会话。
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Link
             href="/settings"
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-white px-3 py-2.5 text-xs font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-zinc-50 dark:bg-zinc-900 dark:text-zinc-100 dark:ring-zinc-700 sm:flex-none"
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-white px-3 py-2.5 text-xs font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-zinc-50 sm:flex-none"
           >
             <Settings className="h-4 w-4" />
             设置

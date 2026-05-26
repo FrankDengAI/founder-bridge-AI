@@ -19,6 +19,7 @@ export async function GET() {
     await prisma.session.findFirst({ select: { id: true }, take: 1 });
     return NextResponse.json({ status: "ok", db: "ok", auth: "ready", ts }, { status: 200 });
   } catch {
+    // DB 可达但 schema 未齐：仍返回 200，避免 Render 健康检查无限重启
     return NextResponse.json(
       {
         status: "degraded",
@@ -27,7 +28,7 @@ export async function GET() {
         hint: "请确认 prisma migrate deploy 已执行（含 username / Session 表）",
         ts,
       },
-      { status: 503 },
+      { status: 200 },
     );
   }
 }

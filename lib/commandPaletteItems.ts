@@ -130,8 +130,8 @@ export const COMMAND_ITEMS: CommandItem[] = [
   {
     id: "learn",
     group: "学习与工具",
-    label: "学习中心",
-    href: "/learn",
+    label: "继续学习路线",
+    href: "/home",
     keywords: ["课程", "路线", "项目"],
     Icon: GraduationCap,
   },

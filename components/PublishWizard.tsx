@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
 import { Check, ImagePlus, NotebookPen } from "lucide-react";
 import clsx from "clsx";
 import { MarkdownPreview } from "@/components/MarkdownPreview";
-import { useClientUserId } from "@/lib/hooks/useClientUserId";
+import { UiToast } from "@/components/ui/UiToast";
+import { LearnPublishHint } from "@/components/learn/LearnPublishHint";
+import { useClientUserId, useClientUserReady } from "@/lib/hooks/useClientUserId";
 import { POST_TYPES, isPostType } from "@/lib/domain/postType";
 import { completeActivationStep } from "@/lib/activation";
 import { recordGamifyEvent } from "@/lib/gamification";
@@ -15,14 +18,19 @@ import {
   readPublishDraftLocal,
   savePublishDraftLocal,
 } from "@/lib/retention";
-import { POST_TYPE_LABEL } from "@/lib/labels";
+import { getPostTypeLabel } from "@/lib/labels";
 
-const STEPS = ["类型", "内容", "封面", "发布"] as const;
+const STEP_KEYS = ["stepType", "stepContent", "stepCover", "stepConfirm"] as const;
 
 export function PublishWizard() {
+  const t = useTranslations("publish");
+  const tCommon = useTranslations("common");
+  const tPost = useTranslations("postType");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const steps = useMemo(() => STEP_KEYS.map((k) => t(k)), [t]);
   const userId = useClientUserId();
+  const userReady = useClientUserReady();
   const [step, setStep] = useState(0);
   const [type, setType] = useState<string>("NOTE");
   const [linkedModelId, setLinkedModelId] = useState("");
@@ -37,6 +45,7 @@ export function PublishWizard() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [draftId, setDraftId] = useState<string | null>(null);
 
   const isRecruit = type === "RECRUIT";
 
@@ -51,11 +60,39 @@ export function PublishWizard() {
   useEffect(() => {
     const qType = searchParams.get("type");
     const qModelId = searchParams.get("modelId")?.trim() ?? "";
+    const qDraftId = searchParams.get("draftId")?.trim() ?? "";
     if (qType && isPostType(qType)) {
       setType(qType);
       if (qType === "MODEL_DISCUSSION") setStep(1);
     }
     if (qModelId) setLinkedModelId(qModelId);
+    if (qDraftId) {
+      setDraftId(qDraftId);
+      void fetch(`/api/posts/${qDraftId}`, { credentials: "include" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data: { post?: Record<string, unknown> } | null) => {
+          const post = data?.post;
+          if (!post) return;
+          if (typeof post.title === "string") setTitle(post.title);
+          if (typeof post.excerpt === "string") setExcerpt(post.excerpt);
+          if (typeof post.body === "string") setBody(post.body);
+          if (typeof post.type === "string" && isPostType(post.type)) setType(post.type);
+          if (typeof post.coverUrl === "string") setCoverUrl(post.coverUrl);
+          if (typeof post.linkedModelId === "string") setLinkedModelId(post.linkedModelId);
+          if (post.type === "RECRUIT" && typeof post.meta === "string") {
+            try {
+              const meta = JSON.parse(post.meta) as Record<string, string>;
+              if (meta.recruitRole) setRecruitRole(meta.recruitRole);
+              if (meta.recruitTime) setRecruitTime(meta.recruitTime);
+              if (meta.recruitComp) setRecruitComp(meta.recruitComp);
+            } catch {
+              /* ignore */
+            }
+          }
+          setStep(1);
+        })
+        .catch(() => setErr("加载草稿失败"));
+    }
   }, [searchParams]);
 
   useEffect(() => {
@@ -66,7 +103,7 @@ export function PublishWizard() {
     return () => window.clearTimeout(t);
   }, [title, excerpt, body, type]);
 
-  const next = () => setStep((s) => Math.min(STEPS.length - 1, s + 1));
+  const next = () => setStep((s) => Math.min(steps.length - 1, s + 1));
   const prev = () => setStep((s) => Math.max(0, s - 1));
 
   const payloadMeta = useMemo(() => {
@@ -79,8 +116,9 @@ export function PublishWizard() {
   }, [isRecruit, recruitRole, recruitTime, recruitComp]);
 
   const submit = async (asDraft: boolean) => {
+    if (!userReady) return;
     if (!userId) {
-      setErr("请先登录后再发布");
+      setErr(t("loginFirst"));
       router.push("/welcome/login");
       return;
     }
@@ -89,38 +127,39 @@ export function PublishWizard() {
     setToast(null);
     try {
       const tKey = isPostType(type) ? type : "NOTE";
-      const typeTag = POST_TYPE_LABEL[tKey];
-      const res = await fetch("/api/posts", {
-        method: "POST",
+      const typeTag = getPostTypeLabel(tPost, tKey);
+      const payload = {
+        title,
+        excerpt,
+        body,
+        type,
+        status: asDraft ? "draft" : "published",
+        meta: payloadMeta,
+        coverUrl: coverUrl.trim() || undefined,
+        tags: ["VibeCoding", typeTag, asDraft ? "草稿" : "发布"],
+        linkedModelId: linkedModelId.trim() || undefined,
+      };
+      const res = await fetch(draftId ? `/api/posts/${draftId}` : "/api/posts", {
+        method: draftId ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({
-          title,
-          excerpt,
-          body,
-          type,
-          status: asDraft ? "draft" : "published",
-          meta: payloadMeta,
-          coverUrl: coverUrl.trim() || undefined,
-          tags: ["VibeCoding", typeTag, asDraft ? "草稿" : "发布"],
-          linkedModelId: linkedModelId.trim() || undefined,
-        }),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error(asDraft ? "保存草稿失败" : "发布失败");
       recordGamifyEvent("publish_1");
       if (tKey === "MODEL_DISCUSSION") recordGamifyEvent("model_discussion_first");
       const data = (await res.json()) as { post: { id: string } };
+      const postId = draftId ?? data.post.id;
       if (asDraft) {
         savePublishDraftLocal({ title, excerpt, body, type });
-        setToast("草稿已保存，可在创作者中心继续编辑。");
-        window.setTimeout(() => setToast(null), 2400);
+        setToast(t("draftSaved"));
         return;
       }
       clearPublishDraftLocal();
       completeActivationStep("week_publish_or_learn");
-      setToast("发布成功！正在跳转到笔记详情…");
+      setToast(t("publishOk"));
       window.setTimeout(() => {
-        router.push(`/post/${data.post.id}`);
+        router.push(`/post/${postId}`);
         router.refresh();
       }, 450);
     } catch (e) {
@@ -132,28 +171,26 @@ export function PublishWizard() {
 
   return (
     <div className="space-y-4 pb-6">
+      {draftId ? (
+        <div className="rounded-2xl bg-amber-50 px-3 py-2 text-[11px] font-medium text-amber-900 ring-1 ring-amber-200/70">
+          {t("draftBanner")}
+        </div>
+      ) : null}
       {linkedModelId && type === "MODEL_DISCUSSION" ? (
         <div className="rounded-2xl bg-violet-50 px-3 py-2 text-[11px] font-medium text-violet-900 ring-1 ring-violet-200/70">
-          本条讨论将关联到大模型详情页
+          {t("modelLinkBanner")}
         </div>
       ) : null}
-      {toast ? (
-        <div
-          className="fixed left-1/2 top-4 z-50 -translate-x-1/2 rounded-full bg-zinc-950 px-4 py-2 text-xs font-medium text-white shadow-lg motion-safe:animate-pulse"
-          role="status"
-        >
-          {toast}
-        </div>
-      ) : null}
+      <UiToast message={toast} />
       <div className="glass-panel rounded-3xl p-4 shadow-sm ring-1 ring-white/70">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-xs font-semibold text-zinc-900">发布流程</p>
+          <p className="text-xs font-semibold text-zinc-900">{t("title")}</p>
           <p className="text-[11px] font-semibold text-brand-900">
-            第 {step + 1} / {STEPS.length} 步 · {STEPS[step]}
+            {step + 1} / {steps.length} · {steps[step]}
           </p>
         </div>
         <div className="mt-3 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {STEPS.map((label, i) => (
+          {steps.map((label, i) => (
             <div
               key={label}
               className={clsx(
@@ -189,7 +226,7 @@ export function PublishWizard() {
                       : "border-zinc-200/80 bg-white/70 text-zinc-700 hover:border-zinc-300",
                   )}
                 >
-                  {POST_TYPE_LABEL[t]}
+                  {getPostTypeLabel(tPost, t)}
                 </button>
               ))}
             </div>
@@ -304,26 +341,22 @@ export function PublishWizard() {
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-zinc-900">确认发布</p>
                 <p className="mt-1 text-xs leading-relaxed text-zinc-600">
-                  {userId ? (
-                    <>
-                      将使用当前登录账号{" "}
-                      <span className="rounded bg-white px-1 font-mono text-[11px] ring-1 ring-zinc-200">
-                        {userId}
-                      </span>{" "}
-                      作为作者。也可先保存草稿。
-                    </>
+                  {!userReady ? (
+                    t("confirmLogin")
+                  ) : userId ? (
+                    t("confirmAsUser")
                   ) : (
                     <>
-                      请先{" "}
+                      {t("confirmNeedLogin")}{" "}
                       <Link href="/welcome/login" className="font-semibold text-violet-700 hover:underline">
-                        登录
-                      </Link>{" "}
-                      后再发布。
+                        {tCommon("login")}
+                      </Link>
                     </>
                   )}
                 </p>
               </div>
             </div>
+            <LearnPublishHint />
             {err ? <p className="text-xs font-medium text-red-600">{err}</p> : null}
           </div>
         ) : null}
@@ -335,16 +368,16 @@ export function PublishWizard() {
             disabled={step === 0 || busy}
             className="min-w-[88px] flex-1 rounded-2xl bg-white px-3 py-3 text-sm font-semibold text-zinc-900 ring-1 ring-zinc-200/80 disabled:opacity-40"
           >
-            上一步
+            {tCommon("back")}
           </button>
-          {step < STEPS.length - 1 ? (
+          {step < steps.length - 1 ? (
             <button
               type="button"
               disabled={(step === 1 && !title.trim()) || busy}
               onClick={next}
               className="min-w-[88px] flex-1 rounded-2xl bg-gradient-to-r from-brand-600 to-fuchsia-600 px-3 py-3 text-sm font-semibold text-white shadow-glow disabled:opacity-50"
             >
-              下一步
+              {tCommon("next")}
             </button>
           ) : (
             <>
@@ -354,7 +387,7 @@ export function PublishWizard() {
                 onClick={() => void submit(true)}
                 className="rounded-2xl bg-white px-3 py-3 text-sm font-semibold text-zinc-900 ring-1 ring-zinc-200/80 disabled:opacity-50"
               >
-                存草稿
+                {t("saveDraft")}
               </button>
               <button
                 type="button"
@@ -362,7 +395,7 @@ export function PublishWizard() {
                 onClick={() => void submit(false)}
                 className="min-w-[88px] flex-1 rounded-2xl bg-gradient-to-r from-brand-600 to-fuchsia-600 px-3 py-3 text-sm font-semibold text-white shadow-glow disabled:opacity-50"
               >
-                {busy ? "发布中…" : "发布到发现"}
+                {busy ? t("publishing") : t("publishFeed")}
               </button>
             </>
           )}

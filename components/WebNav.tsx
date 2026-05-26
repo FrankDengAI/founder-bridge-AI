@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
-import { appDemoReady, appShellHref, isExternalMiniapp } from "@/lib/miniappOrigin";
+import { appDemoReady, appEntryHref, isExternalMiniapp } from "@/lib/miniappOrigin";
 
 /** 对内：愿景 / 能力 / 路线图 */
 const platformLinks = [
@@ -21,7 +21,7 @@ const productLinks = [
 ] as const;
 
 export function WebNav() {
-  const homeHref = appShellHref("/home");
+  const homeHref = appEntryHref("/home");
   const external = isExternalMiniapp();
   const appReady = appDemoReady();
   const [productOpen, setProductOpen] = useState(false);
@@ -36,7 +36,7 @@ export function WebNav() {
   }, []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.08] bg-ink-950/55 shadow-[0_12px_48px_-16px_rgba(0,0,0,0.55)] backdrop-blur-2xl backdrop-saturate-150">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-zinc-200/80 bg-white/85 shadow-sm backdrop-blur-2xl backdrop-saturate-150">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-400/50 to-transparent" />
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-4 sm:h-16 sm:gap-3 sm:px-6">
         <Link
@@ -48,13 +48,13 @@ export function WebNav() {
 
         <nav
           aria-label="页面内导航"
-          className="flex min-w-0 flex-1 items-center justify-center gap-1 overflow-x-auto whitespace-nowrap py-1 text-xs font-medium text-slate-400 [scrollbar-width:none] md:gap-2 md:py-0 md:text-sm [&::-webkit-scrollbar]:hidden"
+          className="flex min-w-0 flex-1 items-center justify-center gap-1 overflow-x-auto whitespace-nowrap py-1 text-xs font-medium text-zinc-600 [scrollbar-width:none] md:gap-2 md:py-0 md:text-sm [&::-webkit-scrollbar]:hidden"
         >
           {platformLinks.map((l) => (
             <a
               key={l.href}
               href={l.href}
-              className="shrink-0 rounded-full px-2.5 py-1 transition hover:bg-white/[0.06] hover:text-slate-200 md:px-3"
+              className="shrink-0 rounded-full px-2.5 py-1 transition hover:bg-violet-50 hover:text-violet-900 md:px-3"
             >
               {l.label}
             </a>
@@ -62,7 +62,7 @@ export function WebNav() {
 
           <span
             aria-hidden
-            className="mx-0.5 hidden h-4 w-px shrink-0 bg-white/15 sm:inline-block"
+            className="mx-0.5 hidden h-4 w-px shrink-0 bg-zinc-200 sm:inline-block"
           />
 
           <div ref={productRef} className="relative shrink-0">
@@ -71,7 +71,7 @@ export function WebNav() {
               aria-expanded={productOpen}
               aria-haspopup="true"
               onClick={() => setProductOpen((v) => !v)}
-              className="inline-flex items-center gap-1 rounded-full border border-violet-400/25 bg-violet-500/10 px-2.5 py-1 font-semibold text-violet-200 transition hover:border-violet-400/40 hover:bg-violet-500/15 md:px-3"
+              className="inline-flex items-center gap-1 rounded-full border border-violet-300/60 bg-violet-50 px-2.5 py-1 font-semibold text-violet-800 transition hover:border-violet-400 hover:bg-violet-100 md:px-3"
             >
               产品体验
               <ChevronDown
@@ -81,7 +81,7 @@ export function WebNav() {
             {productOpen ? (
               <div
                 role="menu"
-                className="absolute left-1/2 top-[calc(100%+8px)] z-50 w-[min(92vw,17rem)] -translate-x-1/2 rounded-2xl border border-white/10 bg-ink-950/95 p-1.5 shadow-2xl shadow-black/50 backdrop-blur-xl"
+                className="absolute left-1/2 top-[calc(100%+8px)] z-50 w-[min(92vw,17rem)] -translate-x-1/2 rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-xl backdrop-blur-xl"
               >
                 {productLinks.map((l) => (
                   <a
@@ -89,10 +89,10 @@ export function WebNav() {
                     role="menuitem"
                     href={l.href}
                     onClick={() => setProductOpen(false)}
-                    className="block rounded-xl px-3 py-2.5 transition hover:bg-white/[0.08]"
+                    className="block rounded-xl px-3 py-2.5 transition hover:bg-violet-50"
                   >
-                    <span className="block text-sm font-semibold text-white">{l.label}</span>
-                    <span className="mt-0.5 block text-[10px] leading-snug text-slate-400">
+                    <span className="block text-sm font-semibold text-zinc-900">{l.label}</span>
+                    <span className="mt-0.5 block text-[10px] leading-snug text-zinc-500">
                       {l.hint}
                     </span>
                   </a>
@@ -106,7 +106,7 @@ export function WebNav() {
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <Link
             href="/login"
-            className="rounded-full border border-white/15 bg-white/[0.06] px-3 py-1.5 text-xs font-semibold text-slate-200 transition hover:border-white/25 hover:bg-white/10 sm:px-4 sm:text-sm"
+            className="rounded-full border border-zinc-200/80 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-800 transition hover:border-violet-300 hover:bg-violet-50 sm:px-4 sm:text-sm"
           >
             登录
           </Link>
@@ -122,7 +122,7 @@ export function WebNav() {
           ) : (
             <span
               title="在部署环境设置 NEXT_PUBLIC_MINIAPP_URL 后可用"
-              className="cursor-default rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-slate-500 sm:px-4 sm:text-sm"
+              className="cursor-default rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-semibold text-zinc-500 sm:px-4 sm:text-sm"
             >
               App 演示（待配置）
             </span>

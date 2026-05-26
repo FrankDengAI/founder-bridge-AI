@@ -1,71 +1,78 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { completeActivationStep } from "@/lib/activation";
+import { useModePickerHref } from "@/lib/hooks/useModePickerHref";
 
 const PRESETS = [
-  {
-    id: "student",
-    label: "应届生 · 做作品集",
-    role: "ADC",
-    direction: "AI 编程教育",
-    href: "/learn",
-  },
-  {
-    id: "pm",
-    label: "产品经理 · 找开发者",
-    role: "SUPPORT",
-    direction: "内容合作 / 访谈",
-    href: "/match",
-  },
-  {
-    id: "founder",
-    label: "创业者 · 快速组队",
-    role: "JUNGLE",
-    direction: "出海 SaaS",
-    href: "/match",
-  },
+  { id: "student", titleKey: "personaStudent", role: "ADC", direction: "AI 编程教育", href: "/home" },
+  { id: "pm", titleKey: "personaPm", role: "SUPPORT", direction: "内容合作 / 访谈", href: "/match" },
+  { id: "founder", titleKey: "personaFounder", role: "JUNGLE", direction: "出海 SaaS", href: "/match" },
 ] as const;
 
 export function PersonaQuickPick() {
   const router = useRouter();
+  const modeHref = useModePickerHref();
+  const t = useTranslations("welcome");
+  const [busy, setBusy] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
 
   const apply = async (p: (typeof PRESETS)[number]) => {
-    const me = await fetch("/api/me", { credentials: "include" });
-    const j = (await me.json()) as { userId: string | null };
-    if (!j.userId) {
-      router.push("/welcome/login");
-      return;
+    setBusy(p.id);
+    setErr(null);
+    try {
+      const me = await fetch("/api/me", { credentials: "include" });
+      if (!me.ok) {
+        router.push("/welcome/login");
+        return;
+      }
+      const j = (await me.json()) as { userId: string | null };
+      if (!j.userId) {
+        router.push("/welcome/login");
+        return;
+      }
+      const label = t(p.titleKey);
+      const put = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          role: p.role,
+          direction: p.direction,
+          intro: `${label} — exploring VibeHub.`,
+        }),
+      });
+      if (!put.ok) {
+        const body = (await put.json().catch(() => ({}))) as { error?: string };
+        throw new Error(body.error ?? "资料保存失败");
+      }
+      localStorage.setItem("vibe_persona", p.id);
+      completeActivationStep("persona");
+      window.location.href = modeHref(p.href);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "操作失败");
+    } finally {
+      setBusy(null);
     }
-    await fetch("/api/profile", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        userId: j.userId,
-        role: p.role,
-        direction: p.direction,
-        intro: `我是${p.label}路径用户，正在探索 VibeHub。`,
-      }),
-    });
-    localStorage.setItem("vibe_persona", p.id);
-    completeActivationStep("persona");
-    router.push(p.href);
   };
 
   return (
     <section className="welcome-glass relative z-10 rounded-3xl p-4">
-      <p className="text-sm font-bold text-white">30 秒人设快选（可选）</p>
-      <p className="mt-1 text-xs text-zinc-400">自动填充资料并跳转到推荐首页</p>
+      <p className="text-sm font-bold text-zinc-900">{t("personaTitle")}</p>
+      <p className="mt-1 text-xs text-zinc-600">{t("personaDesc")}</p>
+      {err ? <p className="mt-2 text-xs text-rose-600">{err}</p> : null}
       <div className="mt-3 flex flex-wrap gap-2">
         {PRESETS.map((p) => (
           <button
             key={p.id}
             type="button"
+            disabled={Boolean(busy)}
             onClick={() => void apply(p)}
-            className="rounded-2xl bg-white/10 px-3 py-2 text-[11px] font-semibold text-white ring-1 ring-white/20 hover:bg-white/20"
+            className="rounded-2xl bg-violet-50 px-3 py-2 text-[11px] font-semibold text-violet-900 ring-1 ring-violet-200/80 transition hover:bg-violet-100 active:scale-95 disabled:opacity-50"
           >
-            {p.label}
+            {busy === p.id ? t("personaSaving") : t(p.titleKey)}
           </button>
         ))}
       </div>

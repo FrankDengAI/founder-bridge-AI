@@ -1,3 +1,7 @@
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
+
 /** @type {import('next').NextConfig} */
 const vercelUrl = process.env.VERCEL_URL?.trim();
 const vercelOrigin =
@@ -42,6 +46,15 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: "/en/welcome/login",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: `frame-ancestors ${frameAncestors.join(" ")};`,
+          },
+        ],
+      },
     ];
   },
   images: {
@@ -70,4 +83,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

@@ -3,24 +3,24 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight, Github, Mail, MessageCircle, Twitter } from "lucide-react";
 import Link from "next/link";
-import { appDemoReady, appShellHref, isExternalMiniapp } from "@/lib/miniappOrigin";
+import { appDemoReady, appEntryHref, isExternalMiniapp } from "@/lib/miniappOrigin";
 
 export function WebCta() {
-  const homeHref = appShellHref("/home");
+  const homeHref = appEntryHref("/home");
   const external = isExternalMiniapp();
   const appReady = appDemoReady();
   const demoLabel = homeHref.replace(/^https?:\/\//, "");
   return (
     <section
       id="cta"
-      className="border-t border-white/[0.06] pb-24 pt-20 sm:pb-32 sm:pt-28"
+      className="border-t border-violet-200/50 pb-24 pt-20 sm:pb-32 sm:pt-28"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="relative overflow-hidden rounded-[2rem] border border-violet-400/25 bg-gradient-to-br from-violet-950/90 via-ink-900 to-fuchsia-950/55 p-10 text-center web-card-glow sm:p-16"
+          className="relative overflow-hidden rounded-[2rem] border border-violet-200/60 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 p-10 text-center shadow-[0_24px_80px_-32px_rgba(139,92,246,0.35)] sm:p-16"
         >
           {/* 多层装饰 */}
           <div className="pointer-events-none absolute inset-0 bg-conic-glow opacity-30 blur-3xl" />
@@ -43,7 +43,7 @@ export function WebCta() {
             <h2 className="mt-5 font-display text-3xl font-bold sm:text-4xl lg:text-5xl">
               <span className="text-gradient-anim">准备好接好下一棒了吗？</span>
             </h2>
-            <p className="relative mx-auto mt-4 max-w-xl text-slate-300/85 sm:text-base">
+            <p className="relative mx-auto mt-4 max-w-xl text-zinc-600 sm:text-base">
               在另一窗口启动 App 壳演示，与本页并排：
               一边走完整用户流，一边对外讲品牌故事。
             </p>
@@ -53,7 +53,7 @@ export function WebCta() {
                   href={homeHref}
                   target={external ? "_blank" : undefined}
                   rel={external ? "noopener noreferrer" : undefined}
-                  className="group inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 text-sm font-bold text-ink-950 transition hover:bg-slate-100"
+                  className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-500/25 transition hover:opacity-95"
                 >
                   打开 App 演示
                   <span className="font-mono text-[11px] text-slate-500">
@@ -64,14 +64,14 @@ export function WebCta() {
               ) : (
                 <span
                   title="在 Vercel 等项目环境变量中设置 NEXT_PUBLIC_MINIAPP_URL"
-                  className="inline-flex cursor-default rounded-full border border-white/15 bg-white/5 px-8 py-3.5 text-sm font-semibold text-slate-400"
+                  className="inline-flex cursor-default rounded-full border border-violet-200 bg-violet-50/80 px-8 py-3.5 text-sm font-semibold text-zinc-500"
                 >
                   App 演示（待配置 NEXT_PUBLIC_MINIAPP_URL）
                 </span>
               )}
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/[0.04] px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-white/[0.08]"
+                className="inline-flex items-center gap-2 rounded-full border border-violet-300/60 bg-white px-8 py-3.5 text-sm font-semibold text-violet-800 transition hover:bg-violet-50"
               >
                 登录演示账号
               </Link>
@@ -86,41 +86,41 @@ export function WebCta() {
               ].map((it) => (
                 <div
                   key={it.k}
-                  className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4 backdrop-blur"
+                  className="rounded-2xl border border-violet-200/60 bg-white/80 p-4 backdrop-blur"
                 >
                   <p className="font-display text-2xl font-bold text-gradient num-tab">
                     {it.v}
                   </p>
-                  <p className="mt-1 text-xs text-slate-400">{it.k}</p>
+                  <p className="mt-1 text-xs text-zinc-500">{it.k}</p>
                 </div>
               ))}
             </div>
           </div>
         </motion.div>
 
-        <footer className="mt-16 flex flex-col items-center justify-between gap-6 border-t border-white/[0.06] pt-10 sm:flex-row">
-          <div className="flex items-center gap-2 text-sm text-slate-500">
+        <footer className="mt-16 flex flex-col items-center justify-between gap-6 border-t border-violet-200/50 pt-10 sm:flex-row">
+          <div className="flex items-center gap-2 text-sm text-zinc-500">
             <span className="font-display text-base font-bold text-gradient-anim">
               VibeCoding
             </span>
             <span>·</span>
             <p>© {new Date().getFullYear()} 演示工程</p>
           </div>
-          <div className="flex items-center gap-4 text-slate-500">
-            <a href="#" className="transition hover:text-slate-200" aria-label="GitHub">
+          <div className="flex items-center gap-4 text-zinc-400">
+            <span className="inline-flex" title="演示工程，社交链接暂未配置" aria-hidden>
               <Github className="h-4 w-4" />
-            </a>
-            <a href="#" className="transition hover:text-slate-200" aria-label="Twitter">
+            </span>
+            <span className="inline-flex" aria-hidden>
               <Twitter className="h-4 w-4" />
-            </a>
-            <a href="#" className="transition hover:text-slate-200" aria-label="WeChat">
+            </span>
+            <span className="inline-flex" aria-hidden>
               <MessageCircle className="h-4 w-4" />
-            </a>
-            <a href="#" className="transition hover:text-slate-200" aria-label="Email">
+            </span>
+            <span className="inline-flex" aria-hidden>
               <Mail className="h-4 w-4" />
-            </a>
+            </span>
           </div>
-          <p className="font-mono text-xs text-slate-600">
+          <p className="font-mono text-xs text-zinc-400">
             Next.js 14 · Prisma · PostgreSQL · Edge
           </p>
         </footer>

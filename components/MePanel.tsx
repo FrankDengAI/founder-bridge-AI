@@ -16,6 +16,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { MeRetentionHub } from "@/components/me/MeRetentionHub";
+import { LearnProgressInline } from "@/components/learn/LearnProgressInline";
 import { ActivationJourney } from "@/components/retention/ActivationJourney";
 import { ProfileStrengthCard } from "@/components/retention/ProfileStrengthCard";
 import { PublishDraftBanner } from "@/components/retention/PublishDraftBanner";
@@ -37,7 +38,7 @@ const quickLinks = [
   { href: "/messages", label: "消息", desc: "私聊会话", icon: MessageCircle },
   { href: "/match", label: "匹配", desc: "算法推荐", icon: Sparkles },
   { href: "/tools", label: "工具", desc: "导航/商城", icon: Wrench },
-  { href: "/settings", label: "设置", desc: "主题/数据", icon: Settings },
+  { href: "/settings", label: "设置", desc: "账户 / 数据", icon: Settings },
   { href: "/me/achievements", label: "成就墙", desc: "徽章与分享", icon: BadgeCheck },
 ] as const;
 
@@ -86,14 +87,15 @@ export function MePanel() {
         subtitle="个人中心 · 快捷入口 · 任意页右上角「账户」也可退出登录。"
       />
 
+      <LearnProgressInline />
       <ProfileStrengthCard />
       <PublishDraftBanner />
       <ActivationJourney compact />
       <MeRetentionHub />
 
-      <section className="rounded-3xl border border-rose-200/80 bg-gradient-to-br from-rose-50/90 to-white/80 p-4 shadow-sm ring-1 ring-rose-100/80 dark:border-rose-900/50 dark:from-rose-950/40 dark:to-zinc-950/80 dark:ring-rose-900/40">
-        <p className="text-xs font-semibold text-rose-900 dark:text-rose-200">账户与安全</p>
-        <p className="mt-1 text-[11px] leading-relaxed text-rose-800/80 dark:text-rose-300/90">
+      <section className="rounded-3xl border border-rose-200/80 bg-gradient-to-br from-rose-50/90 to-white/80 p-4 shadow-sm ring-1 ring-rose-100/80">
+        <p className="text-xs font-semibold text-rose-900">账户与安全</p>
+        <p className="mt-1 text-[11px] leading-relaxed text-rose-800/80">
           退出后将清除会话 Cookie 与本地当前用户 id，并回到欢迎页。与「设置」页中的退出为同一套逻辑。
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -107,9 +109,9 @@ export function MePanel() {
           </button>
           <Link
             href="/settings"
-            className="inline-flex items-center justify-center rounded-2xl bg-white/90 px-4 py-3 text-sm font-semibold text-zinc-900 ring-1 ring-zinc-200/80 transition hover:bg-white dark:bg-zinc-900 dark:text-zinc-100 dark:ring-zinc-700"
+            className="inline-flex items-center justify-center rounded-2xl bg-white/90 px-4 py-3 text-sm font-semibold text-zinc-900 ring-1 ring-zinc-200/80 transition hover:bg-white"
           >
-            打开设置（主题 / 清理数据）
+            打开设置（数据 / 账户）
           </Link>
         </div>
       </section>

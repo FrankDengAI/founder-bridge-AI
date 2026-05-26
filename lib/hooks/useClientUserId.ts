@@ -9,54 +9,92 @@ export type MeUser = {
   isDemo: boolean;
 };
 
-/** 客户端读取当前登录用户；未登录为 null */
+type SessionSnapshot = {
+  user: MeUser | null;
+  loading: boolean;
+};
+
+let snapshot: SessionSnapshot = { user: null, loading: true };
+let inflight: Promise<MeUser | null> | null = null;
+const listeners = new Set<() => void>();
+
+function notify() {
+  listeners.forEach((fn) => fn());
+}
+
+async function fetchMe(): Promise<MeUser | null> {
+  try {
+    const res = await fetch("/api/me", { credentials: "include" });
+    if (!res.ok) return null;
+    const me = (await res.json()) as MeUser;
+    return me?.userId ? me : null;
+  } catch {
+    return null;
+  }
+}
+
+function ensureSessionLoaded() {
+  if (!inflight) {
+    inflight = fetchMe().then((user) => {
+      snapshot = { user, loading: false };
+      notify();
+      return user;
+    });
+  }
+  return inflight;
+}
+
+function subscribe(fn: () => void) {
+  listeners.add(fn);
+  return () => {
+    listeners.delete(fn);
+  };
+}
+
+function getSnapshot(): SessionSnapshot {
+  return snapshot;
+}
+
+/** 客户端读取当前登录用户；未登录为 null（加载完成前也为 null） */
 export function useClientUserId(): string | null {
-  const [userId, setUserId] = useState<string | null>(null);
+  const [, bump] = useState(0);
   useEffect(() => {
-    let cancelled = false;
-    void fetch("/api/me", { credentials: "include" })
-      .then(async (r) => {
-        if (!r.ok) return null;
-        return r.json() as Promise<MeUser>;
-      })
-      .then((me) => {
-        if (!cancelled) setUserId(me?.userId ?? null);
-      })
-      .catch(() => {
-        if (!cancelled) setUserId(null);
-      });
-    return () => {
-      cancelled = true;
-    };
+    return subscribe(() => bump((n) => n + 1));
   }, []);
-  return userId;
+  useEffect(() => {
+    void ensureSessionLoaded();
+  }, []);
+  return getSnapshot().user?.userId ?? null;
+}
+
+/** `/api/me` 是否已返回（用于区分「加载中」与「未登录」） */
+export function useClientUserReady(): boolean {
+  const [, bump] = useState(0);
+  useEffect(() => {
+    return subscribe(() => bump((n) => n + 1));
+  }, []);
+  useEffect(() => {
+    void ensureSessionLoaded();
+  }, []);
+  return !getSnapshot().loading;
 }
 
 export function useCurrentUser(): { user: MeUser | null; loading: boolean } {
-  const [user, setUser] = useState<MeUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [, bump] = useState(0);
   useEffect(() => {
-    let cancelled = false;
-    void fetch("/api/me", { credentials: "include" })
-      .then(async (r) => {
-        if (!r.ok) return null;
-        return r.json() as Promise<MeUser>;
-      })
-      .then((me) => {
-        if (!cancelled) {
-          setUser(me?.userId ? me : null);
-          setLoading(false);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setUser(null);
-          setLoading(false);
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
+    return subscribe(() => bump((n) => n + 1));
   }, []);
-  return { user, loading };
+  useEffect(() => {
+    void ensureSessionLoaded();
+  }, []);
+  const s = getSnapshot();
+  return { user: s.user, loading: s.loading };
+}
+
+/** 登录/登出后强制刷新会话缓存 */
+export function invalidateClientSession() {
+  inflight = null;
+  snapshot = { user: null, loading: true };
+  notify();
+  void ensureSessionLoaded();
 }

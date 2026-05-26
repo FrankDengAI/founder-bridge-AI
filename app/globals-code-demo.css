@@ -9,10 +9,18 @@ html {
   scroll-behavior: smooth;
 }
 
+html[lang="zh-CN"] {
+  --font-ui: var(--font-noto-sc), "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+html[lang="en"] {
+  --font-ui: var(--font-geist-sans), system-ui, sans-serif;
+}
+
 .app-shell-scope {
   color: var(--foreground);
   background-color: var(--background);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-ui);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -61,19 +69,17 @@ html.dark .mesh-bg {
       linear-gradient(180deg, #ddd6fe 0%, #e0e7ff 38%, #fce7f3 100%);
   }
 
-  /** 欢迎 / 登录流：深空极光 + 细网格（避免大面积死白） */
+  /** 欢迎 / 登录流：浅色极光 + 细网格 */
   .welcome-aurora {
     position: relative;
     isolation: isolate;
     background:
-      radial-gradient(ellipse 130% 90% at 50% -25%, rgba(167, 139, 250, 0.62), transparent 50%),
-      radial-gradient(ellipse 90% 70% at 100% 15%, rgba(236, 72, 153, 0.4), transparent 50%),
-      radial-gradient(ellipse 80% 60% at 0% 55%, rgba(34, 211, 238, 0.26), transparent 48%),
-      radial-gradient(ellipse 100% 80% at 50% 120%, rgba(99, 102, 241, 0.32), transparent 55%),
-      linear-gradient(168deg, #020106 0%, #080512 32%, #120a22 68%, #050208 100%);
+      radial-gradient(ellipse 100% 85% at 50% -15%, rgba(139, 92, 246, 0.16), transparent 52%),
+      radial-gradient(ellipse 70% 55% at 100% 25%, rgba(236, 72, 153, 0.08), transparent 48%),
+      linear-gradient(180deg, #faf5ff 0%, #f4f4f5 42%, #fafafa 100%);
   }
 
-  /** 登录 / 注册 / 游客：轻浮底（主站与 App 登录页气质） */
+  /** 别名：与默认浅色 welcome 一致 */
   .welcome-aurora.welcome-aurora--soft {
     background:
       radial-gradient(ellipse 100% 85% at 50% -15%, rgba(139, 92, 246, 0.16), transparent 52%),
@@ -81,6 +87,7 @@ html.dark .mesh-bg {
       linear-gradient(180deg, #faf5ff 0%, #f4f4f5 42%, #fafafa 100%);
   }
 
+  .welcome-aurora::before,
   .welcome-aurora.welcome-aurora--soft::before {
     opacity: 0.1;
     background-image:
@@ -88,15 +95,18 @@ html.dark .mesh-bg {
       linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
   }
 
+  .welcome-aurora::after,
   .welcome-aurora.welcome-aurora--soft::after {
     opacity: 0.22;
     filter: blur(88px);
   }
 
+  .welcome-aurora .welcome-starfield,
   .welcome-aurora.welcome-aurora--soft .welcome-starfield {
     opacity: 0.1;
   }
 
+  .welcome-aurora .welcome-vignette,
   .welcome-aurora.welcome-aurora--soft .welcome-vignette {
     background: radial-gradient(
       ellipse 88% 78% at 50% 48%,
@@ -105,6 +115,7 @@ html.dark .mesh-bg {
     );
   }
 
+  .welcome-aurora .welcome-shoot,
   .welcome-aurora.welcome-aurora--soft .welcome-shoot {
     opacity: 0.25;
   }
@@ -160,16 +171,15 @@ html.dark .mesh-bg {
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(15, 23, 42, 0.08);
     background:
-      radial-gradient(120% 80% at 50% -40%, rgba(167, 139, 250, 0.15), transparent 55%),
-      linear-gradient(155deg, rgba(32, 28, 52, 0.88) 0%, rgba(14, 10, 28, 0.92) 100%);
+      radial-gradient(120% 80% at 50% -40%, rgba(167, 139, 250, 0.12), transparent 55%),
+      linear-gradient(155deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.92) 100%);
     box-shadow:
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
-      0 0 0 1px rgba(139, 92, 246, 0.22),
-      0 28px 90px -32px rgba(0, 0, 0, 0.72),
-      0 0 80px -18px rgba(139, 92, 246, 0.38),
-      0 0 120px -40px rgba(236, 72, 153, 0.15);
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
+      0 0 0 1px rgba(139, 92, 246, 0.12),
+      0 20px 60px -24px rgba(139, 92, 246, 0.25),
+      0 8px 24px -12px rgba(15, 23, 42, 0.08);
     backdrop-filter: blur(22px) saturate(140%);
     -webkit-backdrop-filter: blur(22px) saturate(140%);
   }
@@ -180,12 +190,12 @@ html.dark .mesh-bg {
     inset: 0;
     background: linear-gradient(
       125deg,
-      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.65) 0%,
       transparent 38%,
       transparent 62%,
-      rgba(34, 211, 238, 0.06) 100%
+      rgba(139, 92, 246, 0.04) 100%
     );
-    opacity: 0.55;
+    opacity: 0.85;
     pointer-events: none;
   }
 
@@ -199,7 +209,7 @@ html.dark .mesh-bg {
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(255, 255, 255, 0.55),
+      rgba(139, 92, 246, 0.35),
       transparent
     );
     pointer-events: none;
@@ -329,3 +339,13 @@ html.dark .mesh-bg {
     }
   }
 
+  @keyframes vbcFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }

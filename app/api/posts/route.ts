@@ -14,6 +14,8 @@ export async function GET(req: Request) {
   const authorId = searchParams.get("authorId");
   const includeDrafts =
     searchParams.get("includeDrafts") === "1" && Boolean(sessionUserId);
+  const savedOnly =
+    searchParams.get("saved") === "1" && Boolean(sessionUserId);
   const take = Math.min(60, Math.max(1, Number(searchParams.get("take") ?? "40")));
   const sort = (searchParams.get("sort") ?? "new").toLowerCase();
   const orderBy =
@@ -43,10 +45,15 @@ export async function GET(req: Request) {
           : {},
         type && isPostType(type) ? { type } : {},
         authorId ? { authorId } : {},
-        includeDrafts
-          ? {}
-          : { status: "published" },
-        includeDrafts ? { authorId: sessionUserId ?? undefined } : {},
+        savedOnly
+          ? {
+              status: "published",
+              savedBy: { some: { userId: sessionUserId! } },
+            }
+          : includeDrafts
+            ? {}
+            : { status: "published" },
+        includeDrafts && !savedOnly ? { authorId: sessionUserId ?? undefined } : {},
       ],
     },
     /** 按 id 列表查询时禁用 orderBy，保持请求顺序 */

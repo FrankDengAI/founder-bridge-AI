@@ -45,15 +45,13 @@ export function PostEngage({
       router.push("/welcome/login");
       return;
     }
-    const already = action === "like" ? liked : saved;
-    if (!already) {
-      if (action === "like") {
-        setLikes((n) => n + 1);
-        setLiked(true);
-      } else {
-        setSaves((n) => n + 1);
-        setSaved(true);
-      }
+    const wasActive = action === "like" ? liked : saved;
+    if (action === "like") {
+      setLikes((n) => Math.max(0, n + (wasActive ? -1 : 1)));
+      setLiked(!wasActive);
+    } else {
+      setSaves((n) => Math.max(0, n + (wasActive ? -1 : 1)));
+      setSaved(!wasActive);
     }
     setBusy(action);
     setToast(null);
@@ -65,19 +63,23 @@ export function PostEngage({
         body: JSON.stringify({ action }),
       });
       if (!res.ok) throw new Error("操作失败");
-      const data = (await res.json()) as { likes: number; saves: number };
+      const data = (await res.json()) as {
+        likes: number;
+        saves: number;
+        active: boolean;
+      };
       setLikes(data.likes);
       setSaves(data.saves);
-      if (action === "like") setLiked(true);
-      if (action === "save") setSaved(true);
+      if (action === "like") setLiked(data.active);
+      if (action === "save") setSaved(data.active);
       setToast(
-        already
-          ? action === "like"
-            ? "你已赞过该笔记"
-            : "你已收藏过该笔记"
-          : action === "like"
+        action === "like"
+          ? data.active
             ? "已点赞"
-            : "已收藏",
+            : "已取消点赞"
+          : data.active
+            ? "已收藏"
+            : "已取消收藏",
       );
     } catch {
       if (action === "like") {

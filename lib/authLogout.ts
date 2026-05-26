@@ -1,4 +1,6 @@
 import { clearLocalUserId } from "@/lib/clientSession";
+import { invalidateClientSession } from "@/lib/hooks/useClientUserId";
+import { clearViewMode } from "@/lib/viewMode";
 
 /**
  * 演示站统一退出：清 Cookie（API）+ 清本地用户 id + 回欢迎页。
@@ -14,6 +16,8 @@ export async function performLogout(): Promise<void> {
     /* 仍执行本地清理 */
   } finally {
     clearLocalUserId();
+    clearViewMode();
+    invalidateClientSession();
     window.location.href = "/welcome";
   }
 }

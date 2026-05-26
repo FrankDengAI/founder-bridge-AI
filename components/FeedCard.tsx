@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import {
   Bookmark,
   BookOpen,
@@ -20,11 +21,12 @@ import {
 } from "lucide-react";
 import type { PostType } from "@/lib/domain/postType";
 import { isPostType } from "@/lib/domain/postType";
-import { POST_TYPE_LABEL } from "@/lib/labels";
+import { getPostTypeLabel } from "@/lib/labels";
 import { isPostSaved, readSavedPostIds, toggleSavedPost } from "@/lib/appHub";
 import { syncSaveCountBadge } from "@/lib/gamification";
 import { completeActivationStep } from "@/lib/activation";
 import { completeMission } from "@/lib/retention";
+import { useClientUserId } from "@/lib/hooks/useClientUserId";
 import clsx from "clsx";
 
 export type FeedCardProps = {
@@ -37,6 +39,7 @@ export type FeedCardProps = {
   authorName: string;
   likes: number;
   saves: number;
+  initiallySaved?: boolean;
 };
 
 /** 类型 → 视觉配方 */
@@ -84,19 +87,19 @@ const TYPE_THEME: Record<
   },
   IDEA: {
     icon: Lightbulb,
-    chipBg: "bg-lime-500/95",
-    chipText: "text-zinc-900",
-    accent: "ring-lime-300/50",
+    chipBg: "bg-sky-500/95",
+    chipText: "text-white",
+    accent: "ring-sky-300/50",
   },
   TUTORIAL: {
-    icon: Code2,
-    chipBg: "bg-indigo-500/95",
+    icon: BookOpen,
+    chipBg: "bg-emerald-600/95",
     chipText: "text-white",
-    accent: "ring-indigo-300/50",
+    accent: "ring-emerald-300/50",
     overlay: "code",
   },
   RECRUIT: {
-    icon: Sparkles,
+    icon: Lightbulb,
     chipBg: "bg-violet-600/95",
     chipText: "text-white",
     accent: "ring-violet-400/50",
@@ -143,22 +146,62 @@ function extractTags(text: string): string[] {
 }
 
 export function FeedCard(p: FeedCardProps) {
+  const tCommon = useTranslations("common");
+  const tPost = useTranslations("postType");
+  const userId = useClientUserId();
   const t: PostType = isPostType(p.type) ? p.type : "NOTE";
   const theme = TYPE_THEME[t];
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState(Boolean(p.initiallySaved));
+  const [saveBusy, setSaveBusy] = useState(false);
+  const [ripple, setRipple] = useState(false);
   const tags = useMemo(() => extractTags(`${p.title} ${p.excerpt}`), [p.title, p.excerpt]);
   const isHot = p.likes + p.saves >= 60;
-  // 保留 theme.accent 在源码中以便 Tailwind JIT 静态识别（防止 purge）
   void theme.accent;
 
   useEffect(() => {
-    setSaved(isPostSaved(p.id));
-  }, [p.id]);
+    if (p.initiallySaved !== undefined) {
+      setSaved(p.initiallySaved);
+      return;
+    }
+    if (!userId) setSaved(isPostSaved(p.id));
+  }, [p.id, p.initiallySaved, userId]);
 
   const onToggleSave = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
+      if (saveBusy) return;
+      setRipple(true);
+      window.setTimeout(() => setRipple(false), 450);
+
+      if (userId) {
+        setSaveBusy(true);
+        const wasSaved = saved;
+        setSaved(!wasSaved);
+        void fetch(`/api/posts/${p.id}/react`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ action: "save" }),
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("save failed");
+            return res.json() as Promise<{ active: boolean }>;
+          })
+          .then((data) => {
+            setSaved(data.active);
+            if (data.active) {
+              completeMission("save_post");
+              completeActivationStep("first_save");
+            }
+          })
+          .catch(() => {
+            setSaved(wasSaved);
+          })
+          .finally(() => setSaveBusy(false));
+        return;
+      }
+
       const next = toggleSavedPost(p.id);
       setSaved(next);
       syncSaveCountBadge(readSavedPostIds().length);
@@ -167,14 +210,14 @@ export function FeedCard(p: FeedCardProps) {
         completeActivationStep("first_save");
       }
     },
-    [p.id],
+    [p.id, saved, saveBusy, userId],
   );
 
   return (
     <div
       className={clsx(
-        "group relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-zinc-200/70 transition",
-        "hover:-translate-y-1 hover:shadow-[0_24px_60px_-22px_rgba(139,92,246,0.5)] hover:ring-violet-300/50",
+        "group relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-zinc-200/70 transition motion-reduce:transition-none",
+        "hover:-translate-y-1 hover:shadow-[0_24px_60px_-22px_rgba(139,92,246,0.5)] hover:ring-violet-300/50 motion-reduce:hover:translate-y-0",
       )}
     >
       <Link href={`/post/${p.id}`} className="block" data-author={p.authorId}>
@@ -183,13 +226,11 @@ export function FeedCard(p: FeedCardProps) {
             src={p.coverUrl}
             alt=""
             fill
-            className="object-cover transition duration-500 group-hover:scale-[1.05]"
+            className="object-cover transition duration-500 group-hover:scale-[1.05] motion-reduce:group-hover:scale-100"
             sizes="(max-width: 768px) 50vw, 200px"
           />
-          {/* 顶到底渐变 */}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-black/0" />
 
-          {/* 类型徽章（左上） */}
           <span
             className={clsx(
               "absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold shadow-sm backdrop-blur",
@@ -198,18 +239,16 @@ export function FeedCard(p: FeedCardProps) {
             )}
           >
             <theme.icon className="h-3 w-3" />
-            {POST_TYPE_LABEL[t]}
+            {getPostTypeLabel(tPost, t)}
           </span>
 
-          {/* 热门 fire 标 */}
           {isHot ? (
             <span className="absolute right-12 top-2 inline-flex items-center gap-0.5 rounded-full bg-rose-500/95 px-1.5 py-0.5 text-[10px] font-semibold text-white shadow-sm">
               <Flame className="h-3 w-3" />
-              热
+              {tCommon("hot")}
             </span>
           ) : null}
 
-          {/* 不同类型的覆盖层 */}
           {theme.overlay === "video" ? (
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <span className="flex h-12 w-12 items-center justify-center rounded-full bg-black/45 backdrop-blur transition group-hover:scale-110">
@@ -231,7 +270,6 @@ export function FeedCard(p: FeedCardProps) {
             </span>
           ) : null}
 
-          {/* 底部作者条 */}
           <span className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[11px] text-white/95">
             <span className="flex min-w-0 items-center gap-1.5">
               <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-400 to-fuchsia-400 text-[10px] font-bold text-white shadow ring-1 ring-white/20">
@@ -242,7 +280,6 @@ export function FeedCard(p: FeedCardProps) {
             <ChevronRight className="h-3.5 w-3.5 opacity-80 transition group-hover:translate-x-0.5" />
           </span>
 
-          {/* tag chips（左下） */}
           {tags.length ? (
             <div className="pointer-events-none absolute bottom-9 left-2 flex flex-wrap gap-1">
               {tags.map((tg) => (
@@ -287,21 +324,27 @@ export function FeedCard(p: FeedCardProps) {
 
       <button
         type="button"
-        title={saved ? "取消收藏" : "收藏到本地"}
-        aria-label={saved ? "取消收藏此笔记" : "收藏此笔记到本地"}
+        title={saved ? tCommon("unsaved") : userId ? tCommon("saved") : tCommon("loginToSave")}
+        aria-label={saved ? tCommon("unsaved") : tCommon("saved")}
         aria-pressed={saved}
+        disabled={saveBusy}
         onClick={onToggleSave}
         className={clsx(
-          "absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-xl shadow-md ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+          "absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-xl shadow-md ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 active:scale-90 motion-reduce:active:scale-100",
           saved
             ? "bg-amber-100 text-amber-800 ring-amber-300/80"
             : "bg-white/90 text-zinc-600 ring-zinc-200/80 hover:bg-white",
+          saveBusy && "opacity-60",
         )}
       >
+        {ripple ? (
+          <span className="pointer-events-none absolute inset-0 animate-ping rounded-xl bg-amber-400/40 motion-reduce:animate-none" />
+        ) : null}
         <Bookmark
           className={clsx(
-            "h-4 w-4 transition",
+            "relative h-4 w-4 transition",
             saved && "fill-current text-amber-700 scale-110",
+            ripple && "motion-safe:scale-125",
           )}
         />
       </button>

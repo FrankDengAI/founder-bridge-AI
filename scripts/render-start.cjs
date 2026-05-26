@@ -1,5 +1,5 @@
 /**
- * Render 启动：先 migrate deploy 再 next start，避免构建阶段未跑迁移导致注册/登录 500。
+ * Render 启动：migrate deploy → 空库 seed → next start
  */
 const { spawnSync } = require("node:child_process");
 
@@ -15,6 +15,18 @@ function run(cmd) {
 
 console.log("[render-start] prisma migrate deploy...");
 run("npx prisma migrate deploy");
+
+if (process.env.DATABASE_URL) {
+  console.log("[render-start] seed-if-empty (when no users)...");
+  const seed = spawnSync("npx tsx scripts/seed-if-empty.ts", {
+    shell: true,
+    stdio: "inherit",
+    env: process.env,
+  });
+  if (seed.status !== 0) {
+    console.warn("[render-start] seed-if-empty failed (non-fatal), continuing...");
+  }
+}
 
 console.log("[render-start] next start...");
 run("npm start");

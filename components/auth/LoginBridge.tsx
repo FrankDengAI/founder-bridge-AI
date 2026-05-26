@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AuthCard } from "@/components/auth/AuthCard";
 import {
-  appShellHref,
+  appEntryHref,
   isExternalMiniapp,
   loginIframeSrc,
   miniappOrigin,
@@ -34,22 +34,22 @@ export function LoginBridge() {
     return () => window.removeEventListener("message", onMsg);
   }, [external, app]);
 
-  const homeHref = appShellHref("/home");
+  const homeHref = appEntryHref("/home");
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-lg flex-col gap-6 px-4 pb-16 pt-8 sm:pt-12">
       <Link
         href="/"
-        className="inline-flex w-fit text-sm font-medium text-slate-400 transition hover:text-white"
+        className="inline-flex w-fit text-sm font-medium text-zinc-500 transition hover:text-violet-700"
       >
         ← 返回首页
       </Link>
 
       <div className="text-center">
-        <h1 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
+        <h1 className="font-display text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">
           登录演示应用
         </h1>
-        <p className="mt-2 text-sm text-slate-400">
+        <p className="mt-2 text-sm text-zinc-600">
           {external
             ? "在下方窗口完成登录（会话写入外站 App 域名）。完成后可进入 App 首页。"
             : "在下方窗口完成登录（会话写入本站服务端）。完成后可进入 App 首页。"}
@@ -65,7 +65,7 @@ export function LoginBridge() {
             href={homeHref}
             target={external ? "_blank" : undefined}
             rel={external ? "noopener noreferrer" : undefined}
-            className="mt-5 flex w-full items-center justify-center rounded-full bg-zinc-900 py-3.5 text-sm font-semibold text-white transition hover:bg-zinc-800"
+            className="mt-5 flex w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 py-3.5 text-sm font-semibold text-white transition hover:opacity-95"
           >
             打开 App 首页
           </a>
@@ -76,7 +76,7 @@ export function LoginBridge() {
       ) : (
         <div className="mx-auto w-full max-w-sm space-y-4">
           <>
-            <div className="rounded-[2rem] border border-white/15 bg-ink-900/60 p-2 shadow-[0_32px_80px_-24px_rgba(0,0,0,0.55)] backdrop-blur-md">
+            <div className="rounded-[2rem] border border-violet-200/60 bg-white/90 p-2 shadow-[0_24px_60px_-24px_rgba(139,92,246,0.25)] backdrop-blur-md">
               <div className="overflow-hidden rounded-[1.65rem] bg-white ring-1 ring-zinc-200/80">
                 <iframe
                   title="VibeCoding 演示登录"
@@ -86,8 +86,8 @@ export function LoginBridge() {
                 />
               </div>
             </div>
-            <details className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-[11px] text-slate-400">
-              <summary className="cursor-pointer select-none font-medium text-slate-300">
+            <details className="rounded-xl border border-violet-200/60 bg-violet-50/50 px-3 py-2 text-[11px] text-zinc-600">
+              <summary className="cursor-pointer select-none font-medium text-zinc-800">
                 内嵌仍为空白或 404？
               </summary>
               <ul className="mt-2 list-disc space-y-1 pl-4 leading-relaxed">

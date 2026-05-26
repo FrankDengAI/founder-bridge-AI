@@ -95,7 +95,7 @@ export function GitHubDemoActions() {
           </button>
         )}
         <Link
-          href="/learn"
+          href="/home"
           className="inline-flex items-center justify-center rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-zinc-50"
         >
           返回学习首页

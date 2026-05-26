@@ -1,41 +1,77 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { COOKIE_DONE, COOKIE_SESSION, isSessionCookieValid } from "@/lib/auth/sessionCookie";
+import { NextRequest, NextResponse } from "next/server";
+import createIntlMiddleware from "next-intl/middleware";
+import {
+  COOKIE_DONE,
+  COOKIE_SESSION,
+  COOKIE_UID,
+  isSessionCookieValid,
+} from "@/lib/auth/sessionCookie";
+import { routing } from "@/i18n/routing";
 
-function isPublicPath(pathname: string) {
-  if (pathname === "/") return true;
-  if (pathname.startsWith("/login")) return true;
-  if (pathname.startsWith("/welcome")) return true;
-  if (pathname.startsWith("/api")) return true;
-  if (pathname.startsWith("/_next")) return true;
-  if (pathname === "/favicon.ico") return true;
+const intlMiddleware = createIntlMiddleware(routing);
+
+const LOCALE_PREFIXES = routing.locales
+  .filter((l) => l !== routing.defaultLocale)
+  .map((l) => `/${l}`);
+
+function stripLocalePrefix(pathname: string): string {
+  for (const prefix of LOCALE_PREFIXES) {
+    if (pathname === prefix) return "/";
+    if (pathname.startsWith(`${prefix}/`)) {
+      return pathname.slice(prefix.length) || "/";
+    }
+  }
+  return pathname;
+}
+
+function isPublicPath(pathname: string): boolean {
+  const base = stripLocalePrefix(pathname);
+  if (base === "/") return true;
+  if (base.startsWith("/login")) return true;
+  if (base.startsWith("/welcome")) return true;
+  if (base.startsWith("/api")) return true;
+  if (base.startsWith("/_next")) return true;
+  if (base === "/favicon.ico") return true;
   return false;
 }
 
 function hasValidSession(req: NextRequest): boolean {
   const session = req.cookies.get(COOKIE_SESSION)?.value;
   if (isSessionCookieValid(session)) return true;
-  // 兼容旧演示 cookie
-  if (req.cookies.get(COOKIE_DONE)?.value === "1") return true;
-  return false;
+  const done = req.cookies.get(COOKIE_DONE)?.value === "1";
+  const uid = req.cookies.get(COOKIE_UID)?.value?.trim();
+  return Boolean(done && uid);
 }
 
-export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
+export default function middleware(req: NextRequest) {
+  const intlResponse = intlMiddleware(req);
+  const pathname = req.nextUrl.pathname;
+
+  if (intlResponse.status >= 300 && intlResponse.status < 400) {
+    return intlResponse;
+  }
 
   if (isPublicPath(pathname)) {
-    return NextResponse.next();
+    return intlResponse;
   }
 
   if (hasValidSession(req)) {
-    return NextResponse.next();
+    return intlResponse;
   }
 
+  const locale =
+    routing.locales.find(
+      (l) =>
+        l !== routing.defaultLocale &&
+        (pathname === `/${l}` || pathname.startsWith(`/${l}/`)),
+    ) ?? routing.defaultLocale;
+
   const url = req.nextUrl.clone();
-  url.pathname = "/welcome";
+  url.pathname =
+    locale === routing.defaultLocale ? "/welcome" : `/${locale}/welcome`;
   return NextResponse.redirect(url);
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { FeedCard } from "@/components/FeedCard";
 import { readSavedPostIds } from "@/lib/appHub";
+import { useClientUserId, useClientUserReady } from "@/lib/hooks/useClientUserId";
 
 type PostPayload = {
   id: string;
@@ -17,19 +20,33 @@ type PostPayload = {
 };
 
 export function HomeSavedFeed() {
+  const t = useTranslations("home");
+  const tCommon = useTranslations("common");
+  const userId = useClientUserId();
+  const ready = useClientUserReady();
   const [posts, setPosts] = useState<PostPayload[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const ids = readSavedPostIds();
-    if (!ids.length) {
-      setPosts([]);
-      setLoading(false);
-      return;
-    }
+    if (!ready) return;
     void (async () => {
       setLoading(true);
       try {
+        if (userId) {
+          const u = new URL("/api/posts", window.location.origin);
+          u.searchParams.set("saved", "1");
+          const res = await fetch(u.toString(), { credentials: "include" });
+          if (res.ok) {
+            const data = (await res.json()) as { posts: PostPayload[] };
+            setPosts(data.posts ?? []);
+            return;
+          }
+        }
+        const ids = readSavedPostIds();
+        if (!ids.length) {
+          setPosts([]);
+          return;
+        }
         const u = new URL("/api/posts", window.location.origin);
         u.searchParams.set("ids", ids.join(","));
         const res = await fetch(u.toString());
@@ -39,19 +56,24 @@ export function HomeSavedFeed() {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [userId, ready]);
 
-  if (loading) {
+  if (!ready || loading) {
     return (
       <div className="glass-panel rounded-2xl p-6 text-center text-sm text-zinc-500 motion-safe:animate-pulse">
-        正在加载本地收藏…
+        {t("loadingSaved")}
       </div>
     );
   }
   if (posts.length === 0) {
     return (
       <div className="glass-panel rounded-2xl p-6 text-center text-sm text-zinc-600">
-        暂无本地收藏。在发现卡片右上角点「书签」即可加入。
+        {userId ? t("noSavedLoggedIn") : t("noSavedGuest")}{" "}
+        {!userId ? (
+          <Link href="/welcome/login" className="font-semibold text-violet-700 hover:underline">
+            {tCommon("login")}
+          </Link>
+        ) : null}
       </div>
     );
   }
@@ -70,6 +92,7 @@ export function HomeSavedFeed() {
             authorName={p.author.displayName}
             likes={p.likes}
             saves={p.saves}
+            initiallySaved
           />
         </div>
       ))}

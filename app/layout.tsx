@@ -5,9 +5,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="zh-CN">
-      <body className="min-h-screen">{children}</body>
-    </html>
-  );
+  return children;
 }

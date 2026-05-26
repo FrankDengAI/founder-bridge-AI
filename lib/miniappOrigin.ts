@@ -1,3 +1,5 @@
+import { modePickerHref } from "./viewMode";
+
 const DEV_FALLBACK_ORIGIN = "http://localhost:3000";
 
 function resolveExplicitMiniapp(): string | null {
@@ -75,6 +77,11 @@ export function appShellHref(path: string): string {
   const ext = resolveExplicitMiniapp();
   if (!ext) return normalized;
   return `${ext.replace(/\/$/, "")}${normalized}`;
+}
+
+/** 进入 App 体验（经模式选择页） */
+export function appEntryHref(next = "/home"): string {
+  return appShellHref(modePickerHref(next));
 }
 
 /** 是否可展示「打开 App」类外链（分域时必须已配置 NEXT_PUBLIC_MINIAPP_URL） */

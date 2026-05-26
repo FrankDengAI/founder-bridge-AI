@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import {
   ChevronDown,
   ChevronUp,
@@ -11,10 +11,10 @@ import {
   Target,
   Users,
 } from "lucide-react";
-import { useClientUserId } from "@/lib/hooks/useClientUserId";
+import { useClientUserId, useCurrentUser } from "@/lib/hooks/useClientUserId";
 import type { Role } from "@/lib/domain/role";
 import { ROLES, isRole } from "@/lib/domain/role";
-import { ROLE_LABEL, ROLE_MATCH_DESC } from "@/lib/labels";
+import { getRoleLabel, getRoleMatchDesc } from "@/lib/labels";
 import type { ScoreBreakdown } from "@/lib/matching/types";
 import {
   MATCH_BREAKDOWN_LABELS,
@@ -54,9 +54,9 @@ type MatchCandidate = {
 
 function scoreIndex(score: number) {
   const n = Math.round(Math.min(1, Math.max(0, score)) * 100);
-  if (n >= 76) return { n, tier: "高匹配", className: "bg-emerald-50 text-emerald-900 ring-emerald-200/80" };
-  if (n >= 58) return { n, tier: "中匹配", className: "bg-amber-50 text-amber-950 ring-amber-200/80" };
-  return { n, tier: "探索向", className: "bg-zinc-100 text-zinc-700 ring-zinc-200/80" };
+  if (n >= 76) return { n, tierKey: "tierHigh" as const, className: "bg-emerald-50 text-emerald-900 ring-emerald-200/80" };
+  if (n >= 58) return { n, tierKey: "tierMid" as const, className: "bg-amber-50 text-amber-950 ring-amber-200/80" };
+  return { n, tierKey: "tierExplore" as const, className: "bg-zinc-100 text-zinc-700 ring-zinc-200/80" };
 }
 
 /** 维度配色（与品牌站雷达图色系一致） */
@@ -194,8 +194,12 @@ const BUDGET_OPTIONS = [
 ] as const;
 
 export function MatchExperience() {
+  const t = useTranslations("match");
+  const tNav = useTranslations("nav");
+  const tRoles = useTranslations("roles");
   const router = useRouter();
   const userId = useClientUserId();
+  const { user: meUser } = useCurrentUser();
   const [kwInput, setKwInput] = useState("");
   const [form, setForm] = useState<ProfilePayload>({
     role: "ADC",
@@ -293,7 +297,7 @@ export function MatchExperience() {
 
   const startMatch = async () => {
     if (!userId) {
-      setError("请先登录后再匹配");
+      setError(t("loginFirst"));
       return;
     }
     setError(null);
@@ -306,7 +310,7 @@ export function MatchExperience() {
         credentials: "include",
         body: JSON.stringify({ ...form }),
       });
-      if (!put.ok) throw new Error("保存资料失败");
+      if (!put.ok) throw new Error(t("saveProfileFail"));
       trackEvent("match_run");
       completeMission("match_run");
       completeActivationStep("first_match");
@@ -345,14 +349,18 @@ export function MatchExperience() {
   return (
     <div className="space-y-4 pb-28">
       <PageHeader
-        title="创业伙伴匹配"
-        subtitle={`多维度互补评分 · 支持快速/仪式感动效${userId ? ` · 当前会话：${userId}` : ""}`}
+        title={t("title")}
+        subtitle={
+          meUser
+            ? `${t("subtitle")}${t("subtitleUser", { name: meUser.displayName })}`
+            : t("subtitle")
+        }
         right={
           <Link
             href="/messages"
             className="rounded-2xl bg-white/80 px-3 py-2 text-[11px] font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-white"
           >
-            消息
+            {tNav("messages")}
           </Link>
         }
       />
@@ -374,7 +382,7 @@ export function MatchExperience() {
       </section>
 
       {loadingProfile ? (
-        <p className="text-sm text-zinc-500">加载资料中…</p>
+        <p className="text-sm text-zinc-500">{t("loadingProfile")}</p>
       ) : (
         <div className="space-y-5 rounded-3xl bg-white/80 p-4 shadow-soft ring-1 ring-white/70 backdrop-blur">
           <section className="space-y-3">
@@ -397,9 +405,9 @@ export function MatchExperience() {
                       : "border-zinc-200/90 bg-white/60 hover:border-violet-200 hover:bg-violet-50/30"
                   }`}
                 >
-                  <span className="block font-semibold">{ROLE_LABEL[r]}</span>
+                  <span className="block font-semibold">{getRoleLabel(tRoles, r)}</span>
                   <span className="mt-1.5 block text-[10px] leading-relaxed text-zinc-600">
-                    {ROLE_MATCH_DESC[r]}
+                    {getRoleMatchDesc(tRoles, r)}
                   </span>
                 </button>
               ))}
@@ -463,7 +471,7 @@ export function MatchExperience() {
               <button
                 type="button"
                 onClick={addKeyword}
-                className="rounded-xl bg-zinc-900 px-3 py-2 text-xs font-semibold text-white hover:bg-zinc-800"
+                className="rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 py-2 text-xs font-semibold text-white hover:opacity-95"
               >
                 添加
               </button>
@@ -536,7 +544,7 @@ export function MatchExperience() {
                       : "border-zinc-200 text-zinc-600 hover:border-zinc-300"
                   }`}
                 >
-                  {ROLE_LABEL[r]}
+                  {getRoleLabel(tRoles, r)}
                 </button>
               ))}
             </div>
@@ -588,7 +596,13 @@ export function MatchExperience() {
             onClick={() => void startMatch()}
             className="w-full rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 py-3.5 text-sm font-semibold text-white shadow-glow transition hover:opacity-95 disabled:opacity-60"
           >
-            保存画像并开始匹配（{animMode === "fast" ? "约 3 秒" : animMode === "normal" ? "约 8 秒" : "约 30 秒"}）
+            {t("startMatch")} (
+            {animMode === "fast"
+              ? t("durationFast")
+              : animMode === "normal"
+                ? t("durationNormal")
+                : t("durationRitual")}
+            )
           </button>
           {error ? <p className="text-xs text-red-600">{error}</p> : null}
         </div>
@@ -596,10 +610,8 @@ export function MatchExperience() {
 
       {results && results.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-zinc-300/80 bg-white/60 p-6 text-center text-sm text-zinc-600">
-          <p className="font-medium text-zinc-800">本轮暂无候选</p>
-          <p className="mt-2 text-[11px] leading-relaxed text-zinc-500">
-            请确认已执行 <span className="font-mono">npm run db:seed</span>；或放宽关键词 / 期望伙伴类型后再试。
-          </p>
+          <p className="font-medium text-zinc-800">{t("noCandidates")}</p>
+          <p className="mt-2 text-[11px] leading-relaxed text-zinc-500">{t("noCandidatesHint")}</p>
         </div>
       ) : null}
 
@@ -607,9 +619,9 @@ export function MatchExperience() {
         <div className="space-y-4">
           <div className="flex flex-wrap items-end justify-between gap-2">
             <div>
-              <h2 className="text-sm font-semibold text-zinc-950">为你生成的推荐</h2>
+              <h2 className="text-sm font-semibold text-zinc-950">{t("resultsTitle")}</h2>
               <p className="mt-1 text-[11px] text-zinc-500">
-                共 {results.length} 人 · 分数为综合加权，可展开查看各维度与完整理由
+                {t("resultsCount", { count: results.length })}
               </p>
             </div>
             <button
@@ -618,7 +630,7 @@ export function MatchExperience() {
               onClick={() => void startMatch()}
               className="rounded-2xl bg-violet-100 px-3 py-2 text-xs font-semibold text-violet-900 ring-1 ring-violet-200/80 hover:bg-violet-50 disabled:opacity-50"
             >
-              保存参数并再匹配
+              {t("rematch")}
             </button>
           </div>
           <ul className="space-y-4">
@@ -655,7 +667,7 @@ export function MatchExperience() {
                               {c.displayName}
                             </p>
                             <p className="text-[11px] text-zinc-500">
-                              {isRole(c.role) ? ROLE_LABEL[c.role] : c.role}
+                              {isRole(c.role) ? getRoleLabel(tRoles, c.role) : c.role}
                               {c.direction ? (
                                 <span className="text-zinc-400">
                                   {" "}
@@ -665,13 +677,13 @@ export function MatchExperience() {
                             </p>
                           </div>
                           <div className="flex shrink-0 flex-col items-end gap-1">
-                            <span className="rounded-full bg-zinc-900 px-2 py-0.5 text-[10px] font-bold text-white">
+                            <span className="rounded-full bg-violet-700 px-2 py-0.5 text-[10px] font-bold text-white">
                               #{idx + 1}
                             </span>
                             <span
                               className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ${idxInfo.className}`}
                             >
-                              {idxInfo.tier} · {idxInfo.n}
+                              {t(idxInfo.tierKey)} · {idxInfo.n}
                             </span>
                           </div>
                         </div>
@@ -719,9 +731,9 @@ export function MatchExperience() {
                     <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
                       <button
                         type="button"
-                        className="rounded-2xl bg-zinc-950 px-3 py-2.5 text-xs font-semibold text-white hover:bg-zinc-800"
+                        className="rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 py-2.5 text-xs font-semibold text-white hover:opacity-95"
                         onClick={() => {
-                          const intent = `你好 ${c.displayName}，我在 VibeHub 匹配里看到你的资料（${isRole(c.role) ? ROLE_LABEL[c.role] : c.role}），想聊聊合作可能性。`;
+                          const intent = `你好 ${c.displayName}，我在 VibeHub 匹配里看到你的资料（${isRole(c.role) ? getRoleLabel(tRoles, c.role) : c.role}），想聊聊合作可能性。`;
                           void startConversation(c.userId, {
                             source: "match",
                             contextTitle: "创业伙伴匹配",
