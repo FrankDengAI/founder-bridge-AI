@@ -70,6 +70,7 @@ export function viewModeDescription(mode: ViewMode): string {
 const NEXT_PATH_LABELS: Record<string, string> = {
   "/home": "发现首页",
   "/learn": "学习路线",
+  "/learn/step/1": "学习路线",
   "/match": "伙伴匹配",
   "/messages": "消息中心",
   "/me": "我的主页",

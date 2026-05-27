@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { LogIn, MessageSquarePlus, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import { MODEL_SCENARIOS, SCENARIO_LABEL } from "@/lib/models/rank";
 import { recordGamifyEvent } from "@/lib/gamification";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { PageHeader } from "@/components/PageHeader";
 import { DEMO_USER_ID } from "@/lib/constants";
 import { performLogout } from "@/lib/authLogout";

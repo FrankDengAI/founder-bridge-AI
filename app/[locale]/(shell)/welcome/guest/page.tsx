@@ -1,12 +1,15 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { redirect } from "next/navigation";
+import { getLocale } from "next-intl/server";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { isGuestEnabled } from "@/lib/auth/config";
+import { localizedPath } from "@/lib/localePath";
 import { GuestInterestForm } from "./GuestInterestForm";
 
-export default function WelcomeGuestPage() {
+export default async function WelcomeGuestPage() {
   if (!isGuestEnabled()) {
-    redirect("/welcome/register");
+    const locale = await getLocale();
+    redirect(localizedPath("/welcome/register", locale));
   }
 
   return (

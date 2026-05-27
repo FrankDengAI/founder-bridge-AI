@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Cpu, Crown, Flame } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 

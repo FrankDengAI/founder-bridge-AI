@@ -2,11 +2,13 @@
 
 import { motion } from "framer-motion";
 import { ArrowUpRight, Github, Mail, MessageCircle, Twitter } from "lucide-react";
-import Link from "next/link";
-import { appDemoReady, appEntryHref, isExternalMiniapp } from "@/lib/miniappOrigin";
+import { Link } from "@/i18n/navigation";
+import { appDemoReady, isExternalMiniapp } from "@/lib/miniappOrigin";
+import { useAppEntryHref } from "@/lib/hooks/useAppEntryHref";
 
 export function WebCta() {
-  const homeHref = appEntryHref("/home");
+  const appEntry = useAppEntryHref();
+  const homeHref = appEntry("/home");
   const external = isExternalMiniapp();
   const appReady = appDemoReady();
   const demoLabel = homeHref.replace(/^https?:\/\//, "");

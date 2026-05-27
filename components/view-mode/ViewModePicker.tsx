@@ -2,9 +2,11 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { useLocale } from "next-intl";
 import { ArrowRight, LayoutGrid, Loader2, Monitor, Smartphone, Sparkles } from "lucide-react";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
+import { localizedPath } from "@/lib/localePath";
 import { formatNextPathLabel, safeNextPath, setViewMode, type ViewMode } from "@/lib/viewMode";
 
 function AppPreview() {
@@ -59,6 +61,7 @@ function WebPreview() {
 const MODES: ViewMode[] = ["app", "web"];
 
 export function ViewModePicker() {
+  const locale = useLocale();
   const tWelcome = useTranslations("welcome");
   const tVm = useTranslations("viewMode");
   const searchParams = useSearchParams();
@@ -95,7 +98,7 @@ export function ViewModePicker() {
     if (busy) return;
     setBusy(mode);
     setViewMode(mode);
-    window.location.href = next;
+    window.location.href = localizedPath(next, locale);
   };
 
   return (

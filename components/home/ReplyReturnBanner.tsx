@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { MessageCircle, X } from "lucide-react";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
 import { useConversations } from "@/lib/hooks/useConversationStats";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { MessageCircle, Send, UserRound } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";

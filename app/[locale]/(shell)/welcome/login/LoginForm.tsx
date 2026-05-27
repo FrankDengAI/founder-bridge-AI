@@ -2,15 +2,57 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import clsx from "clsx";
+import { Link } from "@/i18n/navigation";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { syncLocalUserId } from "@/lib/clientSession";
 import { VBC_AUTH_POST_MESSAGE } from "@/lib/constants";
 import { useModePickerHref } from "@/lib/hooks/useModePickerHref";
 
 type DemoRow = { id: string; displayName: string };
+
+function isServiceError(message: string): boolean {
+  return /SESSION_SECRET|数据库未连接|数据库表结构|迁移配置|服务暂时不可用|schema/i.test(
+    message,
+  );
+}
+
+function LoginError({ message }: { message: string }) {
+  const adminHint = isServiceError(message);
+
+  if (adminHint) {
+    return (
+      <div
+        role="alert"
+        className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"
+      >
+        <p className="font-semibold">暂时无法完成登录</p>
+        <p className="mt-1 leading-relaxed text-amber-900/90">
+          服务端认证尚未就绪，不是你的账号或密码问题。请稍后再试，或联系站点管理员完成部署配置。
+        </p>
+        <details className="mt-2 text-xs text-amber-900/80">
+          <summary className="cursor-pointer select-none font-medium">管理员排查</summary>
+          <p className="mt-1.5 leading-relaxed">{message}</p>
+          <ul className="mt-2 list-disc space-y-1 pl-4">
+            <li>
+              Render Dashboard → Environment → 添加{" "}
+              <span className="font-mono">SESSION_SECRET</span>（至少 16 位随机字符串）
+            </li>
+            <li>确认已配置 DATABASE_URL 且部署日志中 migrate deploy 成功</li>
+            <li>保存环境变量后点击 Manual Deploy 重新部署</li>
+          </ul>
+        </details>
+      </div>
+    );
+  }
+
+  return (
+    <p role="alert" className="mt-4 text-sm font-medium text-red-600">
+      {message}
+    </p>
+  );
+}
 
 export function LoginForm() {
   const searchParams = useSearchParams();
@@ -104,6 +146,12 @@ export function LoginForm() {
       }
       const data = (await res.json()) as { userId: string };
       syncLocalUserId(data.userId);
+      if (embed && typeof window !== "undefined" && window.parent !== window) {
+        window.parent.postMessage(
+          { type: VBC_AUTH_POST_MESSAGE, userId: data.userId },
+          window.location.origin,
+        );
+      }
       window.location.href = modeHref("/home");
     } catch (e) {
       setErr(e instanceof Error ? e.message : "演示登录失败");
@@ -144,7 +192,9 @@ export function LoginForm() {
             <input
               type="text"
               autoComplete="username"
-              className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm text-zinc-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
+              autoFocus={!embed}
+              disabled={busy}
+              className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm text-zinc-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20 disabled:bg-zinc-50 disabled:text-zinc-500"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="注册时填写的账号"
@@ -155,7 +205,8 @@ export function LoginForm() {
             <input
               type="password"
               autoComplete="current-password"
-              className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm text-zinc-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
+              disabled={busy}
+              className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm text-zinc-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20 disabled:bg-zinc-50 disabled:text-zinc-500"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="输入密码"
@@ -164,21 +215,27 @@ export function LoginForm() {
           </label>
         </div>
 
-        {err ? <p className="mt-3 text-sm font-medium text-red-600">{err}</p> : null}
+        {err ? <LoginError message={err} /> : null}
 
         <button
           type="button"
           disabled={!canSubmit}
           onClick={() => void submitLogin()}
-          className="mt-5 w-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:opacity-95 disabled:opacity-45"
+          className="mt-5 w-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-45"
         >
           {busy ? "登录中…" : "登 录"}
         </button>
 
         {!embed ? (
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-zinc-100 pt-5 text-xs font-medium text-zinc-500">
-            <Link href="/welcome/register" className="text-zinc-700 hover:text-violet-700">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-zinc-100 pt-5 text-xs font-medium text-zinc-500">
+            <Link href="/welcome/register" className="text-violet-700 hover:text-violet-900">
               注册新账号
+            </Link>
+            <span className="hidden text-zinc-300 sm:inline" aria-hidden>
+              ·
+            </span>
+            <Link href="/welcome/forgot-password" className="hover:text-violet-700">
+              忘记密码
             </Link>
           </div>
         ) : null}

@@ -1,20 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useLocale } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { AuthCard } from "@/components/auth/AuthCard";
+import { LoginForm } from "@/app/[locale]/(shell)/welcome/login/LoginForm";
 import {
-  appEntryHref,
   isExternalMiniapp,
-  loginIframeSrc,
   miniappOrigin,
 } from "@/lib/miniappOrigin";
+import { useAppEntryHref } from "@/lib/hooks/useAppEntryHref";
+import { localizedPath, modePickerHref } from "@/lib/localePath";
 import { VBC_AUTH_POST_MESSAGE } from "@/lib/constants";
 
-export function LoginBridge() {
+function loginEmbedSrc(locale: string, external: boolean, app: string): string {
+  const path = localizedPath("/welcome/login", locale);
+  const qs = "?embed=1";
+  if (!external) return `${path}${qs}`;
+  if (!app) return `${path}${qs}`;
+  return `${app.replace(/\/$/, "")}${path}${qs}`;
+}
+
+function LoginBridgeInner() {
+  const locale = useLocale();
   const app = miniappOrigin();
   const external = isExternalMiniapp();
-  const iframeSrc = loginIframeSrc();
+  const appEntry = useAppEntryHref();
+  const iframeSrc = useMemo(
+    () => loginEmbedSrc(locale, external, app),
+    [locale, external, app],
+  );
   const [done, setDone] = useState(false);
 
   useEffect(() => {
@@ -34,7 +49,24 @@ export function LoginBridge() {
     return () => window.removeEventListener("message", onMsg);
   }, [external, app]);
 
-  const homeHref = appEntryHref("/home");
+  const homeHref =
+    external && app
+      ? `${app.replace(/\/$/, "")}${modePickerHref("/home", locale)}`
+      : appEntry("/home");
+
+  if (!external) {
+    return (
+      <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-lg flex-col gap-6 px-4 pb-16 pt-8 sm:pt-12">
+        <Link
+          href="/"
+          className="inline-flex w-fit text-sm font-medium text-zinc-500 transition hover:text-violet-700"
+        >
+          ← 返回首页
+        </Link>
+        <LoginForm />
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-lg flex-col gap-6 px-4 pb-16 pt-8 sm:pt-12">
@@ -117,5 +149,19 @@ export function LoginBridge() {
         </div>
       )}
     </div>
+  );
+}
+
+export function LoginBridge() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-lg items-center justify-center px-4">
+          <p className="text-sm text-zinc-500">加载登录页…</p>
+        </div>
+      }
+    >
+      <LoginBridgeInner />
+    </Suspense>
   );
 }

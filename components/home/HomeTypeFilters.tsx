@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { POST_TYPES } from "@/lib/domain/postType";
 import { POST_TYPE_LABEL } from "@/lib/labels";
 import clsx from "clsx";

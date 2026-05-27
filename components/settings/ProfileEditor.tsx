@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { PageHeader } from "@/components/PageHeader";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
 import type { Role } from "@/lib/domain/role";

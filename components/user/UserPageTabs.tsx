@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { FolderGit2 } from "lucide-react";
 import { FeedCard } from "@/components/FeedCard";
 import type { Role } from "@/lib/domain/role";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ChevronDown, LogOut, Settings, UserRound } from "lucide-react";
 import { performLogout } from "@/lib/authLogout";
 import clsx from "clsx";

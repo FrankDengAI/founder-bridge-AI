@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Copy, Download } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { TemplateCopyButton } from "@/components/templates/TemplateCopyButton";

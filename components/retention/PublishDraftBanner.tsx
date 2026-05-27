@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { FileEdit, X } from "lucide-react";
 import { clearPublishDraftLocal, readPublishDraftLocal } from "@/lib/retention";
 

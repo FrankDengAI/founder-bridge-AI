@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { CheckCircle2, Circle } from "lucide-react";
 import { readLearnStepsDone, toggleLearnStepDone } from "@/lib/appHub";
 import { syncLessonProgressGamification } from "@/lib/gamification";

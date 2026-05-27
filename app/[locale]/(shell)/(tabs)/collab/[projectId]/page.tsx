@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { CheckCircle2, Circle } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";

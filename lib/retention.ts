@@ -320,7 +320,7 @@ const DEFAULT_MISSIONS: DailyMissionDef[] = [
 export const PERSONA_MISSIONS: Record<PersonaId, DailyMissionDef[]> = {
   student: [
     { id: "checkin", label: "签到", href: "/home" },
-    { id: "learn_step", label: "学习路线 +1 步", href: "/home" },
+    { id: "learn_step", label: "学习路线 +1 步", href: "/learn/step/1" },
     { id: "save_post", label: "收藏灵感帖", href: "/home" },
   ],
   pm: [

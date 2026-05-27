@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { Bookmark, Heart } from "lucide-react";
 import clsx from "clsx";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";

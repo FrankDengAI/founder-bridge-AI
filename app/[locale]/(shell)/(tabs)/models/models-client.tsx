@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Award, Crown, Info, PenLine, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { ModelRankCard, type ModelRankRow } from "@/components/models/ModelRankCard";

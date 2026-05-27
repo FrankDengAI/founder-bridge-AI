@@ -1,16 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Cpu, Crown, Flame, GraduationCap, PenLine, Sparkles } from "lucide-react";
+import { Link, usePathname } from "@/i18n/navigation";
 import { HomeCommunityHub } from "@/components/home/HomeCommunityHub";
 import { resolveTab } from "@/lib/navConfig";
 
 const quickLinks = [
   { href: "/match", label: "开始匹配", icon: Sparkles, tone: "from-violet-600 to-fuchsia-600" },
   { href: "/publish", label: "发布笔记", icon: PenLine, tone: "from-sky-600 to-cyan-600" },
-  { href: "/home", label: "学习路线", icon: GraduationCap, tone: "from-emerald-600 to-teal-600" },
+  { href: "/learn/step/1", label: "学习路线", icon: GraduationCap, tone: "from-emerald-600 to-teal-600" },
   { href: "/tools", label: "工具商城", icon: Cpu, tone: "from-amber-500 to-orange-600" },
 ] as const;
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Filter, Flame, Search as SearchIcon, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { POST_TYPE_LABEL } from "@/lib/labels";

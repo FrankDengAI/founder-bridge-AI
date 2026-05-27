@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Flame, Sparkles, Trophy } from "lucide-react";
 import { getUnlockedBadges } from "@/lib/gamification";
 import { readCheckIn, readMissionProgress } from "@/lib/retention";

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { ExternalLink, FolderGit2, Sparkles } from "lucide-react";
 import { PostComments } from "@/components/PostComments";

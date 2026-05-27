@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Cpu, Flame, Sparkles, Zap } from "lucide-react";
 import { getUnlockedBadges } from "@/lib/gamification";
 

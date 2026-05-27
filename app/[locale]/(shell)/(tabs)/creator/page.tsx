@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { PageHeader } from "@/components/PageHeader";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromCookies } from "@/lib/session";
@@ -19,10 +19,10 @@ export default async function CreatorPage() {
         />
         <p className="glass-panel rounded-shell p-4 text-sm text-zinc-600 shadow-panel">
           未检测到登录会话。请前往{" "}
-          <Link className="font-semibold text-brand-800" href="/welcome">
-            /welcome
-          </Link>{" "}
-          完成登录。
+          <Link className="font-semibold text-brand-800 hover:underline" href="/welcome/login">
+            欢迎页登录
+          </Link>
+          后再查看创作者数据。
         </p>
       </div>
     );

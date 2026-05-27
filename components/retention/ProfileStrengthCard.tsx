@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Gauge } from "lucide-react";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
 import { profileCompletenessScore } from "@/lib/retention";

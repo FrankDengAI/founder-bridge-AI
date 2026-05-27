@@ -10,6 +10,7 @@ const COMPACT_PREFIXES = [
   "/welcome/register",
   "/welcome/guest",
   "/welcome/mode",
+  "/welcome/forgot-password",
 ] as const;
 
 function isCompactWelcomePath(pathname: string) {

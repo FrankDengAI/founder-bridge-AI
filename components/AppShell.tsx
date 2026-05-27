@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { CommandPalette } from "@/components/CommandPalette";
 import { MissionCompleteToast } from "@/components/retention/MissionCompleteToast";
 import { recordRouteVisit } from "@/lib/appHub";

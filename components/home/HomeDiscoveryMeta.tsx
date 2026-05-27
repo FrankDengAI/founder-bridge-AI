@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Flame, Sparkles } from "lucide-react";
 import clsx from "clsx";
 import { HomeTypeFilters } from "./HomeTypeFilters";

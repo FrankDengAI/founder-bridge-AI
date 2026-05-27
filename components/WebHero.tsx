@@ -12,8 +12,9 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
-import Link from "next/link";
-import { appDemoReady, appEntryHref, isExternalMiniapp } from "@/lib/miniappOrigin";
+import { Link } from "@/i18n/navigation";
+import { appDemoReady, isExternalMiniapp } from "@/lib/miniappOrigin";
+import { useAppEntryHref } from "@/lib/hooks/useAppEntryHref";
 
 const HERO_STATS = [
   { v: "30s", k: "极速匹配", sub: "约 30 秒仪式动效" },
@@ -29,7 +30,8 @@ const FLOATING_TICKERS = [
 ];
 
 export function WebHero() {
-  const homeHref = appEntryHref("/home");
+  const appEntry = useAppEntryHref();
+  const homeHref = appEntry("/home");
   const external = isExternalMiniapp();
   const appReady = appDemoReady();
 

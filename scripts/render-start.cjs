@@ -5,7 +5,9 @@ require("dotenv").config({ path: ".env" });
 require("dotenv").config({ path: ".env.local", override: true });
 
 const { ensurePrismaEnv } = require("./ensure-prisma-env.cjs");
+const { ensureSessionSecret } = require("./ensure-session-secret.cjs");
 ensurePrismaEnv();
+ensureSessionSecret();
 
 const { spawnSync } = require("node:child_process");
 

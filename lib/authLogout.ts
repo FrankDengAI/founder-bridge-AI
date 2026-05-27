@@ -1,5 +1,6 @@
 import { clearLocalUserId } from "@/lib/clientSession";
 import { invalidateClientSession } from "@/lib/hooks/useClientUserId";
+import { currentBrowserLocale, localizedPath } from "@/lib/localePath";
 import { clearViewMode } from "@/lib/viewMode";
 
 /**
@@ -18,6 +19,6 @@ export async function performLogout(): Promise<void> {
     clearLocalUserId();
     clearViewMode();
     invalidateClientSession();
-    window.location.href = "/welcome";
+    window.location.href = localizedPath("/welcome", currentBrowserLocale());
   }
 }

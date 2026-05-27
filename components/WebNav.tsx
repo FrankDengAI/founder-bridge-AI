@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ChevronDown } from "lucide-react";
-import { appDemoReady, appEntryHref, isExternalMiniapp } from "@/lib/miniappOrigin";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { appDemoReady, isExternalMiniapp } from "@/lib/miniappOrigin";
+import { useAppEntryHref } from "@/lib/hooks/useAppEntryHref";
 
 /** 对内：愿景 / 能力 / 路线图 */
 const platformLinks = [
@@ -21,7 +23,8 @@ const productLinks = [
 ] as const;
 
 export function WebNav() {
-  const homeHref = appEntryHref("/home");
+  const appEntry = useAppEntryHref();
+  const homeHref = appEntry("/home");
   const external = isExternalMiniapp();
   const appReady = appDemoReady();
   const [productOpen, setProductOpen] = useState(false);
@@ -31,12 +34,19 @@ export function WebNav() {
     const onDoc = (e: MouseEvent) => {
       if (!productRef.current?.contains(e.target as Node)) setProductOpen(false);
     };
-    document.addEventListener("click", onDoc);
-    return () => document.removeEventListener("click", onDoc);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setProductOpen(false);
+    };
+    document.addEventListener("pointerdown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
   }, []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-zinc-200/80 bg-white/85 shadow-sm backdrop-blur-2xl backdrop-saturate-150">
+    <header className="fixed inset-x-0 top-0 z-50 overflow-visible border-b border-zinc-200/80 bg-white/85 shadow-sm backdrop-blur-2xl backdrop-saturate-150">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-400/50 to-transparent" />
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-4 sm:h-16 sm:gap-3 sm:px-6">
         <Link
@@ -48,29 +58,35 @@ export function WebNav() {
 
         <nav
           aria-label="页面内导航"
-          className="flex min-w-0 flex-1 items-center justify-center gap-1 overflow-x-auto whitespace-nowrap py-1 text-xs font-medium text-zinc-600 [scrollbar-width:none] md:gap-2 md:py-0 md:text-sm [&::-webkit-scrollbar]:hidden"
+          className="flex min-w-0 flex-1 items-center justify-center gap-1 whitespace-nowrap py-1 text-xs font-medium text-zinc-600 md:gap-2 md:py-0 md:text-sm"
         >
-          {platformLinks.map((l) => (
-            <a
-              key={l.href}
-              href={l.href}
-              className="shrink-0 rounded-full px-2.5 py-1 transition hover:bg-violet-50 hover:text-violet-900 md:px-3"
-            >
-              {l.label}
-            </a>
-          ))}
+          <div className="flex min-w-0 items-center gap-1 overflow-x-auto [scrollbar-width:none] md:gap-2 [&::-webkit-scrollbar]:hidden">
+            {platformLinks.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                className="shrink-0 rounded-full px-2.5 py-1 transition hover:bg-violet-50 hover:text-violet-900 md:px-3"
+              >
+                {l.label}
+              </a>
+            ))}
+          </div>
 
           <span
             aria-hidden
             className="mx-0.5 hidden h-4 w-px shrink-0 bg-zinc-200 sm:inline-block"
           />
 
-          <div ref={productRef} className="relative shrink-0">
+          <div ref={productRef} className="relative shrink-0 overflow-visible">
             <button
               type="button"
               aria-expanded={productOpen}
               aria-haspopup="true"
-              onClick={() => setProductOpen((v) => !v)}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                setProductOpen((v) => !v);
+              }}
               className="inline-flex items-center gap-1 rounded-full border border-violet-300/60 bg-violet-50 px-2.5 py-1 font-semibold text-violet-800 transition hover:border-violet-400 hover:bg-violet-100 md:px-3"
             >
               产品体验
@@ -81,7 +97,7 @@ export function WebNav() {
             {productOpen ? (
               <div
                 role="menu"
-                className="absolute left-1/2 top-[calc(100%+8px)] z-50 w-[min(92vw,17rem)] -translate-x-1/2 rounded-2xl border border-zinc-200/80 bg-white/95 p-1.5 shadow-xl backdrop-blur-xl"
+                className="absolute left-1/2 top-[calc(100%+8px)] z-[100] w-[min(92vw,17rem)] -translate-x-1/2 rounded-2xl border border-zinc-200/80 bg-white p-1.5 shadow-xl ring-1 ring-black/5"
               >
                 {productLinks.map((l) => (
                   <a
@@ -104,6 +120,7 @@ export function WebNav() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <LocaleSwitcher />
           <Link
             href="/login"
             className="rounded-full border border-zinc-200/80 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-800 transition hover:border-violet-300 hover:bg-violet-50 sm:px-4 sm:text-sm"

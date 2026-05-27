@@ -131,7 +131,7 @@ export const COMMAND_ITEMS: CommandItem[] = [
     id: "learn",
     group: "学习与工具",
     label: "继续学习路线",
-    href: "/home",
+    href: "/learn/step/1",
     keywords: ["课程", "路线", "项目"],
     Icon: GraduationCap,
   },

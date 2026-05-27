@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { ExternalLink, FolderGit2, Users } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";

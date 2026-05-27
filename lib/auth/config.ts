@@ -1,4 +1,8 @@
 /** 认证与环境开关 */
+import { randomBytes } from "crypto";
+
+let runtimeSessionSecret: string | null = null;
+
 export function isDemoLoginEnabled(): boolean {
   return process.env.ENABLE_DEMO_LOGIN === "true";
 }
@@ -16,12 +20,29 @@ export function appBaseUrl(): string {
 }
 
 export function sessionSecret(): string {
+  if (runtimeSessionSecret) return runtimeSessionSecret;
+
   const s = process.env.SESSION_SECRET?.trim();
-  if (s && s.length >= 16) return s;
-  if (process.env.NODE_ENV !== "production") {
-    return "dev-session-secret-change-me";
+  if (s && s.length >= 16) {
+    runtimeSessionSecret = s;
+    return s;
   }
-  throw new Error("SESSION_SECRET is required in production");
+
+  if (process.env.NODE_ENV !== "production") {
+    runtimeSessionSecret = "dev-session-secret-change-me";
+    return runtimeSessionSecret;
+  }
+
+  runtimeSessionSecret = randomBytes(32).toString("hex");
+  console.warn(
+    "[auth] SESSION_SECRET 未配置，已使用进程内临时密钥。请在 Render Environment 添加固定 SESSION_SECRET 后重新部署。",
+  );
+  return runtimeSessionSecret;
+}
+
+export function hasConfiguredSessionSecret(): boolean {
+  const s = process.env.SESSION_SECRET?.trim();
+  return Boolean(s && s.length >= 16);
 }
 
 export const SESSION_MAX_AGE_SEC = 60 * 60 * 24 * 30;

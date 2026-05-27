@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import {
   BadgeCheck,
   LayoutGrid,
@@ -177,7 +177,19 @@ export function MePanel() {
             </div>
           </>
         )}
-        {msg ? <p className="mt-3 text-xs font-medium text-brand-900">{msg}</p> : null}
+        {msg ? (
+          <p className="mt-3 text-xs font-medium text-brand-900">
+            {msg}
+            {!user?.userId ? (
+              <>
+                {" "}
+                <Link href="/welcome/login" className="font-semibold underline hover:text-brand-700">
+                  去登录
+                </Link>
+              </>
+            ) : null}
+          </p>
+        ) : null}
       </section>
 
       <section className="glass-panel rounded-3xl p-4 shadow-sm ring-1 ring-white/70">

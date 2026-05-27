@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { Crown, Flame, MessageSquare, Star } from "lucide-react";
 import { SCENARIO_LABEL } from "@/lib/models/rank";

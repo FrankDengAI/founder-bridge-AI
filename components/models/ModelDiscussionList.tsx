@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { MessageCircle } from "lucide-react";
 import { POST_TYPE_LABEL } from "@/lib/labels";
 
