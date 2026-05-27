@@ -27,8 +27,8 @@ export function WelcomeQuickEntry() {
         <LayoutGrid className="h-6 w-6" />
       </span>
       <div className="min-w-0">
-        <p className="text-lg font-bold text-white">进入体验</p>
-        <p className="mt-1 text-sm text-zinc-400">已登录 · 选择 App 或网页模式后进入首页</p>
+        <p className="text-lg font-bold text-zinc-900">进入体验</p>
+        <p className="mt-1 text-sm text-zinc-600">已登录 · 选择 App 或网页模式后进入首页</p>
       </div>
     </Link>
   );

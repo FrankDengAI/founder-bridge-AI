@@ -43,7 +43,7 @@ function RoleMatrixViz() {
           {labels.map((l) => (
             <span
               key={l}
-              className="w-7 text-center text-[9px] font-mono uppercase text-slate-500"
+              className="w-7 text-center text-[9px] font-mono uppercase text-zinc-500"
             >
               {l}
             </span>
@@ -52,7 +52,7 @@ function RoleMatrixViz() {
         <div className="mt-1 flex flex-col gap-1.5">
           {matrix.map((row, i) => (
             <div key={i} className="flex items-center gap-1.5">
-              <span className="w-5 text-right text-[9px] font-mono uppercase text-slate-500">
+              <span className="w-5 text-right text-[9px] font-mono uppercase text-zinc-500">
                 {labels[i]}
               </span>
               {row.map((v, j) => (
@@ -72,7 +72,7 @@ function RoleMatrixViz() {
           ))}
         </div>
       </div>
-      <div className="space-y-1.5 text-[10px] text-slate-400">
+      <div className="space-y-1.5 text-[10px] text-zinc-600">
         <p className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded bg-violet-400/80" />
           强互补
@@ -260,7 +260,7 @@ function GraphMiniViz() {
           </g>
         ))}
       </svg>
-      <div className="absolute left-1 bottom-1 text-[9px] font-mono uppercase text-slate-500">
+      <div className="absolute left-1 bottom-1 text-[9px] font-mono uppercase text-zinc-500">
         关注图 · 演示
       </div>
     </div>
@@ -280,16 +280,16 @@ function MarketMiniViz() {
       {items.map((it) => (
         <div
           key={it.name}
-          className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.025] px-2.5 py-2"
+          className="flex items-center gap-2 rounded-xl border border-zinc-200/80 bg-zinc-50 px-2.5 py-2"
         >
           <span className="text-base">{it.icon}</span>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[11px] font-semibold text-white">
+            <p className="truncate text-[11px] font-semibold text-zinc-900">
               {it.name}
             </p>
-            <p className="text-[9px] font-mono text-slate-400">{it.price}</p>
+            <p className="text-[9px] font-mono text-zinc-600">{it.price}</p>
           </div>
-          <ShoppingBag className="h-3 w-3 text-violet-300" />
+          <ShoppingBag className="h-3 w-3 text-violet-600" />
         </div>
       ))}
     </div>
@@ -310,7 +310,7 @@ function StackMiniViz() {
       ].map((t) => (
         <span
           key={t}
-          className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-mono text-slate-300"
+          className="rounded-full border border-zinc-200/80 bg-zinc-50 px-2 py-0.5 text-[10px] font-mono text-zinc-600"
         >
           {t}
         </span>
@@ -371,28 +371,28 @@ export function WebBento() {
   return (
     <section
       id="features"
-      className="relative border-t border-white/[0.06] py-24 sm:py-28"
+      className="marketing-section relative py-24 sm:py-28"
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-2xl">
             <p className="chip mb-3">
-              <Activity className="h-3 w-3 text-violet-300" />
+              <Activity className="h-3 w-3 text-violet-600" />
               CAPABILITY · MATRIX
             </p>
             <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-[2.6rem]">
               <span className="text-gradient-anim">能力矩阵</span>
             </h2>
-            <p className="mt-4 text-slate-400">
+            <p className="mt-4 text-zinc-600">
               五个核心子系统协同工作。每一块都不是 PPT 截图 ——
               都是真实跑在 Prisma 上的业务模块。
             </p>
           </div>
-          <div className="flex gap-2 text-[11px] font-mono uppercase tracking-wider text-slate-500">
-            <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2.5 py-1 text-emerald-300">
+          <div className="flex gap-2 text-[11px] font-mono uppercase tracking-wider text-zinc-500">
+            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-800">
               ● 5 已上线
             </span>
-            <span className="rounded-full border border-amber-400/25 bg-amber-400/10 px-2.5 py-1 text-amber-300">
+            <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-amber-800">
               ◐ 2 公测
             </span>
           </div>
@@ -409,30 +409,30 @@ export function WebBento() {
             <motion.li
               key={it.title}
               variants={itemMotion}
-              className={`group relative overflow-hidden rounded-3xl border border-white/[0.1] bg-gradient-to-br from-white/[0.05] to-white/[0.015] p-6 shadow-inset backdrop-blur transition hover:-translate-y-0.5 hover:border-violet-400/35 hover:shadow-[0_0_64px_-16px_rgba(139,92,246,0.55)] ${it.className}`}
+              className={`group relative overflow-hidden rounded-3xl border border-zinc-200/80 bg-white/90 p-6 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-[0_0_64px_-16px_rgba(139,92,246,0.35)] ${it.className}`}
             >
               <div
                 className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${it.accent} opacity-0 transition group-hover:opacity-100`}
               />
               <div className="relative flex items-start justify-between">
                 <it.icon
-                  className="h-9 w-9 text-violet-300"
+                  className="h-9 w-9 text-violet-600"
                   strokeWidth={1.25}
                 />
-                <span className="rounded-full border border-white/10 bg-white/[0.05] px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-slate-400">
+                <span className="rounded-full border border-zinc-200/80 bg-zinc-50 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-zinc-600">
                   {it.badge}
                 </span>
               </div>
-              <h3 className="relative mt-4 font-display text-xl font-bold text-white">
+              <h3 className="relative mt-4 font-display text-xl font-bold text-zinc-900">
                 {it.title}
               </h3>
-              <p className="relative mt-2 text-sm leading-relaxed text-slate-400">
+              <p className="relative mt-2 text-sm leading-relaxed text-zinc-600">
                 {it.desc}
               </p>
               <div className="relative">{it.viz}</div>
               <Sparkles
                 aria-hidden
-                className="pointer-events-none absolute -right-3 -bottom-3 h-12 w-12 rotate-12 text-white/[0.05] transition group-hover:text-white/[0.1]"
+                className="pointer-events-none absolute -right-3 -bottom-3 h-12 w-12 rotate-12 text-zinc-900/[0.05] transition group-hover:text-zinc-900/[0.1]"
               />
             </motion.li>
           ))}

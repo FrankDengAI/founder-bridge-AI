@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { ChevronDown } from "lucide-react";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
@@ -14,36 +13,20 @@ const platformLinks = [
   { href: "#roadmap", label: "路线图" },
 ] as const;
 
-/** 对用户：四大可体验模块（页内区块仍分开，仅导航合并） */
-const productLinks = [
-  { href: "#match", label: "匹配引擎", hint: "7 维加权 · 30s 仪式动效" },
-  { href: "#pulse", label: "实时脉动", hint: "社区活跃与匹配动态" },
-  { href: "#market", label: "工具商城", hint: "模板上架 · 心愿单 · 变现" },
-  { href: "#stories", label: "用户故事", hint: "真实创业者的闭环案例" },
-] as const;
-
 export function WebNav() {
   const appEntry = useAppEntryHref();
   const homeHref = appEntry("/home");
   const external = isExternalMiniapp();
   const appReady = appDemoReady();
-  const [productOpen, setProductOpen] = useState(false);
-  const productRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const onDoc = (e: MouseEvent) => {
-      if (!productRef.current?.contains(e.target as Node)) setProductOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setProductOpen(false);
-    };
-    document.addEventListener("pointerdown", onDoc);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("pointerdown", onDoc);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, []);
+  const scrollToShowcase = () => {
+    const el = document.getElementById("showcase");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    window.location.hash = "showcase";
+  };
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 overflow-visible border-b border-zinc-200/80 bg-white/85 shadow-sm backdrop-blur-2xl backdrop-saturate-150">
@@ -77,46 +60,17 @@ export function WebNav() {
             className="mx-0.5 hidden h-4 w-px shrink-0 bg-zinc-200 sm:inline-block"
           />
 
-          <div ref={productRef} className="relative shrink-0 overflow-visible">
-            <button
-              type="button"
-              aria-expanded={productOpen}
-              aria-haspopup="true"
-              onPointerDown={(e) => e.stopPropagation()}
-              onClick={(e) => {
-                e.stopPropagation();
-                setProductOpen((v) => !v);
-              }}
-              className="inline-flex items-center gap-1 rounded-full border border-violet-300/60 bg-violet-50 px-2.5 py-1 font-semibold text-violet-800 transition hover:border-violet-400 hover:bg-violet-100 md:px-3"
-            >
-              产品体验
-              <ChevronDown
-                className={`h-3.5 w-3.5 transition ${productOpen ? "rotate-180" : ""}`}
-              />
-            </button>
-            {productOpen ? (
-              <div
-                role="menu"
-                className="absolute left-1/2 top-[calc(100%+8px)] z-[100] w-[min(92vw,17rem)] -translate-x-1/2 rounded-2xl border border-zinc-200/80 bg-white p-1.5 shadow-xl ring-1 ring-black/5"
-              >
-                {productLinks.map((l) => (
-                  <a
-                    key={l.href}
-                    role="menuitem"
-                    href={l.href}
-                    onClick={() => setProductOpen(false)}
-                    className="block rounded-xl px-3 py-2.5 transition hover:bg-violet-50"
-                  >
-                    <span className="block text-sm font-semibold text-zinc-900">{l.label}</span>
-                    <span className="mt-0.5 block text-[10px] leading-snug text-zinc-500">
-                      {l.hint}
-                    </span>
-                  </a>
-                ))}
-              </div>
-            ) : null}
-          </div>
-
+          <a
+            href="#showcase"
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToShowcase();
+            }}
+            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-violet-300/60 bg-violet-50 px-2.5 py-1 font-semibold text-violet-800 transition hover:border-violet-400 hover:bg-violet-100 md:px-3"
+          >
+            产品体验
+            <ChevronDown className="h-3.5 w-3.5 opacity-60" aria-hidden />
+          </a>
         </nav>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">

@@ -29,18 +29,23 @@ function LoginError({ message }: { message: string }) {
       >
         <p className="font-semibold">暂时无法完成登录</p>
         <p className="mt-1 leading-relaxed text-amber-900/90">
-          服务端认证尚未就绪，不是你的账号或密码问题。请稍后再试，或联系站点管理员完成部署配置。
+          服务端尚未就绪，不是你的账号或密码问题。若刚更新过代码，请先在 Render 点击 Manual Deploy
+          重新部署；部署后仍失败再检查下方配置项。
         </p>
         <details className="mt-2 text-xs text-amber-900/80">
           <summary className="cursor-pointer select-none font-medium">管理员排查</summary>
           <p className="mt-1.5 leading-relaxed">{message}</p>
           <ul className="mt-2 list-disc space-y-1 pl-4">
             <li>
-              Render Dashboard → Environment → 添加{" "}
-              <span className="font-mono">SESSION_SECRET</span>（至少 16 位随机字符串）
+              Render → Settings → Start Command 应为{" "}
+              <span className="font-mono">node scripts/render-start.cjs</span>
             </li>
-            <li>确认已配置 DATABASE_URL 且部署日志中 migrate deploy 成功</li>
-            <li>保存环境变量后点击 Manual Deploy 重新部署</li>
+            <li>
+              Environment → 添加{" "}
+              <span className="font-mono">SESSION_SECRET</span>（≥16 位随机字符串，推荐 32 位）
+            </li>
+            <li>确认已配置 DATABASE_URL，且部署日志中 prisma migrate deploy 成功</li>
+            <li>保存后 Manual Deploy；完成后访问 /api/health 确认 auth 为 ready</li>
           </ul>
         </details>
       </div>

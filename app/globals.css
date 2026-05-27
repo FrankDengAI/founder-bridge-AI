@@ -320,6 +320,17 @@ body {
   .btn-ghost {
     @apply inline-flex items-center gap-2 rounded-full border border-zinc-200/80 bg-white/80 px-6 py-3 text-sm font-semibold text-zinc-800 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-900;
   }
+
+  /* 营销页锚点区块：适配固定顶栏 + 浅底深字 */
+  .marketing-section {
+    @apply scroll-mt-20 border-t border-zinc-200/80;
+  }
+  .marketing-card {
+    @apply rounded-2xl border border-zinc-200/80 bg-white/90 shadow-sm backdrop-blur;
+  }
+  .marketing-body {
+    @apply text-zinc-600;
+  }
 }
 
 @import "./globals-code-demo.css";

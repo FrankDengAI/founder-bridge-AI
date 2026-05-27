@@ -52,11 +52,11 @@ const events = [
 ];
 
 const badgeColor: Record<string, string> = {
-  violet: "border-violet-400/30 bg-violet-500/15 text-violet-200",
-  fuchsia: "border-fuchsia-400/30 bg-fuchsia-500/15 text-fuchsia-200",
-  lime: "border-lime-400/30 bg-lime-500/15 text-lime-200",
-  cyan: "border-cyan-400/30 bg-cyan-500/15 text-cyan-200",
-  rose: "border-rose-400/30 bg-rose-500/15 text-rose-200",
+  violet: "border-violet-200 bg-violet-50 text-violet-800",
+  fuchsia: "border-fuchsia-200 bg-fuchsia-50 text-fuchsia-800",
+  lime: "border-lime-200 bg-lime-50 text-lime-800",
+  cyan: "border-cyan-200 bg-cyan-50 text-cyan-800",
+  rose: "border-rose-200 bg-rose-50 text-rose-800",
 };
 
 function MiniRing({ value, label, color }: { value: number; label: string; color: string }) {
@@ -67,7 +67,7 @@ function MiniRing({ value, label, color }: { value: number; label: string; color
     <div className="flex flex-col items-center">
       <div className="relative h-20 w-20">
         <svg viewBox="0 0 80 80" className="h-full w-full -rotate-90">
-          <circle cx="40" cy="40" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
+          <circle cx="40" cy="40" r={r} fill="none" stroke="rgba(15,23,42,0.08)" strokeWidth="6" />
           <motion.circle
             cx="40"
             cy="40"
@@ -84,13 +84,13 @@ function MiniRing({ value, label, color }: { value: number; label: string; color
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-display text-lg font-bold text-white num-tab">
+          <span className="font-display text-lg font-bold text-zinc-900 num-tab">
             {value}
           </span>
-          <span className="text-[8px] uppercase tracking-wider text-slate-500">%</span>
+          <span className="text-[8px] uppercase tracking-wider text-zinc-500">%</span>
         </div>
       </div>
-      <p className="mt-2 text-[10px] font-medium uppercase tracking-wider text-slate-400">
+      <p className="mt-2 text-[10px] font-medium uppercase tracking-wider text-zinc-600">
         {label}
       </p>
     </div>
@@ -101,7 +101,7 @@ export function WebPulse() {
   return (
     <section
       id="pulse"
-      className="relative overflow-hidden border-t border-white/[0.06] py-24 sm:py-28"
+      className="marketing-section relative overflow-hidden py-24 sm:py-28"
     >
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-violet-600/5 via-transparent to-transparent" />
 
@@ -109,19 +109,19 @@ export function WebPulse() {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="chip mb-3">
-              <Activity className="h-3 w-3 text-emerald-300" />
+              <Activity className="h-3 w-3 text-emerald-600" />
               LIVE · PULSE
             </p>
             <h2 className="font-display text-3xl font-bold sm:text-4xl lg:text-[2.6rem]">
               <span className="text-gradient-anim">实时脉动</span>
             </h2>
-            <p className="mt-3 max-w-lg text-slate-400">
+            <p className="mt-3 max-w-lg text-zinc-600">
               品牌站用纯前端动画模拟「增长仪表盘」；
               真实指标与订单流可在 App 演示内查询。
             </p>
           </div>
-          <div className="flex items-center gap-3 text-[11px] font-mono uppercase tracking-wider text-slate-500">
-            <span className="flex items-center gap-1.5 text-emerald-300">
+          <div className="flex items-center gap-3 text-[11px] font-mono uppercase tracking-wider text-zinc-500">
+            <span className="flex items-center gap-1.5 text-emerald-600">
               <span className="pulse-dot text-emerald-400" />
               streaming
             </span>
@@ -138,25 +138,25 @@ export function WebPulse() {
             transition={{ duration: 0.6 }}
             className="glass-v2-strong rounded-3xl p-6 sm:p-7 lg:col-span-2"
           >
-            <div className="flex flex-wrap items-end justify-between gap-6 border-b border-white/[0.06] pb-6">
+            <div className="flex flex-wrap items-end justify-between gap-6 border-b border-zinc-200/80 pb-6">
               <div>
-                <p className="text-[10px] font-medium uppercase tracking-wider text-slate-500">
+                <p className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">
                   协作热度（演示）
                 </p>
                 <p className="mt-1 font-display text-[2.8rem] font-bold leading-none text-gradient num-tab">
                   +128%
                 </p>
-                <p className="mt-2 inline-flex items-center gap-1 text-xs text-emerald-300">
+                <p className="mt-2 inline-flex items-center gap-1 text-xs text-emerald-600">
                   <ArrowUpRight className="h-3.5 w-3.5" />
                   较上 24h · 移动平均
                 </p>
               </div>
-              <div className="text-right text-sm text-slate-400">
+              <div className="text-right text-sm text-zinc-600">
                 <p className="flex items-center justify-end gap-1.5">
                   <Clock className="h-3.5 w-3.5" />
                   过去 24h · 会话级模拟
                 </p>
-                <p className="mt-1 font-mono text-xs text-slate-500">UTC+8</p>
+                <p className="mt-1 font-mono text-xs text-zinc-500">UTC+8</p>
               </div>
             </div>
 
@@ -204,7 +204,7 @@ export function WebPulse() {
                     cx={x}
                     cy={y}
                     r="2.2"
-                    fill="#fff"
+                    fill="#7c3aed"
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
@@ -215,7 +215,7 @@ export function WebPulse() {
             </div>
 
             {/* 底部圆环 */}
-            <div className="mt-6 grid grid-cols-4 gap-3 border-t border-white/[0.06] pt-6">
+            <div className="mt-6 grid grid-cols-4 gap-3 border-t border-zinc-200/80 pt-6">
               <MiniRing value={86} label="匹配成功率" color="#a78bfa" />
               <MiniRing value={72} label="次日留存" color="#f472b6" />
               <MiniRing value={94} label="工具好评" color="#22d3ee" />
@@ -231,12 +231,12 @@ export function WebPulse() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="glass-v2-strong overflow-hidden rounded-3xl p-6 sm:p-7"
           >
-            <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
+            <div className="flex items-center justify-between border-b border-zinc-200/80 pb-4">
               <div className="flex items-center gap-2">
-                <Flame className="h-4 w-4 text-rose-300" />
-                <p className="text-sm font-bold text-white">事件流</p>
+                <Flame className="h-4 w-4 text-rose-600" />
+                <p className="text-sm font-bold text-zinc-900">事件流</p>
               </div>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
                 t · 60s 窗口
               </span>
             </div>
@@ -248,9 +248,9 @@ export function WebPulse() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.2 + i * 0.08 }}
-                  className="flex items-start gap-2.5 text-[12px] leading-relaxed text-slate-300"
+                  className="flex items-start gap-2.5 text-[12px] leading-relaxed text-zinc-700"
                 >
-                  <span className="mt-1 w-8 shrink-0 font-mono text-[10px] text-slate-500">
+                  <span className="mt-1 w-8 shrink-0 font-mono text-[10px] text-zinc-500">
                     {e.time}
                   </span>
                   <span
@@ -264,16 +264,16 @@ export function WebPulse() {
                 </motion.li>
               ))}
             </ul>
-            <div className="mt-5 flex items-center justify-between rounded-2xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5">
+            <div className="mt-5 flex items-center justify-between rounded-2xl border border-zinc-200/80 bg-zinc-50 px-3 py-2.5">
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-slate-500">
+                <p className="text-[10px] uppercase tracking-wider text-zinc-500">
                   当前在线
                 </p>
-                <p className="font-display text-lg font-bold text-white num-tab">
+                <p className="font-display text-lg font-bold text-zinc-900 num-tab">
                   2,418
                 </p>
               </div>
-              <span className="inline-flex items-center gap-1 text-xs text-rose-300">
+              <span className="inline-flex items-center gap-1 text-xs text-rose-600">
                 <ArrowDownRight className="h-3 w-3 rotate-180" />
                 +7.2%
               </span>

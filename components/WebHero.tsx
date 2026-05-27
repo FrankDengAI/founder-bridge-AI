@@ -38,7 +38,7 @@ export function WebHero() {
   return (
     <section
       id="vision"
-      className="relative overflow-hidden pb-24 pt-28 sm:pb-32 sm:pt-36"
+      className="relative scroll-mt-20 overflow-hidden pb-24 pt-28 sm:pb-32 sm:pt-36"
     >
       {/* 巨型水印 */}
       <p
@@ -52,7 +52,7 @@ export function WebHero() {
       <div className="pointer-events-none absolute inset-0 bg-hero-radial" />
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute left-1/2 top-0 h-[1px] w-[120%] -translate-x-1/2 bg-gradient-to-r from-transparent via-fuchsia-400/40 to-transparent blur-[1px]" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[length:100%_120px] [mask-image:linear-gradient(180deg,transparent,black_15%,black_85%,transparent)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.04)_1px,transparent_1px)] bg-[length:100%_120px] [mask-image:linear-gradient(180deg,transparent,black_15%,black_85%,transparent)]" />
       </div>
       <div
         className="pointer-events-none absolute -left-1/4 top-1/4 h-[520px] w-[520px] rounded-full bg-conic-glow opacity-40 blur-3xl animate-drift"
@@ -114,7 +114,7 @@ export function WebHero() {
             ) : (
               <span
                 title="在部署环境设置 NEXT_PUBLIC_MINIAPP_URL 后可用"
-                className="inline-flex cursor-default items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-6 py-3 text-sm font-semibold text-slate-500"
+                className="inline-flex cursor-default items-center gap-2 rounded-full border border-zinc-200/80 bg-zinc-50 px-6 py-3 text-sm font-semibold text-zinc-500"
               >
                 App 壳（待配置）
               </span>
@@ -331,14 +331,14 @@ export function WebHero() {
             className="absolute right-2 top-[42%] hidden w-[9.5rem] lg:block"
           >
             <div className="glass-v2 rounded-2xl p-3">
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-fuchsia-300">
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-fuchsia-700">
                 <Cpu className="h-3 w-3" />
                 AI 评分
               </div>
-              <p className="mt-2 line-clamp-2 text-[11px] leading-snug text-slate-300">
+              <p className="mt-2 line-clamp-2 text-[11px] leading-snug text-zinc-600">
                 「方向语义 + 关键词向量都高度匹配，建议优先邀约。」
               </p>
-              <div className="mt-2 flex items-center gap-1.5 text-[10px] text-rose-300">
+              <div className="mt-2 flex items-center gap-1.5 text-[10px] text-rose-600">
                 <Heart className="h-3 w-3 fill-current" />
                 双向意向命中
               </div>
@@ -349,10 +349,10 @@ export function WebHero() {
 
       {/* 滚动信任标识 */}
       <div className="relative mx-auto mt-20 max-w-6xl px-4 sm:px-6">
-        <p className="mb-4 text-center text-[10px] font-medium uppercase tracking-[0.3em] text-slate-500">
+        <p className="mb-4 text-center text-[10px] font-medium uppercase tracking-[0.3em] text-zinc-500">
           技术栈 · 部署能力
         </p>
-        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[11px] font-mono text-slate-500">
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[11px] font-mono text-zinc-500">
           {[
             "Next.js 14",
             "Prisma · PostgreSQL",
@@ -363,7 +363,7 @@ export function WebHero() {
             "GitHub OAuth",
             "Vercel 部署",
           ].map((t) => (
-            <span key={t} className="transition hover:text-slate-200">
+            <span key={t} className="transition hover:text-zinc-700">
               {t}
             </span>
           ))}

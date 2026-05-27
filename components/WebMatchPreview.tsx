@@ -97,7 +97,7 @@ function RadarChart() {
           cy={cy}
           r={max * r}
           fill="none"
-          stroke="rgba(255,255,255,0.06)"
+          stroke="rgba(15,23,42,0.08)"
           strokeWidth="1"
         />
       ))}
@@ -111,7 +111,7 @@ function RadarChart() {
             y1={cy}
             x2={cx + Math.cos(a) * max}
             y2={cy + Math.sin(a) * max}
-            stroke="rgba(255,255,255,0.06)"
+            stroke="rgba(15,23,42,0.08)"
           />
         );
       })}
@@ -139,7 +139,7 @@ function RadarChart() {
             cx={x}
             cy={y}
             r="4"
-            fill="#fff"
+            fill="#7c3aed"
             initial={{ opacity: 0, scale: 0 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
@@ -157,7 +157,7 @@ function RadarChart() {
             key={i}
             x={x}
             y={y}
-            fill="rgba(255,255,255,0.7)"
+            fill="rgba(51,65,85,0.75)"
             fontSize="12"
             fontWeight="600"
             textAnchor="middle"
@@ -177,7 +177,7 @@ export function WebMatchPreview() {
   return (
     <section
       id="match"
-      className="relative border-t border-white/[0.06] py-24 sm:py-28"
+      className="marketing-section relative py-24 sm:py-28"
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-[8%] top-[20%] h-72 w-72 rounded-full bg-violet-500/10 blur-3xl" />
@@ -187,13 +187,13 @@ export function WebMatchPreview() {
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mx-auto max-w-2xl text-center">
           <p className="chip mb-3 inline-flex">
-            <Radar className="h-3 w-3 text-violet-300" />
+            <Radar className="h-3 w-3 text-violet-600" />
             MATCH · ENGINE
           </p>
           <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-[2.6rem]">
             <span className="text-gradient-anim">7 维加权 · 全程可解释</span>
           </h2>
-          <p className="mt-4 text-slate-400">
+          <p className="mt-4 text-zinc-600">
             不止「角色互补」一招——
             我们把 7 个独立信号编织成一张雷达图，每条边都可以告诉你
             「为什么是 TA」。
@@ -220,7 +220,7 @@ export function WebMatchPreview() {
                   <p className="font-display text-5xl font-bold text-gradient num-tab leading-none">
                     {Math.round(total * 100)}
                   </p>
-                  <p className="mt-1 text-[10px] text-emerald-300">高匹配</p>
+                  <p className="mt-1 text-[10px] text-emerald-600">高匹配</p>
                 </div>
               </div>
             </div>
@@ -240,25 +240,25 @@ export function WebMatchPreview() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 + i * 0.06 }}
-                className="group rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4 transition hover:border-violet-400/30 hover:bg-white/[0.04]"
+                className="group marketing-card p-4 transition hover:border-violet-300 hover:shadow-md"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/25 to-fuchsia-500/15">
-                      <d.icon className="h-4 w-4 text-violet-200" />
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-100 to-fuchsia-50">
+                      <d.icon className="h-4 w-4 text-violet-700" />
                     </span>
                     <div>
-                      <p className="text-sm font-semibold text-white">
+                      <p className="text-sm font-semibold text-zinc-900">
                         {d.label}
                       </p>
-                      <p className="text-[11px] text-slate-400">{d.hint}</p>
+                      <p className="text-[11px] text-zinc-600">{d.hint}</p>
                     </div>
                   </div>
-                  <p className="font-mono text-lg font-bold text-white num-tab">
+                  <p className="font-mono text-lg font-bold text-zinc-900 num-tab">
                     {Math.round(d.value * 100)}
                   </p>
                 </div>
-                <div className="mt-2.5 h-1 overflow-hidden rounded-full bg-white/5">
+                <div className="mt-2.5 h-1 overflow-hidden rounded-full bg-zinc-100">
                   <motion.div
                     initial={{ width: 0 }}
                     whileInView={{ width: `${d.value * 100}%` }}
