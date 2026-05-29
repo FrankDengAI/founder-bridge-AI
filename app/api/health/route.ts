@@ -4,6 +4,9 @@ import { hasConfiguredSessionSecret } from "@/lib/auth/config";
 
 export const dynamic = "force-dynamic";
 
+/** 部署后访问 /api/health，middleware 应为 edge-shape-v2（否则登录后进 App 会 500） */
+const MIDDLEWARE_BUILD = "edge-shape-v2";
+
 export async function GET() {
   const ts = new Date().toISOString();
   const sessionConfigured = hasConfiguredSessionSecret();
@@ -16,6 +19,7 @@ export async function GET() {
         status: "error",
         db: "unreachable",
         auth: sessionConfigured ? "ready" : "session_secret_ephemeral",
+        middleware: MIDDLEWARE_BUILD,
         ts,
       },
       { status: 503 },
@@ -30,6 +34,7 @@ export async function GET() {
         status: sessionConfigured ? "ok" : "degraded",
         db: "ok",
         auth: sessionConfigured ? "ready" : "session_secret_ephemeral",
+        middleware: MIDDLEWARE_BUILD,
         hint: sessionConfigured
           ? undefined
           : "SESSION_SECRET 为启动时自动生成；可选在 Render Environment 配置固定值以免重启后掉线",
@@ -44,6 +49,7 @@ export async function GET() {
         status: "degraded",
         db: "ok",
         auth: sessionConfigured ? "schema_pending" : "session_secret_ephemeral",
+        middleware: MIDDLEWARE_BUILD,
         hint: "请确认 prisma migrate deploy 已执行（含 username / Session 表）",
         ts,
       },

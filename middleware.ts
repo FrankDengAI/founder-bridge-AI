@@ -35,15 +35,15 @@ function isPublicPath(pathname: string): boolean {
   return false;
 }
 
-async function hasValidSession(req: NextRequest): Promise<boolean> {
+function hasValidSession(req: NextRequest): boolean {
   const session = req.cookies.get(COOKIE_SESSION)?.value;
-  if (await isSessionCookieValidEdge(session)) return true;
+  if (isSessionCookieValidEdge(session)) return true;
   const done = req.cookies.get(COOKIE_DONE)?.value === "1";
   const uid = req.cookies.get(COOKIE_UID)?.value?.trim();
   return Boolean(done && uid);
 }
 
-export default async function middleware(req: NextRequest) {
+export default function middleware(req: NextRequest) {
   const intlResponse = intlMiddleware(req);
   const pathname = req.nextUrl.pathname;
 
@@ -55,7 +55,7 @@ export default async function middleware(req: NextRequest) {
     return intlResponse;
   }
 
-  if (await hasValidSession(req)) {
+  if (hasValidSession(req)) {
     return intlResponse;
   }
 

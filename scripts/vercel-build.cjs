@@ -60,3 +60,6 @@ run("npx prisma generate");
 
 console.log("[build] next build...");
 run("npx next build");
+
+console.log("[build] verify middleware edge safety...");
+run("node scripts/verify-middleware-edge.cjs");

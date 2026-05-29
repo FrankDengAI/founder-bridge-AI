@@ -38,7 +38,7 @@ export function buildSessionCookieValue(sessionId: string, expiresAtMs: number):
   return `${sessionId}.${expiresAtMs}.${sign(sessionId, expiresAtMs)}`;
 }
 
-/** Edge/middleware：仅校验签名与过期，不查库 */
+/** Node 端：完整 HMAC 验签（middleware 仅用 sessionCookieEdge 做格式门控） */
 export function isSessionCookieValid(raw: string | undefined): boolean {
   return parseSessionCookie(raw) !== null;
 }
