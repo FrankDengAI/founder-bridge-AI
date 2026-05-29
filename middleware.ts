@@ -4,8 +4,8 @@ import {
   COOKIE_DONE,
   COOKIE_SESSION,
   COOKIE_UID,
-  isSessionCookieValid,
-} from "@/lib/auth/sessionCookie";
+  isSessionCookieValidEdge,
+} from "@/lib/auth/sessionCookieEdge";
 import { routing } from "@/i18n/routing";
 
 const intlMiddleware = createIntlMiddleware(routing);
@@ -35,15 +35,15 @@ function isPublicPath(pathname: string): boolean {
   return false;
 }
 
-function hasValidSession(req: NextRequest): boolean {
+async function hasValidSession(req: NextRequest): Promise<boolean> {
   const session = req.cookies.get(COOKIE_SESSION)?.value;
-  if (isSessionCookieValid(session)) return true;
+  if (await isSessionCookieValidEdge(session)) return true;
   const done = req.cookies.get(COOKIE_DONE)?.value === "1";
   const uid = req.cookies.get(COOKIE_UID)?.value?.trim();
   return Boolean(done && uid);
 }
 
-export default function middleware(req: NextRequest) {
+export default async function middleware(req: NextRequest) {
   const intlResponse = intlMiddleware(req);
   const pathname = req.nextUrl.pathname;
 
@@ -55,7 +55,7 @@ export default function middleware(req: NextRequest) {
     return intlResponse;
   }
 
-  if (hasValidSession(req)) {
+  if (await hasValidSession(req)) {
     return intlResponse;
   }
 

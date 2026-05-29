@@ -32,7 +32,7 @@ export async function GET() {
         auth: sessionConfigured ? "ready" : "session_secret_ephemeral",
         hint: sessionConfigured
           ? undefined
-          : "请在 Render Environment 配置 SESSION_SECRET（≥16 位）以保持登录会话稳定",
+          : "SESSION_SECRET 为启动时自动生成；可选在 Render Environment 配置固定值以免重启后掉线",
         ts,
       },
       { status: 200 },

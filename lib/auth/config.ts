@@ -34,8 +34,9 @@ export function sessionSecret(): string {
   }
 
   runtimeSessionSecret = randomBytes(32).toString("hex");
+  process.env.SESSION_SECRET = runtimeSessionSecret;
   console.warn(
-    "[auth] SESSION_SECRET 未配置，已使用进程内临时密钥。请在 Render Environment 添加固定 SESSION_SECRET 后重新部署。",
+    "[auth] SESSION_SECRET 未配置，已自动生成临时密钥（重启后全员需重新登录）。",
   );
   return runtimeSessionSecret;
 }
