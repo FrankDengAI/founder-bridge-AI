@@ -1,0 +1,88 @@
+{
+  "generatedAt": "2026-05-30T16:24:25.545Z",
+  "baseUrl": "http://localhost:3010",
+  "count": 16,
+  "totalBytes": 5694666,
+  "assets": [
+    {
+      "file": "app-home-feed.png",
+      "bytes": 158802,
+      "kind": "png"
+    },
+    {
+      "file": "app-learn.png",
+      "bytes": 139137,
+      "kind": "png"
+    },
+    {
+      "file": "app-match-results.png",
+      "bytes": 189024,
+      "kind": "png"
+    },
+    {
+      "file": "app-messages.png",
+      "bytes": 162941,
+      "kind": "png"
+    },
+    {
+      "file": "app-models-rank.png",
+      "bytes": 175867,
+      "kind": "png"
+    },
+    {
+      "file": "app-publish.png",
+      "bytes": 156723,
+      "kind": "png"
+    },
+    {
+      "file": "app-tools-market.png",
+      "bytes": 155532,
+      "kind": "png"
+    },
+    {
+      "file": "app-workspace.png",
+      "bytes": 136955,
+      "kind": "png"
+    },
+    {
+      "file": "demo-command-palette.gif",
+      "bytes": 724102,
+      "kind": "gif"
+    },
+    {
+      "file": "demo-feed-scroll.gif",
+      "bytes": 1090542,
+      "kind": "gif"
+    },
+    {
+      "file": "demo-locale-switch.gif",
+      "bytes": 772146,
+      "kind": "gif"
+    },
+    {
+      "file": "demo-match-flow.gif",
+      "bytes": 994404,
+      "kind": "gif"
+    },
+    {
+      "file": "hero-cover.png",
+      "bytes": 185446,
+      "kind": "png"
+    },
+    {
+      "file": "marketing-bento.png",
+      "bytes": 285798,
+      "kind": "png"
+    },
+    {
+      "file": "marketing-match-radar.png",
+      "bytes": 188915,
+      "kind": "png"
+    },
+    {
+      "file": "marketing-pulse.png",
+      "bytes": 178332,
+      "kind": "png"
+    }
+  ]
+}
