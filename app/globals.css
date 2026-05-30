@@ -54,6 +54,43 @@ body {
   .glass-panel {
     @apply border border-zinc-200/80 bg-white/80 shadow-sm backdrop-blur-xl;
   }
+
+  /* Web 模式分区：替代单一「手机卡片」容器 */
+  .web-section {
+    @apply w-full;
+  }
+
+  .web-panel {
+    @apply border border-zinc-200/70 bg-white/75 shadow-sm backdrop-blur-sm;
+  }
+
+  .web-main {
+    @apply min-w-0;
+  }
+
+  /* 主内容区逐段淡入（Web 壳层） */
+  .web-main-enter > * {
+    animation: fade-up 0.55s var(--ease-glass) both;
+  }
+  .web-main-enter > *:nth-child(2) {
+    animation-delay: 0.05s;
+  }
+  .web-main-enter > *:nth-child(3) {
+    animation-delay: 0.1s;
+  }
+  .web-main-enter > *:nth-child(4) {
+    animation-delay: 0.14s;
+  }
+  .web-main-enter > *:nth-child(5) {
+    animation-delay: 0.18s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .web-main-enter > * {
+      animation: none;
+    }
+  }
+
   .web-card-glow {
     box-shadow:
       0 0 0 1px rgba(167, 139, 250, 0.18),

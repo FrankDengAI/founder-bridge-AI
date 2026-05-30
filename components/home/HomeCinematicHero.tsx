@@ -3,7 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { Cpu, Flame, Sparkles, Zap } from "lucide-react";
+import { motion } from "framer-motion";
+import clsx from "clsx";
 import { getUnlockedBadges } from "@/lib/gamification";
+import { useViewModeOptional } from "@/components/view-mode/ViewModeProvider";
 
 type Stats = {
   posts: number;
@@ -35,6 +38,7 @@ function useAnimatedInt(target: number, active: boolean) {
 }
 
 export function HomeCinematicHero({ stats }: { stats: Stats }) {
+  const isWeb = useViewModeOptional()?.isWeb ?? false;
   const [mounted, setMounted] = useState(false);
   const [badges, setBadges] = useState<ReturnType<typeof getUnlockedBadges>>([]);
 
@@ -62,9 +66,22 @@ export function HomeCinematicHero({ stats }: { stats: Stats }) {
   );
 
   return (
-    <section className="relative overflow-hidden rounded-3xl p-[1px] shadow-[0_20px_60px_-28px_rgba(109,40,217,0.55)]">
+    <motion.section
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className={clsx(
+        "relative overflow-hidden rounded-3xl p-[1px] shadow-[0_20px_60px_-28px_rgba(109,40,217,0.55)]",
+        isWeb && "web-section shadow-[0_28px_80px_-32px_rgba(109,40,217,0.45)]",
+      )}
+    >
       <div className="absolute inset-0 bg-gradient-to-r from-violet-600/35 via-fuchsia-500/30 to-cyan-500/35 bg-[length:200%_200%] motion-safe:animate-gradient-x" />
-      <div className="relative overflow-hidden rounded-[22px] bg-white/95 px-4 py-5 ring-1 ring-violet-200/50">
+      <div
+        className={clsx(
+          "relative overflow-hidden rounded-[22px] bg-white/95 ring-1 ring-violet-200/50",
+          isWeb ? "px-6 py-8 sm:px-8 sm:py-10" : "px-4 py-5",
+        )}
+      >
         <div className="pointer-events-none absolute -right-8 -top-12 h-40 w-40 rounded-full bg-fuchsia-400/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-10 -left-10 h-36 w-36 rounded-full bg-cyan-300/20 blur-3xl" />
 
@@ -72,14 +89,26 @@ export function HomeCinematicHero({ stats }: { stats: Stats }) {
           <div className="min-w-0">
             <p className="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-700 ring-1 ring-violet-200/70">
               <Sparkles className="h-3 w-3 text-amber-500" />
-              Live Feed
+              {isWeb ? "内容 · 工具 · 匹配 · 一体化社区" : "实时动态"}
             </p>
-            <h2 className="mt-2 text-2xl font-black leading-tight tracking-tight text-zinc-900 sm:text-3xl">
+            <h2
+              className={clsx(
+                "mt-2 font-black leading-tight tracking-tight text-zinc-900",
+                isWeb ? "text-3xl sm:text-4xl xl:text-5xl" : "text-2xl sm:text-3xl",
+              )}
+            >
               <span className="text-holo">VibeCoding</span>
               <span className="text-zinc-800"> 灵感宇宙</span>
             </h2>
-            <p className="mt-2 max-w-[20rem] text-xs leading-relaxed text-zinc-600">
-              没匹配到伙伴也没关系：先看笔记、给大模型打分、参与讨论，把社区热度做起来。
+            <p
+              className={clsx(
+                "mt-2 leading-relaxed text-zinc-600",
+                isWeb ? "max-w-2xl text-sm sm:text-base" : "max-w-[20rem] text-xs",
+              )}
+            >
+              {isWeb
+                ? "没匹配到伙伴也没关系：先看笔记、给大模型打分、参与讨论——你的每一次表达，都在帮系统读懂「你要什么、能做什么」。"
+                : "没匹配到伙伴也没关系：先看笔记、给大模型打分、参与讨论，把社区热度做起来。"}
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-2">
@@ -107,21 +136,35 @@ export function HomeCinematicHero({ stats }: { stats: Stats }) {
           </div>
         </div>
 
-        <div className="relative mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {chips.map((c) => (
-            <div
+        <div
+          className={clsx(
+            "relative mt-5 grid gap-2",
+            isWeb ? "grid-cols-2 sm:grid-cols-4 lg:grid-cols-4" : "grid-cols-2 sm:grid-cols-4",
+          )}
+        >
+          {chips.map((c, i) => (
+            <motion.div
               key={c.label}
-              className="rounded-2xl bg-violet-50/80 p-3 ring-1 ring-violet-200/50 transition hover:ring-violet-400/40"
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: 0.2 + i * 0.06, ease: [0.22, 1, 0.36, 1] }}
+              className={clsx(
+                "rounded-2xl bg-violet-50/80 ring-1 ring-violet-200/50 transition duration-300 hover:-translate-y-0.5 hover:ring-violet-400/50 hover:shadow-md",
+                isWeb ? "p-4" : "p-3",
+              )}
             >
               <p
-                className={`bg-gradient-to-r ${c.accent} bg-clip-text text-2xl font-black tabular-nums text-transparent`}
+                className={clsx(
+                  `bg-gradient-to-r ${c.accent} bg-clip-text font-black tabular-nums text-transparent`,
+                  isWeb ? "text-3xl xl:text-4xl" : "text-2xl",
+                )}
               >
                 {c.value}
               </p>
               <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
                 {c.label}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
 
@@ -143,6 +186,6 @@ export function HomeCinematicHero({ stats }: { stats: Stats }) {
           </div>
         ) : null}
       </div>
-    </section>
+    </motion.section>
   );
 }

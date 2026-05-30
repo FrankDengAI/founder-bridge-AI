@@ -9,6 +9,7 @@ import { POST_TYPES } from "@/lib/domain/postType";
 import { isPostType } from "@/lib/domain/postType";
 import { rememberSearchQuery, readSearchHistory } from "@/lib/searchHistory";
 import { SEARCH_HOT_WORDS } from "@/lib/searchHot";
+import { useIsWebMode } from "@/lib/hooks/useIsWebMode";
 import clsx from "clsx";
 
 type Hit = {
@@ -36,6 +37,7 @@ function highlight(text: string, q: string) {
 }
 
 export default function SearchPage() {
+  const isWeb = useIsWebMode();
   const [q, setQ] = useState("");
   const [type, setType] = useState("");
   const [sort, setSort] = useState<"new" | "hot">("new");
@@ -108,7 +110,7 @@ export default function SearchPage() {
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="例如：Next.js / 部署 / Prompt / 匹配"
+            placeholder="例如：全栈开发 / 部署上线 / 写作助手 / 伙伴匹配"
             className="w-full bg-transparent text-sm outline-none"
           />
         </div>
@@ -213,7 +215,11 @@ export default function SearchPage() {
         </p>
       </div>
 
-      <ul className="space-y-2">
+      <ul
+        className={clsx(
+          isWeb ? "grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3" : "space-y-2",
+        )}
+      >
         {hits.map((p) => {
           const label = isPostType(p.type) ? POST_TYPE_LABEL[p.type] : p.type;
           return (

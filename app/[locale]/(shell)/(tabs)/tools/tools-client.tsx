@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { ToolCategoryNav } from "@/components/ToolCategoryNav";
+import { useIsWebMode } from "@/lib/hooks/useIsWebMode";
+import clsx from "clsx";
 
 type ToolRow = {
   id: string;
@@ -46,6 +48,7 @@ function formatPrice(cents: number) {
 type ToolSort = "rating" | "reviews" | "name";
 
 export function ToolsClient({ initialTools, initialMarket }: Props) {
+  const isWeb = useIsWebMode();
   const [cat, setCat] = useState("all");
   const [toast, setToast] = useState<string | null>(null);
   const [q, setQ] = useState("");
@@ -134,17 +137,17 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
 
       <PageHeader
         title="工具与商城"
-        subtitle="场景筛选 · 本地搜索/排序 · 详情评价 · 商城筛选（演示级产品逻辑）。"
+        subtitle="场景筛选 · 搜索排序 · 用户评价 · 工具商城一站逛完。"
         right={
           <div className="flex gap-1">
             <button
               type="button"
-              title="命令面板"
-              aria-label="命令面板"
+              title="快捷命令"
+              aria-label="打开快捷命令面板"
               onClick={() => window.dispatchEvent(new Event("vibe-open-command-palette"))}
               className="rounded-2xl bg-white/80 px-2.5 py-2 text-[11px] font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-white"
             >
-              ⌘K
+              快捷命令
             </button>
             <Link
               href="/search"
@@ -248,7 +251,12 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
           场景分类
         </div>
         <ToolCategoryNav value={cat} onChange={setCat} />
-        <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+        <ul
+          className={clsx(
+            "mt-3 grid gap-3",
+            isWeb ? "grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4" : "gap-2 sm:grid-cols-2",
+          )}
+        >
           {filtered.map((t, idx) => {
             const stars = Math.round(t.avgRating * 2) / 2;
             const initial = t.name.replace(/[^A-Za-z一-龥]/g, "").slice(0, 1) || "T";
@@ -359,7 +367,12 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
             className="min-w-0 flex-1 bg-transparent text-xs outline-none"
           />
         </div>
-        <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+        <ul
+          className={clsx(
+            "mt-3 grid gap-3",
+            isWeb ? "grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4" : "gap-2 sm:grid-cols-2",
+          )}
+        >
           {marketFiltered.map((m, idx) => {
             const onWish = wishIds.has(m.id);
             return (

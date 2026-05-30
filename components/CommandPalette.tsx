@@ -245,7 +245,7 @@ export function CommandPalette() {
             <kbd className="rounded bg-zinc-100 px-1 font-mono">Enter</kbd> 打开
           </span>
           <span>
-            <kbd className="rounded bg-zinc-100 px-1 font-mono">⌘/Ctrl</kbd>+
+            <kbd className="rounded bg-zinc-100 px-1 font-mono">Ctrl</kbd>+
             <kbd className="rounded bg-zinc-100 px-1 font-mono">K</kbd>
           </span>
         </div>

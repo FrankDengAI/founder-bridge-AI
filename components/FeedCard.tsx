@@ -122,7 +122,6 @@ const TAG_DICTIONARY = [
   "Next.js",
   "React",
   "Tailwind",
-  "Prisma",
   "Supabase",
   "Stripe",
   "出海",

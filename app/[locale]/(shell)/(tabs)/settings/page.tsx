@@ -103,7 +103,7 @@ export default function SettingsPage() {
         <ul className="mt-3 space-y-2 text-xs text-zinc-700">
           <li className="flex items-center justify-between gap-2 rounded-xl bg-white/60 px-3 py-2 ring-1 ring-zinc-200/60">
             <span>{t("shortcutPalette")}</span>
-            <kbd className="rounded bg-zinc-100 px-2 py-0.5 font-mono text-[10px]">⌘/Ctrl + K</kbd>
+            <kbd className="rounded bg-zinc-100 px-2 py-0.5 font-mono text-[10px]">{t("shortcutKeys")}</kbd>
           </li>
           <li className="flex items-center justify-between gap-2 rounded-xl bg-white/60 px-3 py-2 ring-1 ring-zinc-200/60">
             <span>{t("shortcutDiscover")}</span>

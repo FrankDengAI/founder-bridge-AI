@@ -31,8 +31,8 @@ import { ROLE_LABEL } from "@/lib/labels";
 const quickLinks = [
   { href: "/workspace", label: "工作台", desc: "统计与收藏", icon: LayoutGrid },
   { href: "/creator", label: "创作者中心", desc: "我的笔记与指标", icon: BadgeCheck },
-  { href: "/orders", label: "订单/心愿单", desc: "演示交易数据", icon: ShoppingBag },
-  { href: "/publish", label: "发布", desc: "PostgreSQL 入库", icon: PenSquare },
+  { href: "/orders", label: "订单/心愿单", desc: "购买记录与收藏", icon: ShoppingBag },
+  { href: "/publish", label: "发布", desc: "分享笔记与想法", icon: PenSquare },
   { href: "/settings/profile", label: "编辑主页", desc: "资料与技能", icon: UserRound },
   { href: "/search", label: "搜索", desc: "标题检索", icon: Search },
   { href: "/messages", label: "消息", desc: "私聊会话", icon: MessageCircle },
@@ -63,7 +63,7 @@ export function MePanel() {
       setDisplayName(data.user.displayName);
       setRole(isRole(data.profile.role) ? data.profile.role : null);
     } catch {
-      setMsg("无法加载用户资料，请先执行 npm run db:seed");
+      setMsg("暂时无法加载资料，请稍后重试。");
     } finally {
       setLoading(false);
     }

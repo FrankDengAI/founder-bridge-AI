@@ -112,7 +112,7 @@ export function ToolReviewsPanel({ toolId, initialReviews }: Props) {
       <div className="glass-panel rounded-3xl p-4 shadow-sm ring-1 ring-white/70">
         <div className="flex items-center gap-2 text-xs font-semibold text-zinc-900">
           <MessageSquarePlus className="h-4 w-4 text-brand-700" />
-          写一条评价（演示）
+          写一条评价
         </div>
         <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
           <input
@@ -170,7 +170,7 @@ export function ToolReviewsPanel({ toolId, initialReviews }: Props) {
               <div className="mt-2 flex gap-2">
                 <input
                   className="flex-1 rounded-xl border border-zinc-200 px-2 py-1.5 text-[11px]"
-                  placeholder="开发者回复（演示）"
+                  placeholder="回复这条评价…"
                   value={replyDraft[r.id] ?? ""}
                   onChange={(e) =>
                     setReplyDraft((d) => ({ ...d, [r.id]: e.target.value }))

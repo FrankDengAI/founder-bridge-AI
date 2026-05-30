@@ -5,6 +5,7 @@ import { DailyMatchCard } from "@/components/home/DailyMatchCard";
 import { HomeCommunityHub } from "@/components/home/HomeCommunityHub";
 import { HomeHotRanking } from "@/components/home/HomeHotRanking";
 import { HomeFeedGrid } from "@/components/home/HomeFeedGrid";
+import { WebHomeBody } from "@/components/home/WebHomeBody";
 import { AppOnly } from "@/components/view-mode/AppOnly";
 import { TodayMissionStrip } from "@/components/home/TodayMissionStrip";
 import { LearnProgressCard } from "@/components/learn/LearnProgressCard";
@@ -76,7 +77,7 @@ export default async function HomePage({
   };
 
   const retentionBlocks = (
-    <div className="space-y-3.5">
+    <>
       <AppOnly>
         <HomeCommunityHub modelCount={modelCount} reviewCount={reviewCount} />
       </AppOnly>
@@ -93,15 +94,15 @@ export default async function HomePage({
       <AppOnly>
         <HomeHotRanking />
       </AppOnly>
-    </div>
+    </>
   );
 
   if (view === "saved") {
     return (
-      <div className="space-y-3 pb-4">
+      <div className="space-y-6 pb-4">
         <PageHeader
           title="发现"
-          subtitle="本地收藏视图：数据来自浏览器 localStorage，与卡片右上角书签联动。"
+          subtitle="我的收藏：与卡片右上角书签同步，登录后可在多设备查看。"
           right={<HomeToolbar />}
         />
         <HomeCinematicHero stats={heroStats} />
@@ -111,8 +112,7 @@ export default async function HomePage({
           currentView="saved"
           counts={metaCounts}
         />
-        {retentionBlocks}
-        <HomeSavedFeed />
+        <WebHomeBody retention={retentionBlocks} feed={<HomeSavedFeed />} />
       </div>
     );
   }
@@ -153,13 +153,13 @@ export default async function HomePage({
   }
 
   return (
-    <div className="space-y-3 pb-4">
+    <div className="space-y-6 pb-4">
       <PageHeader
         title="发现"
         subtitle={
           view === "for-you"
-            ? "为你推荐：按兴趣标签与技能关键词规则排序（演示级，无 ML）。"
-            : "笔记 · 工具 · 大模型口碑 · 匹配伙伴 —— 冷启动期也能先留下来。"
+            ? "为你推荐：根据你的兴趣标签与技能关键词智能排序。"
+            : "笔记 · 工具 · 大模型口碑 · 匹配伙伴 —— 在这里发现灵感与同路人。"
         }
         right={<HomeToolbar />}
       />
@@ -173,33 +173,35 @@ export default async function HomePage({
         counts={metaCounts}
       />
 
-      {retentionBlocks}
-
-      <HomeFeedGrid>
-        {posts.map((p) => (
-          <div key={p.id} className="mb-2 break-inside-avoid">
-            <FeedCard
-              id={p.id}
-              authorId={p.author.id}
-              type={p.type}
-              title={p.title}
-              excerpt={p.excerpt}
-              coverUrl={p.coverUrl}
-              authorName={p.author.displayName}
-              likes={p.likes}
-              saves={p.saves}
-            />
-          </div>
-        ))}
-      </HomeFeedGrid>
-      {posts.length === 0 ? (
-        <div className="glass-panel rounded-2xl p-6 text-center text-sm text-zinc-600 shadow-sm">
-          暂无内容。请在项目目录运行{" "}
-          <code className="rounded bg-white/70 px-1 ring-1 ring-zinc-200/70">
-            npm run db:seed
-          </code>
-        </div>
-      ) : null}
+      <WebHomeBody
+        retention={retentionBlocks}
+        feed={
+          <>
+            <HomeFeedGrid>
+              {posts.map((p) => (
+                <div key={p.id} className="mb-2 break-inside-avoid">
+                  <FeedCard
+                    id={p.id}
+                    authorId={p.author.id}
+                    type={p.type}
+                    title={p.title}
+                    excerpt={p.excerpt}
+                    coverUrl={p.coverUrl}
+                    authorName={p.author.displayName}
+                    likes={p.likes}
+                    saves={p.saves}
+                  />
+                </div>
+              ))}
+            </HomeFeedGrid>
+            {posts.length === 0 ? (
+              <div className="glass-panel rounded-2xl p-6 text-center text-sm text-zinc-600 shadow-sm">
+                暂无内容。发布第一条笔记，或邀请伙伴一起加入社区吧。
+              </div>
+            ) : null}
+          </>
+        }
+      />
     </div>
   );
 }

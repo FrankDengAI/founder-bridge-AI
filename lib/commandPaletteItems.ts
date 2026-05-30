@@ -52,7 +52,7 @@ export const COMMAND_ITEMS: CommandItem[] = [
     id: "messages",
     group: "导航",
     label: "消息",
-    hint: "本地会话 · 未读红点",
+    hint: "会话列表 · 未读提醒",
     href: "/messages",
     keywords: ["chat", "im", "私信", "回复"],
     Icon: MessageCircle,
@@ -95,7 +95,7 @@ export const COMMAND_ITEMS: CommandItem[] = [
   {
     id: "orders",
     group: "学习与工具",
-    label: "心愿单与演示订单",
+    label: "心愿单与订单",
     href: "/orders",
     keywords: ["wishlist", "订单", "商城"],
     Icon: ShoppingBag,
@@ -138,7 +138,7 @@ export const COMMAND_ITEMS: CommandItem[] = [
   {
     id: "github",
     group: "学习与工具",
-    label: "GitHub 绑定（演示）",
+    label: "绑定 GitHub",
     href: "/learn/github",
     keywords: ["仓库", "git"],
     Icon: Zap,
@@ -179,7 +179,7 @@ export const COMMAND_ITEMS: CommandItem[] = [
   {
     id: "admin",
     group: "系统",
-    label: "运营演示台",
+    label: "账号切换",
     href: "/admin/demo",
     keywords: ["运营", "种子", "人设"],
     Icon: LayoutGrid,

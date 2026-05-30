@@ -147,7 +147,7 @@ export function LoginForm() {
       });
       if (!res.ok) {
         const j = (await res.json().catch(() => ({}))) as { error?: string };
-        throw new Error(j.error || "演示登录失败");
+        throw new Error(j.error || "体验登录失败");
       }
       const data = (await res.json()) as { userId: string };
       syncLocalUserId(data.userId);
@@ -159,7 +159,7 @@ export function LoginForm() {
       }
       window.location.href = modeHref("/home");
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "演示登录失败");
+      setErr(e instanceof Error ? e.message : "体验登录失败");
     } finally {
       setBusy(false);
     }
@@ -252,12 +252,12 @@ export function LoginForm() {
               onClick={() => setShowDemo((v) => !v)}
               className="text-xs font-semibold text-zinc-500 hover:text-violet-700"
             >
-              {showDemo ? "收起演示模式" : "演示模式（staging）"}
+              {showDemo ? "收起快速体验" : "快速体验（免注册登录）"}
             </button>
             {showDemo ? (
               <div className="mt-3 space-y-3 rounded-2xl border border-amber-200/80 bg-amber-50/50 p-3">
                 <p className="text-[11px] text-amber-950">
-                  选择演示账号，口令为 demo 或留空。
+                  选择体验账号即可进入，无需注册。体验数据与正式账号相互独立。
                 </p>
                 <ul className="max-h-40 space-y-1 overflow-y-auto">
                   {demoUsers.map((u) => (
@@ -290,7 +290,7 @@ export function LoginForm() {
                     type="password"
                     value={demoPassword}
                     onChange={(e) => setDemoPassword(e.target.value)}
-                    placeholder="演示口令 demo"
+                    placeholder="体验口令（可选）"
                     className="w-full rounded-xl border border-zinc-200 px-3 py-2 text-xs"
                   />
                 ) : null}
@@ -300,7 +300,7 @@ export function LoginForm() {
                   onClick={() => void submitDemo()}
                   className="w-full rounded-full bg-amber-900 py-2 text-xs font-semibold text-white disabled:opacity-40"
                 >
-                  演示登录
+                  进入体验
                 </button>
               </div>
             ) : null}

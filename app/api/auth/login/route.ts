@@ -25,16 +25,16 @@ export async function POST(req: Request) {
     // 演示模式：仅 ENABLE_DEMO_LOGIN=true 时可用
     if (body.demoMode || body.userId) {
       if (!isDemoLoginEnabled()) {
-        return NextResponse.json({ error: "演示登录已关闭" }, { status: 403 });
+        return NextResponse.json({ error: "快速体验入口暂未开放" }, { status: 403 });
       }
       const userId = body.userId?.trim();
       const pwd = (body.password ?? "").trim();
       if (!userId || (pwd !== DEMO_PASSWORD && pwd !== "")) {
-        return NextResponse.json({ error: "口令错误（演示固定为 demo，或留空）" }, { status: 401 });
+        return NextResponse.json({ error: "体验口令错误，请重试或留空" }, { status: 401 });
       }
       const user = await prisma.user.findUnique({ where: { id: userId } });
       if (!user || !user.isDemo) {
-        return NextResponse.json({ error: "演示用户不存在" }, { status: 404 });
+        return NextResponse.json({ error: "体验账号不存在" }, { status: 404 });
       }
       const res = NextResponse.json({ ok: true, userId: user.id, isDemo: true });
       await setSessionOnResponse(res, user.id);

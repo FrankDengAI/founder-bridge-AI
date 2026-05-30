@@ -1,5 +1,12 @@
+"use client";
+
 import { Link } from "@/i18n/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { ChevronLeft } from "lucide-react";
+import { motion } from "framer-motion";
+import clsx from "clsx";
+import { useViewModeOptional } from "@/components/view-mode/ViewModeProvider";
+import { missionForPath } from "@/lib/webModuleMission";
 
 type Props = {
   title: string;
@@ -9,6 +16,60 @@ type Props = {
 };
 
 export function PageHeader({ title, subtitle, backHref, right }: Props) {
+  const isWeb = useViewModeOptional()?.isWeb ?? false;
+  const pathname = usePathname() ?? "/home";
+  const mission = isWeb ? missionForPath(pathname) : null;
+  const displaySubtitle = subtitle ?? mission?.purpose;
+
+  if (isWeb) {
+    return (
+      <motion.header
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        className="web-section flex flex-wrap items-end justify-between gap-4 border-b border-zinc-200/80 pb-5"
+      >
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            {backHref ? (
+              <Link
+                href={backHref}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-100 text-zinc-700 transition hover:bg-zinc-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+                aria-label="返回"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </Link>
+            ) : null}
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-violet-600">
+                  VibeCoding
+                </p>
+                {mission ? (
+                  <span className="chip-strong text-[10px]">{mission.tagline}</span>
+                ) : null}
+              </div>
+              <h1 className="truncate text-2xl font-bold tracking-tight text-zinc-900 xl:text-3xl">
+                {title}
+              </h1>
+            </div>
+          </div>
+          {displaySubtitle ? (
+            <p
+              className={clsx(
+                "mt-2 max-w-3xl text-sm leading-relaxed text-zinc-600",
+                backHref && "pl-11",
+              )}
+            >
+              {displaySubtitle}
+            </p>
+          ) : null}
+        </div>
+        {right ? <div className="shrink-0">{right}</div> : null}
+      </motion.header>
+    );
+  }
+
   return (
     <header className="glass-panel flex items-start justify-between gap-3 rounded-shell border border-white/50 bg-grad-header px-4 py-3 shadow-panel dark:border-zinc-800/80">
       <div className="min-w-0">

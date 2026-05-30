@@ -24,7 +24,7 @@ export default async function TemplatesPage() {
     <div className="space-y-4 pb-10">
       <PageHeader
         title="模板市场"
-        subtitle="Starter Kit 与 Prompt 包 · 一键复制命令 · 演示 MVP"
+        subtitle="项目模板与提示词包 · 一键复制 · 快速上手"
         backHref="/home"
       />
 
@@ -71,9 +71,7 @@ export default async function TemplatesPage() {
       </div>
 
       {templates.length === 0 ? (
-        <p className="text-center text-sm text-zinc-600">
-          暂无模板，请运行 <code className="rounded bg-white px-1">npm run db:seed</code>
-        </p>
+        <p className="text-center text-sm text-zinc-600">暂无模板，敬请期待新内容上线。</p>
       ) : null}
 
       <p className="text-center text-[11px] text-zinc-500">

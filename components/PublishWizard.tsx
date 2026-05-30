@@ -292,7 +292,7 @@ export function PublishWizard() {
                 className="mt-1 min-h-[140px] w-full rounded-2xl border border-zinc-200/90 bg-white/80 px-3 py-2 font-mono text-sm leading-relaxed"
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
-                placeholder="## 背景&#10;描述项目阶段…&#10;&#10;```ts&#10;const demo = true&#10;```"
+                placeholder="## 背景&#10;描述项目阶段与目标…&#10;&#10;## 进展&#10;本周完成了…"
               />
             </label>
             <button
@@ -325,7 +325,7 @@ export function PublishWizard() {
             <div className="rounded-2xl border border-dashed border-zinc-300/80 bg-gradient-to-br from-brand-50 to-fuchsia-50 p-4 text-xs text-zinc-700">
               <div className="flex items-center gap-2 font-semibold text-zinc-900">
                 <ImagePlus className="h-4 w-4" />
-                下一步将写入 PostgreSQL，并出现在「发现」信息流。
+                发布后笔记将出现在「发现」信息流，并展示在你的个人主页。
               </div>
               <p className="mt-2 leading-relaxed text-zinc-600">
                 你也可以粘贴一张 `picsum.photos` 链接，或使用默认封面。

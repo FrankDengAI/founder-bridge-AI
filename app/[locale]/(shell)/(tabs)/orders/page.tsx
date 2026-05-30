@@ -9,6 +9,17 @@ function formatPrice(cents: number) {
   return `¥${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)}`;
 }
 
+function formatOrderStatus(status: string) {
+  const map: Record<string, string> = {
+    paid: "已支付",
+    pending: "待支付",
+    cancelled: "已取消",
+    completed: "已完成",
+    DEMO_PAID: "已支付",
+  };
+  return map[status] ?? "处理中";
+}
+
 export default async function OrdersPage() {
   const uid = await getUserIdFromCookies();
   if (!uid) {
@@ -16,7 +27,7 @@ export default async function OrdersPage() {
       <div className="space-y-4 pb-10">
         <PageHeader title="订单与心愿单" backHref="/tools" />
         <p className="glass-panel rounded-shell p-4 text-sm text-zinc-600 shadow-panel">
-          请先登录后查看演示订单与心愿单。
+          请先登录后查看订单与心愿单。
         </p>
       </div>
     );
@@ -39,7 +50,7 @@ export default async function OrdersPage() {
     <div className="space-y-4 pb-10">
       <PageHeader
         title="订单与心愿单"
-        subtitle="演示级：PostgreSQL 存储心愿单与模拟订单，不含真实支付。"
+        subtitle="心愿单收藏与购买记录，当前为模拟支付流程。"
         backHref="/tools"
       />
 
@@ -70,7 +81,7 @@ export default async function OrdersPage() {
       </section>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-zinc-900">演示订单</h2>
+        <h2 className="text-sm font-semibold text-zinc-900">我的订单</h2>
         <ul className="space-y-2">
           {orders.map((o) => (
             <li
@@ -80,7 +91,7 @@ export default async function OrdersPage() {
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-zinc-950">{o.market.title}</p>
                 <p className="text-[11px] text-zinc-500">
-                  {formatPrice(o.market.priceCents)} · {o.status} ·{" "}
+                  {formatPrice(o.market.priceCents)} · {formatOrderStatus(o.status)} ·{" "}
                   {o.createdAt.toLocaleDateString("zh-CN")}
                 </p>
               </div>
@@ -88,7 +99,7 @@ export default async function OrdersPage() {
           ))}
         </ul>
         {orders.length === 0 ? (
-          <p className="text-xs text-zinc-500">暂无订单。完成商品详情页的模拟支付即可写入。</p>
+          <p className="text-xs text-zinc-500">暂无订单。在商品详情页完成购买即可在此查看。</p>
         ) : null}
       </section>
     </div>

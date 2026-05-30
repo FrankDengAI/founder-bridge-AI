@@ -19,7 +19,7 @@ const cards = [
   {
     href: "/match",
     title: "找互补创业伙伴",
-    desc: "技术 × 产品 × 增长，MOBA 式角色匹配，冷启动也能先聊起来。",
+    desc: "技术 × 产品 × 增长，角色互补匹配，新人也能先聊起来。",
     cta: "开始匹配",
     icon: Users,
     tone: "from-sky-600 to-cyan-600",

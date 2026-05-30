@@ -143,19 +143,19 @@ export function matchAnimDurationMs(mode: MatchAnimMode): number {
 export const MATCH_BREAKDOWN_LABELS = {
   role: {
     title: "角色互补",
-    hint: "打野/辅助/射手在创业分工中的协同度（演示用 MOBA 角色隐喻）",
+    hint: "增长、产品运营与技术交付三类分工的协同程度",
   },
   keywords: {
     title: "能力关键词",
-    hint: "Jaccard 重叠 + TF-cosine 向量 + 期望伙伴类型加成",
+    hint: "技能标签重叠度，以及是否命中对方期望的伙伴类型",
   },
   direction: {
-    title: "方向语义",
-    hint: "创业方向 token 切分 Jaccard 与字符 bigram 加权",
+    title: "方向一致",
+    hint: "创业方向与关注领域的相似程度",
   },
   interest: {
     title: "兴趣画像",
-    hint: "关键词 + 方向 + 简介整体兴趣向量（cosine + Jaccard）",
+    hint: "综合关键词、方向与个人简介的整体契合度",
   },
   reciprocity: {
     title: "双向意向",
@@ -163,11 +163,11 @@ export const MATCH_BREAKDOWN_LABELS = {
   },
   budget: {
     title: "资金档位",
-    hint: "投入意愿差几档（差 1 档 0.82 / 2 档 0.58 …）",
+    hint: "投入意愿是否接近，差一档仍可能匹配",
   },
   activity: {
     title: "活跃度",
-    hint: "资料更新新鲜度 + 简介信息密度 + 方向/关键词丰富度",
+    hint: "资料完整度与近期更新情况",
   },
 } as const satisfies Record<
   keyof ScoreBreakdown,

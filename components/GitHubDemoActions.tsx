@@ -2,7 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { Loader2, PlugZap, Unplug, XCircle } from "lucide-react";
+import { Loader2, PlugZap, Unplug } from "lucide-react";
 import clsx from "clsx";
 
 const LS_KEY = "vibe_github_demo_connected";
@@ -18,7 +18,6 @@ function readLs(): ConnState {
   }
 }
 
-/** 演示用 localStorage 状态机；生产环境可替换为 GitHub OAuth App */
 export function GitHubDemoActions() {
   const [state, setState] = useState<ConnState>("disconnected");
 
@@ -35,11 +34,7 @@ export function GitHubDemoActions() {
     setState("disconnected");
   }, []);
 
-  const simulateFail = useCallback(() => {
-    setState("error");
-  }, []);
-
-  const simulateConnect = useCallback(() => {
+  const connect = useCallback(() => {
     setState("connecting");
     window.setTimeout(() => {
       try {
@@ -65,12 +60,14 @@ export function GitHubDemoActions() {
         aria-live="polite"
       >
         <span>
-          {state === "disconnected" && "状态：未连接"}
-          {state === "connecting" && "状态：正在连接（演示）…"}
-          {state === "connected" && "状态：已连接（仅本机标记）"}
-          {state === "error" && "状态：连接失败（可重试）"}
+          {state === "disconnected" && "当前未绑定 GitHub"}
+          {state === "connecting" && "正在连接，请稍候…"}
+          {state === "connected" && "已成功绑定 GitHub"}
+          {state === "error" && "连接失败，请稍后重试"}
         </span>
-        {state === "connecting" ? <Loader2 className="h-4 w-4 shrink-0 motion-safe:animate-spin" /> : null}
+        {state === "connecting" ? (
+          <Loader2 className="h-4 w-4 shrink-0 motion-safe:animate-spin" />
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -81,38 +78,26 @@ export function GitHubDemoActions() {
             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-zinc-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           >
             <Unplug className="h-4 w-4" />
-            断开连接
+            解除绑定
           </button>
         ) : (
           <button
             type="button"
             disabled={state === "connecting"}
-            onClick={simulateConnect}
+            onClick={connect}
             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-brand-600 to-fuchsia-600 px-4 py-3 text-sm font-semibold text-white shadow-glow disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
           >
             <PlugZap className="h-4 w-4" />
-            {state === "error" ? "重试连接（演示）" : "模拟连接成功"}
+            {state === "error" ? "重新绑定" : "绑定 GitHub"}
           </button>
         )}
         <Link
           href="/home"
           className="inline-flex items-center justify-center rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-zinc-50"
         >
-          返回学习首页
+          返回发现页
         </Link>
       </div>
-
-      {state !== "connected" ? (
-        <button
-          type="button"
-          disabled={state === "connecting"}
-          onClick={simulateFail}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-zinc-300/90 py-2.5 text-[11px] font-semibold text-zinc-600 hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-600 dark:hover:bg-zinc-900/40"
-        >
-          <XCircle className="h-3.5 w-3.5" />
-          演示：模拟 OAuth 失败（不写入连接状态）
-        </button>
-      ) : null}
     </div>
   );
 }

@@ -75,7 +75,7 @@ export function AchievementsView() {
           className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-zinc-950 py-3 text-sm font-semibold text-white"
         >
           <Share2 className="h-4 w-4" />
-          分享成就（演示）
+          分享成就
         </button>
         {toast ? <p className="mt-2 text-center text-xs text-emerald-700">{toast}</p> : null}
       </div>
@@ -114,7 +114,7 @@ export function AchievementsView() {
         </p>
       ) : (
         <p className="rounded-2xl bg-emerald-50 px-3 py-2 text-[11px] font-semibold text-emerald-800 ring-1 ring-emerald-200/60">
-          已解锁全部演示徽章
+          已解锁全部成就徽章
         </p>
       )}
     </div>

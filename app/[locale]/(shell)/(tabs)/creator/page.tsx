@@ -59,7 +59,7 @@ export default async function CreatorPage() {
     <div className="space-y-4 pb-10">
       <PageHeader
         title="创作者中心"
-        subtitle={`${user?.displayName ?? "创作者"} · 笔记 ${postCount} 条 · 累计 ♥ ${sumLikes._sum.likes ?? 0} · 收藏 ${sumSaves._sum.saves ?? 0}（演示指标）`}
+        subtitle={`${user?.displayName ?? "创作者"} · 笔记 ${postCount} 条 · 累计 ♥ ${sumLikes._sum.likes ?? 0} · 收藏 ${sumSaves._sum.saves ?? 0}`}
         backHref="/me"
         right={
           <Link

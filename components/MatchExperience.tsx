@@ -30,6 +30,8 @@ import { completeMission, trackEvent } from "@/lib/retention";
 import { startConversation } from "@/lib/chat/client";
 import { PageHeader } from "@/components/PageHeader";
 import { MatchProgress } from "./MatchProgress";
+import { useIsWebMode } from "@/lib/hooks/useIsWebMode";
+import clsx from "clsx";
 
 type ProfilePayload = {
   role: Role;
@@ -197,6 +199,7 @@ export function MatchExperience() {
   const t = useTranslations("match");
   const tNav = useTranslations("nav");
   const tRoles = useTranslations("roles");
+  const isWeb = useIsWebMode();
   const router = useRouter();
   const userId = useClientUserId();
   const { user: meUser } = useCurrentUser();
@@ -365,6 +368,12 @@ export function MatchExperience() {
         }
       />
 
+      <div
+        className={clsx(
+          isWeb && "lg:grid lg:grid-cols-[minmax(300px,360px)_1fr] lg:gap-8 lg:items-start",
+        )}
+      >
+        <div className={clsx("space-y-4", isWeb && "lg:sticky lg:top-20")}>
       <section className="rounded-3xl bg-gradient-to-br from-violet-600/10 via-white/80 to-fuchsia-600/10 p-4 shadow-soft ring-1 ring-white/80 backdrop-blur">
         <div className="flex items-start gap-3">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-violet-200/60">
@@ -373,9 +382,9 @@ export function MatchExperience() {
           <div className="min-w-0 space-y-2 text-xs leading-relaxed text-zinc-700">
             <p className="font-semibold text-zinc-900">匹配在做什么？</p>
             <ul className="list-inside list-disc space-y-1 text-[11px] text-zinc-600">
-              <li>用 MOBA 角色隐喻「增长 / 产品运营 / 技术交付」三类创业分工，计算与你互补的程度。</li>
-              <li>结合能力关键词、创业方向、资金档位与资料新鲜度，输出可解释的分数与理由。</li>
-              <li>点击下方按钮会先保存当前表单，再进入动效（默认快速 3 秒，可跳过）；真实计算在服务端毫秒级完成。</li>
+              <li>用三类创业角色（增长 / 产品运营 / 技术交付）衡量分工互补程度。</li>
+              <li>结合能力关键词、创业方向、资金档位与资料完整度，输出可解释的分数与理由。</li>
+              <li>点击下方按钮会先保存当前表单，再进入匹配动效（可跳过）；系统会实时计算推荐结果。</li>
             </ul>
           </div>
         </div>
@@ -391,7 +400,7 @@ export function MatchExperience() {
               我的创业角色
             </div>
             <p className="text-[11px] leading-relaxed text-zinc-500">
-              三选一即可，后续仍可在「我的」或本页随时修改；角色会进入匹配算法的「互补矩阵」。
+              三选一即可，后续仍可在「我的」或本页随时修改；角色会进入匹配的互补规则。
             </p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               {ROLES.map((r) => (
@@ -440,7 +449,7 @@ export function MatchExperience() {
           <section className="space-y-2">
             <p className="text-xs font-semibold text-zinc-900">能力关键词</p>
             <p className="text-[11px] text-zinc-500">
-              写你「能交付什么」：与首页/笔记里的技能标签越一致，与种子用户的 Jaccard 重叠越高。
+              写你「能交付什么」：与首页、笔记里的技能标签越一致，匹配推荐越精准。
             </p>
             <div className="flex flex-wrap gap-1.5">
               {keywordSuggestions.map((s) => (
@@ -553,13 +562,13 @@ export function MatchExperience() {
           <section className="space-y-2">
             <p className="text-xs font-semibold text-zinc-900">自我介绍</p>
             <p className="text-[11px] text-zinc-500">
-              演示版暂不纳入打分，但会展示在对方看你主页时；建议写清「阶段、资源、时间」。
+              会展示在你的主页与对方看到的资料中；建议写清当前阶段、可投入资源与时间。
             </p>
             <textarea
               className="min-h-[96px] w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm leading-relaxed"
               value={form.intro}
               onChange={(e) => setForm((f) => ({ ...f, intro: e.target.value }))}
-              placeholder="例：独立开发者，有 Next.js 全栈经验，寻找增长与运营合伙人一起做出海工具…"
+              placeholder="例：独立开发者，有全栈经验，寻找增长与运营合伙人一起做出海工具…"
             />
           </section>
 
@@ -567,9 +576,9 @@ export function MatchExperience() {
             <span>动效模式：</span>
             {(
               [
-                ["fast", "快速 3s"],
-                ["normal", "标准 8s"],
-                ["ritual", "仪式感 30s"],
+                ["fast", "快速 3 秒"],
+                ["normal", "标准 8 秒"],
+                ["ritual", "仪式感 30 秒"],
               ] as const
             ).map(([m, label]) => (
               <button
@@ -608,6 +617,9 @@ export function MatchExperience() {
         </div>
       )}
 
+        </div>
+
+        <div className="space-y-4">
       {results && results.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-zinc-300/80 bg-white/60 p-6 text-center text-sm text-zinc-600">
           <p className="font-medium text-zinc-800">{t("noCandidates")}</p>
@@ -767,6 +779,9 @@ export function MatchExperience() {
           </ul>
         </div>
       ) : null}
+
+        </div>
+      </div>
 
       <MatchProgress
         active={running}

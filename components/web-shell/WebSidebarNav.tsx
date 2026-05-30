@@ -23,16 +23,16 @@ export function WebSidebarNav() {
   const modeLabel = useViewModeLabel(viewMode?.mode);
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-[220px] shrink-0 flex-col border-r border-violet-200/50 bg-white/85 px-3 py-5 backdrop-blur-xl lg:flex lg:w-[240px]">
+    <aside className="sticky top-0 hidden h-screen w-[260px] shrink-0 flex-col border-r border-violet-200/50 bg-white/85 px-4 py-6 backdrop-blur-xl lg:flex">
       <Link
         href="/home"
-        className="mb-1 px-2 font-display text-lg font-bold tracking-tight text-violet-700"
+        className="mb-1 px-2 font-display text-xl font-bold tracking-tight text-violet-700"
       >
         VibeCoding
       </Link>
-      <p className="mb-5 px-2 text-[10px] font-medium text-zinc-500">{modeLabel}</p>
+      <p className="mb-6 px-2 text-[11px] font-medium text-zinc-500">{modeLabel}</p>
 
-      <nav className="flex flex-1 flex-col gap-0.5" aria-label="主导航">
+      <nav className="flex flex-1 flex-col gap-1" aria-label="主导航">
         {MAIN_NAV_ITEMS.map((it) => {
           const active = tab === it.tab;
           const Icon = it.Icon;
@@ -43,7 +43,7 @@ export function WebSidebarNav() {
               href={it.href}
               aria-current={active ? "page" : undefined}
               className={clsx(
-                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition duration-200 hover:translate-x-0.5",
+                "flex items-center gap-3 rounded-xl px-3 py-3 text-[15px] font-semibold transition duration-200 hover:translate-x-0.5",
                 active
                   ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-md shadow-violet-500/25"
                       : "text-zinc-600 hover:bg-violet-50 hover:text-vinc-900",

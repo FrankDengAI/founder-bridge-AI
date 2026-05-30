@@ -12,7 +12,7 @@ type Props = {
   marketId?: string;
 };
 
-const STEPS = ["确认商品", "确认订单", "模拟支付", "完成"] as const;
+const STEPS = ["确认商品", "确认订单", "支付", "完成"] as const;
 
 export function MarketCheckout({ title, priceLabel, itemType, marketId }: Props) {
   const [step, setStep] = useState(0);
@@ -26,7 +26,7 @@ export function MarketCheckout({ title, priceLabel, itemType, marketId }: Props)
     const s = step + 1;
     setStep(s);
     if (s === STEPS.length - 1) {
-      setToast("演示支付成功：已生成电子凭证（本地模拟）。");
+      setToast("支付成功，订单已生成。");
       window.setTimeout(() => setToast(null), 2400);
     }
   };
@@ -79,7 +79,7 @@ export function MarketCheckout({ title, priceLabel, itemType, marketId }: Props)
             <p className="text-xs text-zinc-600">类型：{itemType}</p>
             <p className="text-lg font-bold text-brand-900">{priceLabel}</p>
             <p className="text-xs leading-relaxed text-zinc-600">
-              演示商城：不包含真实支付。你可以把这里当作「购买动线」模板继续扩展为订单系统。
+              当前为模拟购买流程，不含真实扣款。完成购买后可在「订单与心愿单」查看记录。
             </p>
           </div>
         ) : null}
@@ -89,9 +89,9 @@ export function MarketCheckout({ title, priceLabel, itemType, marketId }: Props)
             <div className="flex items-start gap-2 rounded-2xl bg-zinc-50 p-3 ring-1 ring-zinc-200/70">
               <ShieldCheck className="mt-0.5 h-5 w-5 text-emerald-700" />
               <div>
-                <p className="font-semibold text-zinc-950">服务保障（演示文案）</p>
+                <p className="font-semibold text-zinc-950">服务保障</p>
                 <p className="mt-1 text-xs leading-relaxed text-zinc-600">
-                  7 天无理由（占位）、交付物清单、版本更新说明。
+                  7 天无理由退换、交付物清单与版本更新说明。
                 </p>
               </div>
             </div>
@@ -105,7 +105,7 @@ export function MarketCheckout({ title, priceLabel, itemType, marketId }: Props)
               <div>
                 <p className="font-semibold text-zinc-950">支付方式</p>
                 <p className="mt-1 text-xs leading-relaxed text-zinc-600">
-                  下一步将模拟拉起收银台，并写入一条本地提示。
+                  确认后将完成模拟支付，并生成订单记录。
                 </p>
               </div>
             </div>
@@ -116,7 +116,7 @@ export function MarketCheckout({ title, priceLabel, itemType, marketId }: Props)
           <div className="rounded-2xl bg-gradient-to-br from-emerald-50 to-brand-50 p-4 ring-1 ring-emerald-200/60">
             <p className="text-sm font-semibold text-emerald-950">购买完成</p>
             <p className="mt-2 text-xs leading-relaxed text-emerald-900">
-              你可以在「我的」里继续扩展：订单列表、下载链接、交付进度与客服入口。
+              你可以在「订单与心愿单」查看记录，或在「我的」继续探索更多功能。
             </p>
           </div>
         ) : null}
@@ -134,7 +134,7 @@ export function MarketCheckout({ title, priceLabel, itemType, marketId }: Props)
             href="/orders"
             className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-zinc-950 py-3 text-sm font-semibold text-white hover:bg-zinc-800"
           >
-            查看演示订单
+            查看我的订单
           </Link>
         )}
       </div>

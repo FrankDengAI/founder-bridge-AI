@@ -24,13 +24,13 @@ export default async function CollabPage({ params }: Props) {
   return (
     <div className="space-y-4 pb-10">
       <PageHeader
-        title="协作看板（演示）"
-        subtitle={`${project.name} · 只读 Kanban · 补齐「沟通之后」的协作环节`}
+        title="协作看板"
+        subtitle={`${project.name} · 与伙伴对齐任务进度，把沟通落到行动上`}
         backHref={`/project/${project.id}`}
       />
 
       <p className="text-xs text-zinc-600">
-        创始人 {project.user.displayName} · 本页为 Demo 静态任务，展示项目协作空间概念。
+        发起人 {project.user.displayName} · 在此查看与更新项目协作任务。
       </p>
 
       <div className="grid gap-3 sm:grid-cols-3">

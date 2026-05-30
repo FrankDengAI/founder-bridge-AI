@@ -63,7 +63,7 @@ export function viewModeShortLabel(mode: ViewMode): string {
 
 export function viewModeDescription(mode: ViewMode): string {
   return mode === "app"
-    ? "手机尺寸壳层 + 底部 Tab，适合演示与移动端浏览。"
+    ? "手机尺寸壳层 + 底部 Tab，适合移动端与单手操作。"
     : "左栏导航 + 宽屏内容 + 右栏推荐，适合桌面深度浏览。";
 }
 

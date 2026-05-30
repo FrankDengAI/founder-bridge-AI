@@ -9,10 +9,10 @@ import { syncLocalUserId } from "@/lib/clientSession";
 import { countEventsToday } from "@/lib/retention";
 
 const PERSONAS = [
-  { id: DEMO_USER_ID, label: "演示用户 · ADC" },
-  { id: "user_seed_01", label: "创业者 1 · 打野" },
-  { id: "user_seed_02", label: "创业者 2 · 辅助" },
-  { id: "user_seed_03", label: "创业者 3 · 射手" },
+  { id: DEMO_USER_ID, label: "体验用户 · 产品型" },
+  { id: "user_seed_01", label: "创业者 1 · 增长型" },
+  { id: "user_seed_02", label: "创业者 2 · 运营型" },
+  { id: "user_seed_03", label: "创业者 3 · 技术型" },
   { id: "user_seed_04", label: "创业者 4" },
   { id: "user_seed_05", label: "创业者 5" },
 ] as const;
@@ -43,8 +43,8 @@ export function AdminDemoClient() {
   return (
     <div className="space-y-4 pb-10">
       <PageHeader
-        title="运营演示台"
-        subtitle="人设快捷切换 · 本地事件统计（Demo）"
+        title="账号切换"
+        subtitle="快速切换体验账号，从不同角色视角浏览产品"
         backHref="/workspace"
       />
 

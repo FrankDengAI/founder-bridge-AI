@@ -1,17 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Cpu, Crown, Flame, GraduationCap, PenLine, Sparkles } from "lucide-react";
+import {
+  Compass,
+  Cpu,
+  GraduationCap,
+  MessageCircle,
+  PenLine,
+  Sparkles,
+  Wrench,
+} from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { HomeCommunityHub } from "@/components/home/HomeCommunityHub";
-import { resolveTab } from "@/lib/navConfig";
-
-const quickLinks = [
-  { href: "/match", label: "开始匹配", icon: Sparkles, tone: "from-violet-600 to-fuchsia-600" },
-  { href: "/publish", label: "发布笔记", icon: PenLine, tone: "from-sky-600 to-cyan-600" },
-  { href: "/learn/step/1", label: "学习路线", icon: GraduationCap, tone: "from-emerald-600 to-teal-600" },
-  { href: "/tools", label: "工具商城", icon: Cpu, tone: "from-amber-500 to-orange-600" },
-] as const;
+import { LearnProgressCard } from "@/components/learn/LearnProgressCard";
+import { TodayMissionStrip } from "@/components/home/TodayMissionStrip";
+import { stripLocalePrefix } from "@/lib/localePath";
+import { useConversationStats } from "@/lib/hooks/useConversationStats";
+import { useClientUserId } from "@/lib/hooks/useClientUserId";
+import { RAIL_MISSIONS } from "@/lib/webModuleMission";
+import { RailHotList } from "@/components/web-shell/rail/RailHotList";
+import { RailLearnProgress } from "@/components/web-shell/rail/RailLearnProgress";
+import { RailMatchTips } from "@/components/web-shell/rail/RailMatchTips";
+import { RailPanel, RailSkeleton } from "@/components/web-shell/rail/RailPanel";
+import { RailQuickActions, type QuickLink } from "@/components/web-shell/rail/RailQuickActions";
+import { RailRecentPaths } from "@/components/web-shell/rail/RailRecentPaths";
 
 type RailData = {
   modelCount: number;
@@ -28,15 +40,39 @@ type RailData = {
   }[];
 };
 
+const globalQuickLinks: QuickLink[] = [
+  { href: "/match", label: "开始匹配", icon: Sparkles, tone: "from-violet-600 to-fuchsia-600" },
+  { href: "/publish", label: "发布笔记", icon: PenLine, tone: "from-sky-600 to-cyan-600" },
+  { href: "/learn/step/1", label: "学习路线", icon: GraduationCap, tone: "from-emerald-600 to-teal-600" },
+  { href: "/tools", label: "工具商城", icon: Cpu, tone: "from-amber-500 to-orange-600" },
+];
+
+type RailKind = "home" | "match" | "tools" | "models" | "learn" | "messages" | "default";
+
+function railKind(pathname: string): RailKind {
+  const p = stripLocalePrefix(pathname.split("?")[0] || "/home");
+  if (p === "/home" || p.startsWith("/home/")) return "home";
+  if (p.startsWith("/match")) return "match";
+  if (p.startsWith("/tools") || p.startsWith("/market")) return "tools";
+  if (p.startsWith("/models")) return "models";
+  if (p.startsWith("/learn")) return "learn";
+  if (p.startsWith("/messages")) return "messages";
+  return "default";
+}
+
 export function WebRightRail({ pathname: pathnameProp }: { pathname?: string }) {
   const pathnameHook = usePathname() ?? "/home";
   const pathname = pathnameProp ?? pathnameHook;
-  const isHome = resolveTab(pathname) === "/home";
+  const kind = railKind(pathname);
+  const userId = useClientUserId();
+  const { unread: msgUnread } = useConversationStats(Boolean(userId));
   const [data, setData] = useState<RailData | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const needsRailApi = kind === "home" || kind === "tools" || kind === "models" || kind === "default";
+
   useEffect(() => {
-    if (!isHome) {
+    if (!needsRailApi) {
       setData(null);
       return;
     }
@@ -46,120 +82,173 @@ export function WebRightRail({ pathname: pathnameProp }: { pathname?: string }) 
       .then((d: RailData | null) => setData(d))
       .catch(() => setData(null))
       .finally(() => setLoading(false));
-  }, [isHome]);
+  }, [needsRailApi, kind]);
 
   return (
-    <aside className="hidden w-[260px] shrink-0 lg:block xl:w-[280px]">
-      <div className="sticky top-[4.5rem] max-h-[calc(100vh-5.5rem)] space-y-4 overflow-y-auto pb-6 pr-1">
-        {isHome ? (
+    <aside className="hidden w-[300px] shrink-0 lg:block xl:w-[320px]">
+      <div className="sticky top-[4.5rem] max-h-[calc(100vh-5.5rem)] space-y-4 overflow-y-auto pb-6 pr-1 scrollbar-thin">
+        {kind === "home" ? (
           <>
-            <HomeCommunityHub
-              modelCount={data?.modelCount ?? 0}
-              reviewCount={data?.reviewCount ?? 0}
-            />
-            {loading ? (
-              <div className="glass-panel h-40 animate-pulse rounded-2xl" />
-            ) : null}
-            {data &&
-            (data.hotPosts.length > 0 ||
-              data.hotTools.length > 0 ||
-              data.hotModels.length > 0) ? (
-              <section className="glass-panel rounded-2xl p-4 shadow-sm ring-1 ring-white/70">
-                <div className="flex items-center gap-2">
-                  <Flame className="h-4 w-4 text-orange-500" />
-                  <p className="text-sm font-bold text-zinc-900">热榜</p>
-                </div>
-                {data.hotPosts.length > 0 ? (
-                  <div className="mt-3">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-                      热门笔记
-                    </p>
-                    <ul className="mt-2 space-y-2">
-                      {data.hotPosts.map((p, i) => (
-                        <li key={p.id}>
-                          <Link
-                            href={`/post/${p.id}`}
-                            className="flex items-start gap-2 text-xs text-zinc-700 hover:text-violet-700"
-                          >
-                            <Crown
-                              className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${i === 0 ? "text-amber-500" : "text-zinc-400"}`}
-                            />
-                            <span className="line-clamp-2">{p.title}</span>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                {data.hotTools.length > 0 ? (
-                  <div className="mt-4">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-                      热门工具
-                    </p>
-                    <ul className="mt-2 space-y-1.5">
-                      {data.hotTools.map((t) => (
-                        <li key={t.id}>
-                          <Link
-                            href={`/tools/${t.id}`}
-                            className="text-xs text-zinc-700 hover:text-violet-700"
-                          >
-                            {t.name}
-                            <span className="ml-1 text-zinc-400">★ {t.avgRating.toFixed(1)}</span>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                {data.hotModels.length > 0 ? (
-                  <div className="mt-4">
-                    <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-                      热门模型
-                    </p>
-                    <ul className="mt-2 space-y-1.5">
-                      {data.hotModels.slice(0, 4).map((m) => (
-                        <li key={m.id}>
-                          <Link
-                            href={`/models/${m.id}`}
-                            className="text-xs text-zinc-700 hover:text-violet-700"
-                          >
-                            {m.name}
-                            <span className="ml-1 text-zinc-400">★ {m.avgRating.toFixed(1)}</span>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-              </section>
+            <div className="web-panel rounded-2xl p-3 transition duration-300 hover:border-violet-300/70 hover:shadow-md">
+              <HomeCommunityHub
+                modelCount={data?.modelCount ?? 0}
+                reviewCount={data?.reviewCount ?? 0}
+              />
+            </div>
+            <RailPanel
+              title={RAIL_MISSIONS.todayMission.title}
+              purpose={RAIL_MISSIONS.todayMission.purpose}
+              index={1}
+            >
+              <TodayMissionStrip />
+            </RailPanel>
+            <RailPanel
+              title={RAIL_MISSIONS.learnProgress.title}
+              purpose={RAIL_MISSIONS.learnProgress.purpose}
+              index={2}
+            >
+              <LearnProgressCard variant="compact" />
+            </RailPanel>
+            {loading ? <RailSkeleton index={3} /> : null}
+            {data ? (
+              <RailHotList
+                hotPosts={data.hotPosts}
+                hotTools={data.hotTools}
+                hotModels={data.hotModels}
+                index={3}
+              />
             ) : null}
           </>
-        ) : (
-          <section className="glass-panel rounded-2xl p-4 shadow-sm ring-1 ring-white/70">
-            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
-              快捷入口
-            </p>
-            <div className="mt-3 space-y-2">
-              {quickLinks.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="flex items-center gap-3 rounded-xl border border-zinc-200/80 bg-white/90 px-3 py-2.5 text-sm font-semibold text-zinc-800 transition hover:border-violet-300 hover:shadow-sm"
-                  >
-                    <span
-                      className={`flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br ${item.tone} text-white`}
-                    >
-                      <Icon className="h-4 w-4" />
-                    </span>
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
-        )}
+        ) : null}
+
+        {kind === "match" ? (
+          <>
+            <RailMatchTips />
+            <RailQuickActions
+              links={[
+                globalQuickLinks[0]!,
+                {
+                  href: "/messages",
+                  label: "查看消息",
+                  icon: MessageCircle,
+                  tone: "from-rose-500 to-pink-600",
+                },
+              ]}
+              index={2}
+            />
+          </>
+        ) : null}
+
+        {kind === "tools" || kind === "models" ? (
+          <>
+            <RailPanel
+              title={kind === "tools" ? "工具商城" : "模型社区"}
+              purpose={
+                kind === "tools"
+                  ? "真实评分帮你少踩坑——在 Vibe Coding 全流程里快速找到趁手的 AI 与生产力工具。"
+                  : "按场景看真实短评：编程、写作、性价比下的体感，比官方榜更贴近创业实战。"
+              }
+              icon={<Wrench className="h-4 w-4 text-amber-600" />}
+              index={0}
+            >
+              <Link
+                href={kind === "tools" ? "/models" : "/tools"}
+                className="inline-flex items-center gap-1 rounded-full bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-800 ring-1 ring-violet-200/70 transition hover:bg-violet-100"
+              >
+                {kind === "tools" ? "去看模型榜 →" : "去看工具商城 →"}
+              </Link>
+            </RailPanel>
+            {loading ? <RailSkeleton index={1} /> : null}
+            {data ? (
+              <RailHotList
+                hotPosts={kind === "models" ? [] : data.hotPosts.slice(0, 3)}
+                hotTools={kind === "tools" ? data.hotTools : data.hotTools.slice(0, 3)}
+                hotModels={kind === "models" ? data.hotModels : data.hotModels.slice(0, 3)}
+                index={2}
+              />
+            ) : null}
+          </>
+        ) : null}
+
+        {kind === "learn" ? (
+          <>
+            <RailLearnProgress />
+            <RailPanel
+              title="学习路线"
+              purpose="17 步 Vibe Coding 实战：从环境搭建到上线部署，降低「不知道从哪开始」的焦虑。"
+              index={1}
+            >
+              <Link
+                href="/learn/github"
+                className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-700"
+              >
+                GitHub 协作指南 →
+              </Link>
+            </RailPanel>
+          </>
+        ) : null}
+
+        {kind === "messages" ? (
+          <>
+            <RailPanel
+              title="消息中心"
+              purpose="私聊是协作的起点——来自匹配的会话带标签，减少破冰，直接聊项目。"
+              icon={<MessageCircle className="h-4 w-4 text-rose-500" />}
+              index={0}
+            >
+              {msgUnread > 0 ? (
+                <p className="text-sm font-semibold text-zinc-900">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="pulse-dot text-rose-500" aria-hidden />
+                    {msgUnread} 条未读会话
+                  </span>
+                </p>
+              ) : (
+                <p className="text-xs leading-relaxed text-zinc-600">
+                  暂无未读。去匹配页认识新伙伴，或回复社区里感兴趣的人。
+                </p>
+              )}
+              <Link
+                href="/match"
+                className="mt-3 inline-flex text-xs font-semibold text-violet-700 hover:underline"
+              >
+                去匹配 →
+              </Link>
+            </RailPanel>
+            <RailQuickActions links={globalQuickLinks.slice(0, 3)} index={1} />
+          </>
+        ) : null}
+
+        {kind === "default" ? (
+          <>
+            <RailPanel
+              title={RAIL_MISSIONS.explore.title}
+              purpose={RAIL_MISSIONS.explore.purpose}
+              icon={<Compass className="h-4 w-4 text-violet-600" />}
+              index={0}
+            >
+              <Link
+                href="/home"
+                className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:brightness-110"
+              >
+                回到发现页 →
+              </Link>
+            </RailPanel>
+            <RailQuickActions links={globalQuickLinks} index={1} />
+            {loading ? <RailSkeleton index={2} /> : null}
+            {data ? (
+              <RailHotList
+                hotPosts={data.hotPosts.slice(0, 3)}
+                hotTools={data.hotTools.slice(0, 3)}
+                hotModels={data.hotModels.slice(0, 3)}
+                index={2}
+              />
+            ) : null}
+            <RailRecentPaths index={3} />
+          </>
+        ) : null}
+
+        {kind !== "default" && kind !== "home" ? <RailRecentPaths index={4} /> : null}
       </div>
     </aside>
   );

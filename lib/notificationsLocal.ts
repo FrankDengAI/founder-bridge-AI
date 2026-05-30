@@ -11,22 +11,22 @@ export type LocalNotif = {
 const SEED: LocalNotif[] = [
   {
     id: "n1",
-    title: "欢迎 aboard",
-    body: "试试 ⌘/Ctrl + K 打开命令面板，一秒跳转任意模块。",
+    title: "欢迎登舰",
+    body: "按 Ctrl + K 打开命令面板，一秒跳转任意模块。",
     at: "刚刚",
     read: false,
   },
   {
     id: "n2",
-    title: "匹配算法已就绪",
-    body: "在「匹配」里保存画像即可生成互补推荐与可解释分数。",
+    title: "匹配已就绪",
+    body: "在「匹配」里保存画像，即可生成互补推荐与可解释分数。",
     at: "1 分钟前",
     read: false,
   },
   {
     id: "n3",
     title: "工作台上线",
-    body: "统计看板 + 本地收藏聚合，适合路演演示真实数据。",
+    body: "统计看板与收藏聚合一屏尽览，帮你掌握社区动态。",
     at: "今天",
     read: false,
   },

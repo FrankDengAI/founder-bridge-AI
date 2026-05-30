@@ -14,7 +14,7 @@ const PHASES = [
   {
     key: "scan",
     label: "扫描候选池",
-    detail: "在种子用户与演示账号中筛选可匹配对象",
+    detail: "在全站用户中筛选与你互补的创业伙伴",
   },
   {
     key: "rank",

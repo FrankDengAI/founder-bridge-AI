@@ -7,6 +7,8 @@ import { PageHeader } from "@/components/PageHeader";
 import { ModelRankCard, type ModelRankRow } from "@/components/models/ModelRankCard";
 import { ModelScenarioFilter } from "@/components/models/ModelScenarioFilter";
 import { SCENARIO_LABEL } from "@/lib/models/rank";
+import { useIsWebMode } from "@/lib/hooks/useIsWebMode";
+import clsx from "clsx";
 
 type SortMode = "rank" | "rating" | "reviews" | "new";
 
@@ -16,6 +18,7 @@ type Props = {
 };
 
 export function ModelsClient({ initialModels, totalReviews = 0 }: Props) {
+  const isWeb = useIsWebMode();
   const [scenario, setScenario] = useState("all");
   const [sort, setSort] = useState<SortMode>("rank");
   const [models, setModels] = useState(initialModels);
@@ -56,10 +59,10 @@ export function ModelsClient({ initialModels, totalReviews = 0 }: Props) {
   const mainList = showTopThree ? list.slice(3) : list;
 
   return (
-    <div className="space-y-4 pb-4">
+    <div className={clsx("space-y-4 pb-4", isWeb && "space-y-6")}>
       <PageHeader
         title="大模型评分榜"
-        subtitle="虎扑式真实体验榜 · 按 VibeCoding 场景评价，帮你在冷启动期也能选模型、聊观点、留下来。"
+        subtitle="按场景的真实体验榜 · 帮你在创业路上选模型、聊观点、做决策。"
         right={
           <Link
             href="/home"
@@ -142,7 +145,7 @@ export function ModelsClient({ initialModels, totalReviews = 0 }: Props) {
           <div>
             <p className="text-sm font-bold text-zinc-900">为什么用户评分更有参考价值？</p>
             <p className="mt-1 text-[11px] leading-relaxed text-zinc-600">
-              官方 benchmark 测通用能力；这里记录你在
+              官方评测看通用能力；这里记录你在
               <strong> 编程、原型、写作、推理、性价比 </strong>
               下的真实体验。综合分 = 评分 × 0.7 + log(评价数) × 0.8，避免一条五星刷榜。
             </p>
@@ -150,58 +153,71 @@ export function ModelsClient({ initialModels, totalReviews = 0 }: Props) {
         </div>
       </section>
 
-      {showTopThree && list.length > 0 ? (
-        <section className="rounded-2xl bg-white/80 p-3 ring-1 ring-amber-200/50">
-          <p className="flex items-center gap-1.5 text-xs font-semibold text-zinc-900">
-            <Crown className="h-3.5 w-3.5 text-amber-500" />
-            综合榜 Top 3
-          </p>
-          <ol className="mt-2 space-y-2">
-            {list.slice(0, 3).map((m, i) => (
-              <ModelRankCard key={m.id} model={m} rank={i + 1} />
-            ))}
-          </ol>
-        </section>
-      ) : null}
-
-      <section className="glass-panel rounded-3xl p-4 shadow-soft ring-1 ring-white/70">
-        <ModelScenarioFilter value={scenario} onChange={setScenario} />
-        <div className="mt-3 flex flex-wrap gap-1 rounded-xl bg-zinc-100/80 p-0.5 ring-1 ring-zinc-200/60">
-          {(
-            [
-              { id: "rank" as const, label: "综合分" },
-              { id: "rating" as const, label: "用户评分" },
-              { id: "reviews" as const, label: "评价数" },
-              { id: "new" as const, label: "最新" },
-            ] as const
-          ).map((x) => (
-            <button
-              key={x.id}
-              type="button"
-              onClick={() => setSort(x.id)}
-              className={`rounded-lg px-2.5 py-1.5 text-[10px] font-semibold ${
-                sort === x.id ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-600"
-              }`}
-            >
-              {x.label}
-            </button>
-          ))}
-        </div>
-        {loading ? (
-          <p className="mt-4 text-center text-xs text-zinc-500">加载中…</p>
-        ) : (
-          <ul className="mt-4 space-y-2">
-            {mainList.map((m, i) => (
-              <li key={m.id}>
-                <ModelRankCard model={m} rank={showTopThree ? i + 4 : i + 1} />
-              </li>
-            ))}
-          </ul>
+      <div
+        className={clsx(
+          isWeb && showTopThree && list.length > 0
+            ? "xl:grid xl:grid-cols-[minmax(280px,360px)_1fr] xl:gap-6 xl:items-start"
+            : "space-y-4",
         )}
-        {!loading && mainList.length === 0 ? (
-          <p className="mt-4 text-center text-xs text-zinc-600">该场景暂无模型，试试「全部」</p>
+      >
+        {showTopThree && list.length > 0 ? (
+          <section className="rounded-2xl bg-white/80 p-3 ring-1 ring-amber-200/50">
+            <p className="flex items-center gap-1.5 text-xs font-semibold text-zinc-900">
+              <Crown className="h-3.5 w-3.5 text-amber-500" />
+              综合榜 Top 3
+            </p>
+            <ol className="mt-2 space-y-2">
+              {list.slice(0, 3).map((m, i) => (
+                <ModelRankCard key={m.id} model={m} rank={i + 1} />
+              ))}
+            </ol>
+          </section>
         ) : null}
-      </section>
+
+        <section className="glass-panel rounded-3xl p-4 shadow-soft ring-1 ring-white/70">
+          <ModelScenarioFilter value={scenario} onChange={setScenario} />
+          <div className="mt-3 flex flex-wrap gap-1 rounded-xl bg-zinc-100/80 p-0.5 ring-1 ring-zinc-200/60">
+            {(
+              [
+                { id: "rank" as const, label: "综合分" },
+                { id: "rating" as const, label: "用户评分" },
+                { id: "reviews" as const, label: "评价数" },
+                { id: "new" as const, label: "最新" },
+              ] as const
+            ).map((x) => (
+              <button
+                key={x.id}
+                type="button"
+                onClick={() => setSort(x.id)}
+                className={`rounded-lg px-2.5 py-1.5 text-[10px] font-semibold ${
+                  sort === x.id ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-600"
+                }`}
+              >
+                {x.label}
+              </button>
+            ))}
+          </div>
+          {loading ? (
+            <p className="mt-4 text-center text-xs text-zinc-500">加载中…</p>
+          ) : (
+            <ul
+              className={clsx(
+                "mt-4",
+                isWeb && !showTopThree ? "grid gap-3 lg:grid-cols-2" : "space-y-2",
+              )}
+            >
+              {mainList.map((m, i) => (
+                <li key={m.id}>
+                  <ModelRankCard model={m} rank={showTopThree ? i + 4 : i + 1} />
+                </li>
+              ))}
+            </ul>
+          )}
+          {!loading && mainList.length === 0 ? (
+            <p className="mt-4 text-center text-xs text-zinc-600">该场景暂无模型，试试「全部」</p>
+          ) : null}
+        </section>
+      </div>
     </div>
   );
 }

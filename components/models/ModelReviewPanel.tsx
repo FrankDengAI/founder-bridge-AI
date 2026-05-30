@@ -156,7 +156,7 @@ export function ModelReviewPanel({ modelId, initialReviews }: Props) {
       <div className="glass-panel rounded-3xl p-4 shadow-sm ring-1 ring-white/70">
         <div className="flex items-center gap-2 text-xs font-semibold text-zinc-900">
           <MessageSquarePlus className="h-4 w-4 text-brand-700" />
-          写一条短评（按 VibeCoding 场景）
+          写一条短评（按使用场景）
         </div>
         <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
           <input

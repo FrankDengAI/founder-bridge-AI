@@ -23,6 +23,8 @@ import { readSavedPostIds } from "@/lib/appHub";
 import { POST_TYPE_LABEL } from "@/lib/labels";
 import { isPostType } from "@/lib/domain/postType";
 import { syncLessonProgressGamification } from "@/lib/gamification";
+import { useIsWebMode } from "@/lib/hooks/useIsWebMode";
+import clsx from "clsx";
 
 type Stats = {
   posts: number;
@@ -51,6 +53,7 @@ const shortcuts = [
 ] as const;
 
 export function WorkspaceDashboard({ stats }: { stats: Stats }) {
+  const isWeb = useIsWebMode();
   const [savedPosts, setSavedPosts] = useState<PostHit[]>([]);
 
   useEffect(() => {
@@ -105,39 +108,44 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
     <div className="space-y-4 pb-4">
       <PageHeader
         title="工作台"
-        subtitle="数据总览 · 本地收藏 · 全局命令面板（⌘/Ctrl+K）"
+        subtitle="数据总览 · 我的收藏 · 快捷命令"
         backHref="/home"
       />
 
       <LearnProgressCard variant="full" />
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div
+        className={clsx(
+          "grid gap-3",
+          isWeb ? "grid-cols-2 lg:grid-cols-4" : "grid-cols-2 gap-2 sm:grid-cols-4",
+        )}
+      >
         {[
           {
-            label: "实时",
-            title: "数据面",
-            sub: "Prisma",
+            label: "社区",
+            title: "动态数据",
+            sub: "实时更新",
             from: "from-violet-600",
             to: "to-indigo-600",
           },
           {
-            label: "本地",
-            title: "收藏",
-            sub: "Indexed",
+            label: "我的",
+            title: "收藏书签",
+            sub: "随时回看",
             from: "from-fuchsia-600",
             to: "to-pink-600",
           },
           {
-            label: "导航",
-            title: "命令",
-            sub: "⌘K",
+            label: "效率",
+            title: "快捷命令",
+            sub: "一键直达",
             from: "from-sky-500",
             to: "to-cyan-600",
           },
           {
-            label: "生态",
-            title: "工具+商",
-            sub: "SKU",
+            label: "资源",
+            title: "工具商城",
+            sub: "精选好物",
             from: "from-amber-500",
             to: "to-orange-600",
           },
@@ -158,19 +166,19 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
       <section className="glass-panel rounded-3xl p-4 shadow-soft ring-1 ring-white/70">
         <div className="flex items-center gap-2 text-xs font-semibold text-zinc-900">
           <LineChart className="h-4 w-4 text-brand-600" />
-          演示库实时统计
+          社区数据一览
         </div>
         <p className="mt-1 text-[11px] text-zinc-500">
-          以下为 PostgreSQL 内真实计数，可用于路演/答辩展示「有后端、有数据」。
+          以下为平台内实时统计，帮助你了解社区活跃度与资源规模。
         </p>
         <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
           {[
             { label: "笔记", value: stats.posts },
-            { label: "用户画像", value: stats.users },
-            { label: "工具条目", value: stats.tools },
-            { label: "商城 SKU", value: stats.market },
-            { label: "项目卡片", value: stats.projects },
-            { label: "活跃指数(估)", value: totalEngagement },
+            { label: "用户", value: stats.users },
+            { label: "工具", value: stats.tools },
+            { label: "商城商品", value: stats.market },
+            { label: "项目", value: stats.projects },
+            { label: "活跃指数", value: totalEngagement },
           ].map((c) => (
             <div
               key={c.label}
@@ -264,7 +272,7 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
       <section className="glass-panel rounded-3xl p-4 shadow-soft ring-1 ring-white/70">
         <p className="text-xs font-semibold text-zinc-900">会话</p>
         <p className="mt-1 text-[11px] text-zinc-600">
-          换设备或演示结束时请退出，避免他人继续使用你的本地会话。
+          在公共设备上使用后请退出登录，保护你的账号与隐私。
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Link

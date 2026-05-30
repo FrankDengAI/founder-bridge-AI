@@ -16,7 +16,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "VibeCoding 创业社交",
-  description: "学习、展示、工具与创业伙伴匹配演示",
+  description: "学习、展示、工具与创业伙伴匹配",
 };
 
 export default function ShellLayout({
