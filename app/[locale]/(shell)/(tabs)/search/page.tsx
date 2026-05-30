@@ -1,15 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Filter, Flame, Search as SearchIcon, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
-import { POST_TYPE_LABEL } from "@/lib/labels";
+import { getPostTypeLabel } from "@/lib/labels";
 import { POST_TYPES } from "@/lib/domain/postType";
 import { isPostType } from "@/lib/domain/postType";
 import { rememberSearchQuery, readSearchHistory } from "@/lib/searchHistory";
 import { SEARCH_HOT_WORDS } from "@/lib/searchHot";
 import { useIsWebMode } from "@/lib/hooks/useIsWebMode";
+import { currentBrowserLocale, localizedPathWithSearch } from "@/lib/localePath";
 import clsx from "clsx";
 
 type Hit = {
@@ -38,6 +40,9 @@ function highlight(text: string, q: string) {
 
 export default function SearchPage() {
   const isWeb = useIsWebMode();
+  const t = useTranslations("pages.search");
+  const tPost = useTranslations("postType");
+  const tCommon = useTranslations("common");
   const [q, setQ] = useState("");
   const [type, setType] = useState("");
   const [sort, setSort] = useState<"new" | "hot">("new");
@@ -66,7 +71,7 @@ export default function SearchPage() {
     if (type && isPostType(type)) params.set("type", type);
     if (sort === "hot") params.set("sort", "hot");
     const qs = params.toString();
-    const next = qs ? `/search?${qs}` : "/search";
+    const next = localizedPathWithSearch("/search", qs, currentBrowserLocale());
     window.history.replaceState(null, "", next);
   }, [query, type, sort]);
 
@@ -99,8 +104,8 @@ export default function SearchPage() {
   return (
     <div className="space-y-3 pb-4">
       <PageHeader
-        title="搜索"
-        subtitle="标题检索 · 类型与排序与发现页对齐 · 高亮关键词。"
+        title={t("title")}
+        subtitle={t("subtitle")}
         backHref="/home"
       />
 
@@ -110,7 +115,7 @@ export default function SearchPage() {
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="例如：全栈开发 / 部署上线 / 写作助手 / 伙伴匹配"
+            placeholder={t("placeholder")}
             className="w-full bg-transparent text-sm outline-none"
           />
         </div>
@@ -118,7 +123,7 @@ export default function SearchPage() {
         {(history.length > 0 || SEARCH_HOT_WORDS.length > 0) && (
           <div className="flex flex-wrap items-center gap-2 border-t border-zinc-100/80 pt-3">
             <span className="w-full text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
-              搜索历史
+              {t("history")}
             </span>
             {history.map((h) => (
               <button
@@ -131,7 +136,7 @@ export default function SearchPage() {
               </button>
             ))}
             <span className="mt-1 w-full text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
-              热门词
+              {t("hotWords")}
             </span>
             {SEARCH_HOT_WORDS.map((h) => (
               <button
@@ -149,7 +154,7 @@ export default function SearchPage() {
         <div className="flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
             <Filter className="h-3 w-3" />
-            类型
+            {t("type")}
           </span>
           <button
             type="button"
@@ -159,28 +164,28 @@ export default function SearchPage() {
               !type ? "border-brand-300 bg-brand-50 text-brand-900" : "border-zinc-200 bg-white text-zinc-600",
             )}
           >
-            全部
+            {t("all")}
           </button>
-          {POST_TYPES.map((t) => (
+          {POST_TYPES.map((pt) => (
             <button
-              key={t}
+              key={pt}
               type="button"
-              onClick={() => setType(t)}
+              onClick={() => setType(pt)}
               className={clsx(
                 "rounded-full border px-2.5 py-1 text-[11px] font-medium",
-                type === t
+                type === pt
                   ? "border-brand-300 bg-brand-50 text-brand-900"
                   : "border-zinc-200 bg-white text-zinc-600",
               )}
             >
-              {POST_TYPE_LABEL[t]}
+              {getPostTypeLabel(tPost, pt)}
             </button>
           ))}
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
-            排序
+            {t("sort")}
           </span>
           <button
             type="button"
@@ -193,7 +198,7 @@ export default function SearchPage() {
             )}
           >
             <Sparkles className="h-3 w-3" />
-            最新
+            {t("newest")}
           </button>
           <button
             type="button"
@@ -206,12 +211,12 @@ export default function SearchPage() {
             )}
           >
             <Flame className="h-3 w-3 text-amber-600" />
-            热门
+            {tCommon("hot")}
           </button>
         </div>
 
         <p className="text-[11px] text-zinc-500">
-          {loading ? "检索中…" : `共 ${hits.length} 条结果`}
+          {loading ? t("searching") : t("resultCount", { count: hits.length })}
         </p>
       </div>
 
@@ -221,7 +226,7 @@ export default function SearchPage() {
         )}
       >
         {hits.map((p) => {
-          const label = isPostType(p.type) ? POST_TYPE_LABEL[p.type] : p.type;
+          const label = isPostType(p.type) ? getPostTypeLabel(tPost, p.type) : p.type;
           return (
             <li key={p.id}>
               <Link
@@ -255,7 +260,7 @@ export default function SearchPage() {
 
       {!loading && query && hits.length === 0 ? (
         <div className="glass-panel rounded-2xl p-6 text-center text-sm text-zinc-600 shadow-sm">
-          没有匹配到内容，试试更短的关键词或切换类型筛选。
+          {t("empty")}
         </div>
       ) : null}
     </div>

@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { LoginBridge } from "@/components/auth/LoginBridge";
 
-export const metadata: Metadata = {
-  title: "登录 · VibeCoding",
-  description: "通过嵌入演示完成登录，会话与数据在同一站点的 App 区（PostgreSQL）。",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("marketing.loginMeta");
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default function LoginPage() {
   return <LoginBridge />;

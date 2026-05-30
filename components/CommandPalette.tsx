@@ -2,22 +2,23 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { Command, CornerDownLeft, Search } from "lucide-react";
 import {
-  COMMAND_ITEMS,
-  type CommandItem,
+  getCommandItems,
+  type ResolvedCommandItem,
 } from "@/lib/commandPaletteItems";
 import { readRecentRoutes } from "@/lib/appHub";
 
 type Row =
   | { kind: "recent"; key: string; label: string; href: string }
-  | { kind: "cmd"; key: string; item: CommandItem };
+  | { kind: "cmd"; key: string; item: ResolvedCommandItem };
 
 function normalize(s: string) {
   return s.trim().toLowerCase();
 }
 
-function scoreItem(q: string, item: CommandItem): number {
+function scoreItem(q: string, item: ResolvedCommandItem): number {
   if (!q) return 1;
   const n = normalize(q);
   if (normalize(item.label).includes(n)) return 100;
@@ -26,14 +27,14 @@ function scoreItem(q: string, item: CommandItem): number {
   return 0;
 }
 
-function filterCommands(q: string): CommandItem[] {
-  if (!q.trim()) return COMMAND_ITEMS;
-  return COMMAND_ITEMS.filter((it) => scoreItem(q, it) > 0).sort(
+function filterCommands(q: string, items: ResolvedCommandItem[]): ResolvedCommandItem[] {
+  if (!q.trim()) return items;
+  return items.filter((it) => scoreItem(q, it) > 0).sort(
     (a, b) => scoreItem(q, b) - scoreItem(q, a),
   );
 }
 
-function buildRows(q: string, recent: string[]): Row[] {
+function buildRows(q: string, recent: string[], items: ResolvedCommandItem[]): Row[] {
   const rows: Row[] = [];
   const qt = q.trim();
   if (!qt) {
@@ -48,7 +49,7 @@ function buildRows(q: string, recent: string[]): Row[] {
         rows.push({ kind: "recent", key: `r:${href}`, label: href, href });
       });
   }
-  filterCommands(q).forEach((item) => {
+  filterCommands(q, items).forEach((item) => {
     rows.push({ kind: "cmd", key: `c:${item.id}`, item });
   });
   return rows;
@@ -56,13 +57,16 @@ function buildRows(q: string, recent: string[]): Row[] {
 
 export function CommandPalette() {
   const router = useRouter();
+  const t = useTranslations("command");
+  const tCommon = useTranslations("common");
+  const commandItems = useMemo(() => getCommandItems(t), [t]);
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const [recent, setRecent] = useState<string[]>([]);
 
-  const rows = useMemo(() => buildRows(q, recent), [q, recent]);
+  const rows = useMemo(() => buildRows(q, recent, commandItems), [q, recent, commandItems]);
 
   useEffect(() => {
     setActive(0);
@@ -147,10 +151,10 @@ export function CommandPalette() {
       }}
     >
       <p id="vibe-command-palette-title" className="sr-only">
-        命令面板
+        {t("paletteTitle")}
       </p>
       <p id="vibe-command-palette-hint" className="sr-only">
-        使用上下键选择，回车打开，Esc 关闭。
+        {t("paletteNavHint")}
       </p>
       <div className="w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-zinc-200/80 dark:bg-zinc-950 dark:ring-zinc-800">
         <div className="flex items-center gap-2 border-b border-zinc-100 px-3 py-2 dark:border-zinc-800">
@@ -161,7 +165,7 @@ export function CommandPalette() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={onKeyNav}
-            placeholder="跳转页面、搜索功能…"
+            placeholder={t("palettePlaceholder")}
             role="combobox"
             aria-autocomplete="list"
             aria-controls="command-palette-listbox"
@@ -179,10 +183,10 @@ export function CommandPalette() {
         <div className="max-h-[min(58vh,400px)] overflow-y-auto overscroll-contain py-2">
           {!q.trim() && recent.length ? (
             <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
-              最近访问
+              {t("recentVisits")}
             </p>
           ) : null}
-          <ul id="command-palette-listbox" role="listbox" className="px-1" aria-label="命令与最近访问">
+          <ul id="command-palette-listbox" role="listbox" className="px-1" aria-label={tCommon("commandPalette")}>
             {rows.map((row, i) => {
               const isSel = i === active;
               if (row.kind === "recent") {
@@ -235,14 +239,14 @@ export function CommandPalette() {
             })}
           </ul>
           {rows.length === 0 ? (
-            <p className="px-4 py-8 text-center text-sm text-zinc-500">没有匹配项，换个词试试</p>
+            <p className="px-4 py-8 text-center text-sm text-zinc-500">{t("noMatch")}</p>
           ) : null}
         </div>
 
         <div className="flex items-center justify-between border-t border-zinc-100 px-3 py-2 text-[10px] text-zinc-500">
           <span className="flex flex-wrap items-center gap-1">
-            <kbd className="rounded bg-zinc-100 px-1 font-mono">↑↓</kbd> 选择
-            <kbd className="rounded bg-zinc-100 px-1 font-mono">Enter</kbd> 打开
+            <kbd className="rounded bg-zinc-100 px-1 font-mono">↑↓</kbd> {t("select")}
+            <kbd className="rounded bg-zinc-100 px-1 font-mono">Enter</kbd> {t("open")}
           </span>
           <span>
             <kbd className="rounded bg-zinc-100 px-1 font-mono">Ctrl</kbd>+

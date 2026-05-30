@@ -2,7 +2,7 @@
 
 import type { LucideIcon } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { RAIL_MISSIONS } from "@/lib/webModuleMission";
+import { useTranslations } from "next-intl";
 import { RailPanel } from "./RailPanel";
 
 export type QuickLink = {
@@ -14,8 +14,8 @@ export type QuickLink = {
 
 export function RailQuickActions({
   links,
-  title = RAIL_MISSIONS.quickActions.title,
-  purpose = RAIL_MISSIONS.quickActions.purpose,
+  title,
+  purpose,
   index = 1,
 }: {
   links: QuickLink[];
@@ -23,8 +23,14 @@ export function RailQuickActions({
   purpose?: string;
   index?: number;
 }) {
+  const t = useTranslations("rail");
+
   return (
-    <RailPanel title={title} purpose={purpose} index={index}>
+    <RailPanel
+      title={title ?? t("quickActions.title")}
+      purpose={purpose ?? t("quickActions.purpose")}
+      index={index}
+    >
       <div className="space-y-2">
         {links.map((item) => {
           const Icon = item.icon;

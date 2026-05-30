@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, JetBrains_Mono, Syne } from "next/font/google";
+import { getTranslations } from "next-intl/server";
 import { MarketingMotionConfig } from "@/components/MarketingMotionConfig";
 import { WebAurora } from "@/components/WebAurora";
 
@@ -21,11 +22,13 @@ const jetbrains = JetBrains_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "VibeCoding — 创业社交 · 网页端",
-  description:
-    "连接创始人、创作者与增长伙伴。品牌站与 App 演示已合并为同一站点。",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("marketing.meta");
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default function MarketingLayout({
   children,

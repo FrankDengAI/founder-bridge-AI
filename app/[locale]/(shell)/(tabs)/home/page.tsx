@@ -25,6 +25,7 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromCookies } from "@/lib/session";
 import { isPostType } from "@/lib/domain/postType";
+import { getTranslations } from "next-intl/server";
 
 type PostWithAuthor = Prisma.PostGetPayload<{
   include: { author: { select: { id: true; displayName: true } } };
@@ -37,6 +38,8 @@ export default async function HomePage({
 }: {
   searchParams?: { type?: string; sort?: string; view?: string };
 }) {
+  const tHome = await getTranslations("home");
+  const tExtra = await getTranslations("pages.homeExtra");
   const view = searchParams?.view?.toLowerCase();
   const rawType = searchParams?.type;
   const type = rawType && isPostType(rawType) ? rawType : undefined;
@@ -101,8 +104,8 @@ export default async function HomePage({
     return (
       <div className="space-y-6 pb-4">
         <PageHeader
-          title="发现"
-          subtitle="我的收藏：与卡片右上角书签同步，登录后可在多设备查看。"
+          title={tHome("title")}
+          subtitle={tExtra("savedSubtitle")}
           right={<HomeToolbar />}
         />
         <HomeCinematicHero stats={heroStats} />
@@ -155,11 +158,11 @@ export default async function HomePage({
   return (
     <div className="space-y-6 pb-4">
       <PageHeader
-        title="发现"
+        title={tHome("title")}
         subtitle={
           view === "for-you"
-            ? "为你推荐：根据你的兴趣标签与技能关键词智能排序。"
-            : "笔记 · 工具 · 大模型口碑 · 匹配伙伴 —— 在这里发现灵感与同路人。"
+            ? tExtra("forYouSubtitle")
+            : tExtra("defaultSubtitle")
         }
         right={<HomeToolbar />}
       />
@@ -196,7 +199,7 @@ export default async function HomePage({
             </HomeFeedGrid>
             {posts.length === 0 ? (
               <div className="glass-panel rounded-2xl p-6 text-center text-sm text-zinc-600 shadow-sm">
-                暂无内容。发布第一条笔记，或邀请伙伴一起加入社区吧。
+                {tExtra("empty")}
               </div>
             ) : null}
           </>

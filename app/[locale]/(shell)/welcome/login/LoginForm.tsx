@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { syncLocalUserId } from "@/lib/clientSession";
@@ -60,6 +61,9 @@ function LoginError({ message }: { message: string }) {
 }
 
 export function LoginForm() {
+  const tAuth = useTranslations("auth");
+  const tWelcome = useTranslations("welcome");
+  const tCommon = useTranslations("common");
   const searchParams = useSearchParams();
   const embed = searchParams.get("embed") === "1";
   const modeHref = useModePickerHref();
@@ -112,7 +116,7 @@ export function LoginForm() {
       });
       const j = (await res.json().catch(() => ({}))) as { error?: string; userId?: string };
       if (!res.ok) {
-        throw new Error(j.error || (res.status === 503 ? "数据库未连接，请联系管理员配置 DATABASE_URL" : "登录失败"));
+        throw new Error(j.error || (res.status === 503 ? "数据库未连接，请联系管理员配置 DATABASE_URL" : tAuth("loginFail")));
       }
       if (!j.userId) throw new Error("登录响应无效");
       syncLocalUserId(j.userId);
@@ -124,7 +128,7 @@ export function LoginForm() {
       }
       window.location.href = modeHref("/home");
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "登录失败");
+      setErr(e instanceof Error ? e.message : tAuth("loginFail"));
     } finally {
       setBusy(false);
     }
@@ -177,23 +181,21 @@ export function LoginForm() {
           href="/welcome"
           className="inline-flex w-fit text-sm font-medium text-zinc-600 transition hover:text-zinc-900"
         >
-          ← 返回
+          ← {tCommon("back")}
         </Link>
       ) : null}
 
       <AuthCard>
         <div className="text-center">
           <h2 className="text-xl font-bold tracking-tight text-zinc-900 sm:text-2xl">
-            登录 VibeCoding
+            {tWelcome("loginTitle")} VibeCoding
           </h2>
-          <p className="mt-2 text-sm leading-relaxed text-zinc-500">
-            使用注册的账号与密码登录。还没有账号请先注册。
-          </p>
+          <p className="mt-2 text-sm leading-relaxed text-zinc-500">{tWelcome("loginDesc")}</p>
         </div>
 
         <div className="mt-6 space-y-4">
           <label className="block text-xs font-semibold text-zinc-600">
-            账号
+            {tAuth("username")}
             <input
               type="text"
               autoComplete="username"
@@ -202,11 +204,11 @@ export function LoginForm() {
               className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm text-zinc-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20 disabled:bg-zinc-50 disabled:text-zinc-500"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="注册时填写的账号"
+              placeholder={tAuth("usernameHint")}
             />
           </label>
           <label className="block text-xs font-semibold text-zinc-600">
-            密码
+            {tAuth("password")}
             <input
               type="password"
               autoComplete="current-password"
@@ -214,7 +216,7 @@ export function LoginForm() {
               className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm text-zinc-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20 disabled:bg-zinc-50 disabled:text-zinc-500"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="输入密码"
+              placeholder={tAuth("passwordHint")}
               onKeyDown={(e) => e.key === "Enter" && canSubmit && void submitLogin()}
             />
           </label>
@@ -228,13 +230,13 @@ export function LoginForm() {
           onClick={() => void submitLogin()}
           className="mt-5 w-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-45"
         >
-          {busy ? "登录中…" : "登 录"}
+          {busy ? tCommon("loading") : tAuth("submitLogin")}
         </button>
 
         {!embed ? (
           <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-zinc-100 pt-5 text-xs font-medium text-zinc-500">
             <Link href="/welcome/register" className="text-violet-700 hover:text-violet-900">
-              注册新账号
+              {tAuth("register")}
             </Link>
             <span className="hidden text-zinc-300 sm:inline" aria-hidden>
               ·

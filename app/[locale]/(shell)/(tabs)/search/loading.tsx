@@ -1,10 +1,13 @@
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/PageHeader";
 import { SearchListSkeleton } from "@/components/ui/PageListSkeleton";
 
-export default function SearchLoading() {
+export default async function SearchLoading() {
+  const t = await getTranslations("pages.loading");
+
   return (
     <div className="space-y-3 pb-4">
-      <PageHeader title="搜索" subtitle="加载检索…" backHref="/home" />
+      <PageHeader title={t("searchTitle")} subtitle={t("searchSubtitle")} backHref="/home" />
       <div className="glass-panel space-y-3 rounded-2xl p-3 shadow-sm motion-safe:animate-pulse">
         <div className="h-10 w-full rounded-2xl bg-zinc-100 dark:bg-zinc-800" />
         <div className="flex flex-wrap gap-2">

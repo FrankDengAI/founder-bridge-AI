@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
@@ -8,7 +9,7 @@ import { UserPageTabs } from "@/components/user/UserPageTabs";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromCookies } from "@/lib/session";
 import { isRole } from "@/lib/domain/role";
-import { ROLE_LABEL } from "@/lib/labels";
+import { getRoleLabel } from "@/lib/labels";
 
 type Props = { params: { id: string } };
 
@@ -24,6 +25,8 @@ function parseJsonArray(raw: string): string[] {
 }
 
 export default async function UserPage({ params }: Props) {
+  const t = await getTranslations("pages.userProfile");
+  const tRoles = await getTranslations("roles");
   const viewerId = await getUserIdFromCookies();
   const user = await prisma.user.findUnique({
     where: { id: params.id },
@@ -63,7 +66,7 @@ export default async function UserPage({ params }: Props) {
 
   return (
     <div className="space-y-4 pb-10">
-      <PageHeader title="用户主页" backHref="/home" />
+      <PageHeader title={t("title")} backHref="/home" />
 
       <section className="glass-panel overflow-hidden rounded-3xl shadow-soft ring-1 ring-white/70">
         <div className="relative h-28 bg-gradient-to-r from-brand-600 via-fuchsia-600 to-sky-500">
@@ -91,12 +94,15 @@ export default async function UserPage({ params }: Props) {
               />
             </div>
             <p className="mt-1 text-[11px] text-zinc-500">
-              粉丝 {user._count.followerEdges} · 关注 {user._count.followingEdges}
+              {t("followers", {
+                followers: user._count.followerEdges,
+                following: user._count.followingEdges,
+              })}
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
               {role ? (
                 <span className="rounded-full bg-brand-50 px-2.5 py-1 text-[11px] font-semibold text-brand-900 ring-1 ring-brand-200/60">
-                  {ROLE_LABEL[role]}
+                  {getRoleLabel(tRoles, role)}
                 </span>
               ) : null}
               {user.profile?.direction ? (
@@ -111,14 +117,14 @@ export default async function UserPage({ params }: Props) {
 
       <div className="flex flex-wrap gap-2">
         <Link href="/match" className="text-[11px] font-semibold text-brand-800 hover:underline">
-          去找 Ta 匹配
+          {t("matchLink")}
         </Link>
         <Link
           href={`/messages?peer=${encodeURIComponent(user.id)}&intent=interview`}
           className="inline-flex items-center gap-1 text-[11px] font-semibold text-violet-800 hover:underline"
         >
           <MessageCircle className="h-3.5 w-3.5" />
-          发消息
+          {t("messageLink")}
         </Link>
       </div>
 

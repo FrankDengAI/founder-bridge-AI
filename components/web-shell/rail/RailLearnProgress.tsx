@@ -5,12 +5,12 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useLearnProgress } from "@/lib/hooks/useLearnProgress";
 import { LEARN_STEPS } from "@/lib/learnSteps";
-import { RAIL_MISSIONS } from "@/lib/webModuleMission";
 import { RailPanel } from "./RailPanel";
 import { RailSkeleton } from "./RailPanel";
 
 export function RailLearnProgress() {
   const t = useTranslations("learn");
+  const tr = useTranslations("rail");
   const { loading, nextStep, pct, complete, stepCount } = useLearnProgress();
 
   if (loading) return <RailSkeleton className="h-32" />;
@@ -19,8 +19,8 @@ export function RailLearnProgress() {
 
   return (
     <RailPanel
-      title={RAIL_MISSIONS.learnProgress.title}
-      purpose={RAIL_MISSIONS.learnProgress.purpose}
+      title={tr("learnProgress.title")}
+      purpose={tr("learnProgress.purpose")}
       icon={<GraduationCap className="h-4 w-4 text-violet-600" />}
       index={0}
     >
@@ -41,7 +41,7 @@ export function RailLearnProgress() {
             </div>
             <div className="min-w-0">
               <p className="text-xs font-semibold text-zinc-900">
-                第 {nextStep}/{stepCount} 步
+                {tr("stepProgress", { current: nextStep, total: stepCount })}
               </p>
               <p className="mt-0.5 line-clamp-2 text-[11px] text-zinc-600">{stepMeta?.title}</p>
             </div>
@@ -51,7 +51,7 @@ export function RailLearnProgress() {
               href={`/learn/step/${nextStep}`}
               className="mt-3 inline-flex text-xs font-semibold text-violet-700 hover:underline"
             >
-              继续学习 →
+              {tr("continueLearn")}
             </Link>
           ) : null}
         </>

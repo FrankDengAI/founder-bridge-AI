@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { PageHeader } from "@/components/PageHeader";
@@ -19,6 +20,7 @@ import {
 } from "@/lib/retention";
 
 export function ProfileEditor() {
+  const t = useTranslations("pages.profileEdit");
   const router = useRouter();
   const userId = useClientUserId();
   const [role, setRole] = useState<Role>("ADC");
@@ -103,7 +105,7 @@ export function ProfileEditor() {
 
   return (
     <div className="space-y-4 pb-10">
-      <PageHeader title="编辑主页" backHref="/me" />
+      <PageHeader title={t("title")} backHref="/me" />
       {!userId ? (
         <p className="rounded-2xl bg-white/80 p-4 text-sm text-zinc-600 ring-1 ring-zinc-200">
           请先{" "}

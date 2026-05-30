@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import {
   BadgeCheck,
@@ -26,25 +27,28 @@ import { syncLocalUserId } from "@/lib/clientSession";
 import { useCurrentUser } from "@/lib/hooks/useClientUserId";
 import type { Role } from "@/lib/domain/role";
 import { ROLES, isRole } from "@/lib/domain/role";
-import { ROLE_LABEL } from "@/lib/labels";
+import { getRoleLabel } from "@/lib/labels";
 
-const quickLinks = [
-  { href: "/workspace", label: "工作台", desc: "统计与收藏", icon: LayoutGrid },
-  { href: "/creator", label: "创作者中心", desc: "我的笔记与指标", icon: BadgeCheck },
-  { href: "/orders", label: "订单/心愿单", desc: "购买记录与收藏", icon: ShoppingBag },
-  { href: "/publish", label: "发布", desc: "分享笔记与想法", icon: PenSquare },
-  { href: "/settings/profile", label: "编辑主页", desc: "资料与技能", icon: UserRound },
-  { href: "/search", label: "搜索", desc: "标题检索", icon: Search },
-  { href: "/messages", label: "消息", desc: "私聊会话", icon: MessageCircle },
-  { href: "/match", label: "匹配", desc: "算法推荐", icon: Sparkles },
-  { href: "/tools", label: "工具", desc: "导航/商城", icon: Wrench },
-  { href: "/settings", label: "设置", desc: "账户 / 数据", icon: Settings },
-  { href: "/me/achievements", label: "成就墙", desc: "徽章与分享", icon: BadgeCheck },
+const quickLinkKeys = [
+  { href: "/workspace", key: "workspace", icon: LayoutGrid },
+  { href: "/creator", key: "creator", icon: BadgeCheck },
+  { href: "/orders", key: "orders", icon: ShoppingBag },
+  { href: "/publish", key: "publish", icon: PenSquare },
+  { href: "/settings/profile", key: "profile", icon: UserRound },
+  { href: "/search", key: "search", icon: Search },
+  { href: "/messages", key: "messages", icon: MessageCircle },
+  { href: "/match", key: "match", icon: Sparkles },
+  { href: "/tools", key: "tools", icon: Wrench },
+  { href: "/settings", key: "settings", icon: Settings },
+  { href: "/me/achievements", key: "achievements", icon: BadgeCheck },
 ] as const;
 
 export function MePanel() {
   const { user, loading: authLoading } = useCurrentUser();
   const userId = user?.userId ?? "";
+  const t = useTranslations("pages.me");
+  const tRoles = useTranslations("roles");
+  const tCommon = useTranslations("common");
   const [displayName, setDisplayName] = useState("");
   const [role, setRole] = useState<Role | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -63,7 +67,7 @@ export function MePanel() {
       setDisplayName(data.user.displayName);
       setRole(isRole(data.profile.role) ? data.profile.role : null);
     } catch {
-      setMsg("暂时无法加载资料，请稍后重试。");
+      setMsg(t("loadFail"));
     } finally {
       setLoading(false);
     }
@@ -72,19 +76,19 @@ export function MePanel() {
   useEffect(() => {
     if (authLoading) return;
     if (!user?.userId) {
-      setMsg("请先登录后查看个人资料");
+      setMsg(t("loginRequired"));
       setLoading(false);
       return;
     }
     syncLocalUserId(user.userId);
     void load(user.userId);
-  }, [authLoading, user?.userId, load]);
+  }, [authLoading, user?.userId, load, t]);
 
   return (
     <div className="space-y-4 pb-4">
       <PageHeader
-        title="我的"
-        subtitle="个人中心 · 快捷入口 · 任意页右上角「账户」也可退出登录。"
+        title={t("title")}
+        subtitle={t("subtitle")}
       />
 
       <LearnProgressInline />
@@ -94,9 +98,9 @@ export function MePanel() {
       <MeRetentionHub />
 
       <section className="rounded-3xl border border-rose-200/80 bg-gradient-to-br from-rose-50/90 to-white/80 p-4 shadow-sm ring-1 ring-rose-100/80">
-        <p className="text-xs font-semibold text-rose-900">账户与安全</p>
+        <p className="text-xs font-semibold text-rose-900">{t("accountSecurity")}</p>
         <p className="mt-1 text-[11px] leading-relaxed text-rose-800/80">
-          退出后将清除会话 Cookie 与本地当前用户 id，并回到欢迎页。与「设置」页中的退出为同一套逻辑。
+          {t("logoutDesc")}
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <button
@@ -105,21 +109,21 @@ export function MePanel() {
             className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-rose-600 px-4 py-3 text-sm font-bold text-white shadow-md transition hover:bg-rose-700 sm:flex-none"
           >
             <LogOut className="h-4 w-4" />
-            退出登录
+            {t("logout")}
           </button>
           <Link
             href="/settings"
             className="inline-flex items-center justify-center rounded-2xl bg-white/90 px-4 py-3 text-sm font-semibold text-zinc-900 ring-1 ring-zinc-200/80 transition hover:bg-white"
           >
-            打开设置（数据 / 账户）
+            {t("openSettings")}
           </Link>
         </div>
       </section>
 
       <section className="glass-panel rounded-3xl p-4 shadow-soft ring-1 ring-white/70">
-        <p className="text-xs font-semibold text-zinc-900">快捷入口</p>
+        <p className="text-xs font-semibold text-zinc-900">{t("quickLinks")}</p>
         <div className="mt-3 grid grid-cols-2 gap-2">
-          {quickLinks.map((it) => {
+          {quickLinkKeys.map((it) => {
             const Icon = it.icon;
             return (
               <Link
@@ -132,8 +136,8 @@ export function MePanel() {
                     <Icon className="h-4 w-4" />
                   </span>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-zinc-950">{it.label}</p>
-                    <p className="truncate text-[11px] text-zinc-600">{it.desc}</p>
+                    <p className="text-sm font-semibold text-zinc-950">{t(`links.${it.key}.label`)}</p>
+                    <p className="truncate text-[11px] text-zinc-600">{t(`links.${it.key}.desc`)}</p>
                   </div>
                 </div>
               </Link>
@@ -144,21 +148,21 @@ export function MePanel() {
 
       <section className="glass-panel rounded-3xl p-4 shadow-sm ring-1 ring-white/70">
         {loading ? (
-          <p className="text-sm text-zinc-600">加载中…</p>
+          <p className="text-sm text-zinc-600">{tCommon("loading")}</p>
         ) : (
           <>
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-zinc-950">
-                  {displayName || user?.displayName || "用户"}
+                  {displayName || user?.displayName || t("user")}
                 </p>
-                <p className="mt-1 text-xs text-zinc-600">角色定位（来自资料库）</p>
+                <p className="mt-1 text-xs text-zinc-600">{t("roleFromProfile")}</p>
               </div>
               <Link
                 href="/settings/profile"
                 className="rounded-full bg-brand-50 px-3 py-1 text-[11px] font-semibold text-brand-900 ring-1 ring-brand-200/70 hover:bg-white"
               >
-                编辑主页
+                {t("links.profile.label")}
               </Link>
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -171,7 +175,7 @@ export function MePanel() {
                       : "border-zinc-200/80 bg-white/70 text-zinc-600"
                   }`}
                 >
-                  {ROLE_LABEL[r]}
+                  {getRoleLabel(tRoles, r)}
                 </span>
               ))}
             </div>
@@ -184,7 +188,7 @@ export function MePanel() {
               <>
                 {" "}
                 <Link href="/welcome/login" className="font-semibold underline hover:text-brand-700">
-                  去登录
+                  {t("goLogin")}
                 </Link>
               </>
             ) : null}
@@ -195,22 +199,22 @@ export function MePanel() {
       <section className="glass-panel rounded-3xl p-4 shadow-sm ring-1 ring-white/70">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h2 className="text-sm font-semibold text-zinc-950">我的主页</h2>
-            <p className="mt-1 text-xs text-zinc-600">查看笔记/项目聚合展示。</p>
+            <h2 className="text-sm font-semibold text-zinc-950">{t("myProfile")}</h2>
+            <p className="mt-1 text-xs text-zinc-600">{t("profileDesc")}</p>
           </div>
           {userId ? (
             <Link
               href={`/user/${encodeURIComponent(userId)}`}
               className="rounded-2xl bg-gradient-to-r from-brand-600 to-fuchsia-600 px-3 py-2 text-xs font-semibold text-white shadow-glow"
             >
-              打开
+              {t("open")}
             </Link>
           ) : (
             <Link
               href="/welcome/login"
               className="rounded-2xl bg-zinc-200 px-3 py-2 text-xs font-semibold text-zinc-700"
             >
-              请先登录
+              {t("loginFirst")}
             </Link>
           )}
         </div>

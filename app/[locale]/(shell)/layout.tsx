@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { AppShell } from "@/components/AppShell";
 import clsx from "clsx";
@@ -13,11 +12,6 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
-
-export const metadata: Metadata = {
-  title: "VibeCoding 创业社交",
-  description: "学习、展示、工具与创业伙伴匹配",
-};
 
 export default function ShellLayout({
   children,

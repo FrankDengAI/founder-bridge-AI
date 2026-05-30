@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Compass,
   Cpu,
@@ -17,7 +18,6 @@ import { TodayMissionStrip } from "@/components/home/TodayMissionStrip";
 import { stripLocalePrefix } from "@/lib/localePath";
 import { useConversationStats } from "@/lib/hooks/useConversationStats";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
-import { RAIL_MISSIONS } from "@/lib/webModuleMission";
 import { RailHotList } from "@/components/web-shell/rail/RailHotList";
 import { RailLearnProgress } from "@/components/web-shell/rail/RailLearnProgress";
 import { RailMatchTips } from "@/components/web-shell/rail/RailMatchTips";
@@ -40,13 +40,6 @@ type RailData = {
   }[];
 };
 
-const globalQuickLinks: QuickLink[] = [
-  { href: "/match", label: "开始匹配", icon: Sparkles, tone: "from-violet-600 to-fuchsia-600" },
-  { href: "/publish", label: "发布笔记", icon: PenLine, tone: "from-sky-600 to-cyan-600" },
-  { href: "/learn/step/1", label: "学习路线", icon: GraduationCap, tone: "from-emerald-600 to-teal-600" },
-  { href: "/tools", label: "工具商城", icon: Cpu, tone: "from-amber-500 to-orange-600" },
-];
-
 type RailKind = "home" | "match" | "tools" | "models" | "learn" | "messages" | "default";
 
 function railKind(pathname: string): RailKind {
@@ -66,8 +59,19 @@ export function WebRightRail({ pathname: pathnameProp }: { pathname?: string }) 
   const kind = railKind(pathname);
   const userId = useClientUserId();
   const { unread: msgUnread } = useConversationStats(Boolean(userId));
+  const t = useTranslations("rail");
   const [data, setData] = useState<RailData | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const globalQuickLinks = useMemo<QuickLink[]>(
+    () => [
+      { href: "/match", label: t("startMatch"), icon: Sparkles, tone: "from-violet-600 to-fuchsia-600" },
+      { href: "/publish", label: t("publishNote"), icon: PenLine, tone: "from-sky-600 to-cyan-600" },
+      { href: "/learn/step/1", label: t("learnPath"), icon: GraduationCap, tone: "from-emerald-600 to-teal-600" },
+      { href: "/tools", label: t("toolMarket"), icon: Cpu, tone: "from-amber-500 to-orange-600" },
+    ],
+    [t],
+  );
 
   const needsRailApi = kind === "home" || kind === "tools" || kind === "models" || kind === "default";
 
@@ -96,15 +100,15 @@ export function WebRightRail({ pathname: pathnameProp }: { pathname?: string }) 
               />
             </div>
             <RailPanel
-              title={RAIL_MISSIONS.todayMission.title}
-              purpose={RAIL_MISSIONS.todayMission.purpose}
+              title={t("todayMission.title")}
+              purpose={t("todayMission.purpose")}
               index={1}
             >
               <TodayMissionStrip />
             </RailPanel>
             <RailPanel
-              title={RAIL_MISSIONS.learnProgress.title}
-              purpose={RAIL_MISSIONS.learnProgress.purpose}
+              title={t("learnProgress.title")}
+              purpose={t("learnProgress.purpose")}
               index={2}
             >
               <LearnProgressCard variant="compact" />
@@ -129,7 +133,7 @@ export function WebRightRail({ pathname: pathnameProp }: { pathname?: string }) 
                 globalQuickLinks[0]!,
                 {
                   href: "/messages",
-                  label: "查看消息",
+                  label: t("viewMessages"),
                   icon: MessageCircle,
                   tone: "from-rose-500 to-pink-600",
                 },
@@ -142,12 +146,8 @@ export function WebRightRail({ pathname: pathnameProp }: { pathname?: string }) 
         {kind === "tools" || kind === "models" ? (
           <>
             <RailPanel
-              title={kind === "tools" ? "工具商城" : "模型社区"}
-              purpose={
-                kind === "tools"
-                  ? "真实评分帮你少踩坑——在 Vibe Coding 全流程里快速找到趁手的 AI 与生产力工具。"
-                  : "按场景看真实短评：编程、写作、性价比下的体感，比官方榜更贴近创业实战。"
-              }
+              title={kind === "tools" ? t("toolMarket") : t("modelCommunity")}
+              purpose={kind === "tools" ? t("toolsDesc") : t("modelsDesc")}
               icon={<Wrench className="h-4 w-4 text-amber-600" />}
               index={0}
             >
@@ -155,7 +155,7 @@ export function WebRightRail({ pathname: pathnameProp }: { pathname?: string }) 
                 href={kind === "tools" ? "/models" : "/tools"}
                 className="inline-flex items-center gap-1 rounded-full bg-violet-50 px-3 py-1.5 text-xs font-semibold text-violet-800 ring-1 ring-violet-200/70 transition hover:bg-violet-100"
               >
-                {kind === "tools" ? "去看模型榜 →" : "去看工具商城 →"}
+                {kind === "tools" ? t("viewModels") : t("viewTools")}
               </Link>
             </RailPanel>
             {loading ? <RailSkeleton index={1} /> : null}
@@ -174,15 +174,15 @@ export function WebRightRail({ pathname: pathnameProp }: { pathname?: string }) 
           <>
             <RailLearnProgress />
             <RailPanel
-              title="学习路线"
-              purpose="17 步 Vibe Coding 实战：从环境搭建到上线部署，降低「不知道从哪开始」的焦虑。"
+              title={t("learnPath")}
+              purpose={t("learnDesc")}
               index={1}
             >
               <Link
                 href="/learn/github"
                 className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-700"
               >
-                GitHub 协作指南 →
+                {t("githubGuide")}
               </Link>
             </RailPanel>
           </>
@@ -191,8 +191,8 @@ export function WebRightRail({ pathname: pathnameProp }: { pathname?: string }) 
         {kind === "messages" ? (
           <>
             <RailPanel
-              title="消息中心"
-              purpose="私聊是协作的起点——来自匹配的会话带标签，减少破冰，直接聊项目。"
+              title={t("messageCenter")}
+              purpose={t("messagesDesc")}
               icon={<MessageCircle className="h-4 w-4 text-rose-500" />}
               index={0}
             >
@@ -200,19 +200,17 @@ export function WebRightRail({ pathname: pathnameProp }: { pathname?: string }) 
                 <p className="text-sm font-semibold text-zinc-900">
                   <span className="inline-flex items-center gap-1.5">
                     <span className="pulse-dot text-rose-500" aria-hidden />
-                    {msgUnread} 条未读会话
+                    {t("unreadCount", { count: msgUnread })}
                   </span>
                 </p>
               ) : (
-                <p className="text-xs leading-relaxed text-zinc-600">
-                  暂无未读。去匹配页认识新伙伴，或回复社区里感兴趣的人。
-                </p>
+                <p className="text-xs leading-relaxed text-zinc-600">{t("noUnread")}</p>
               )}
               <Link
                 href="/match"
                 className="mt-3 inline-flex text-xs font-semibold text-violet-700 hover:underline"
               >
-                去匹配 →
+                {t("goMatch")}
               </Link>
             </RailPanel>
             <RailQuickActions links={globalQuickLinks.slice(0, 3)} index={1} />
@@ -222,8 +220,8 @@ export function WebRightRail({ pathname: pathnameProp }: { pathname?: string }) 
         {kind === "default" ? (
           <>
             <RailPanel
-              title={RAIL_MISSIONS.explore.title}
-              purpose={RAIL_MISSIONS.explore.purpose}
+              title={t("explore.title")}
+              purpose={t("explore.purpose")}
               icon={<Compass className="h-4 w-4 text-violet-600" />}
               index={0}
             >
@@ -231,7 +229,7 @@ export function WebRightRail({ pathname: pathnameProp }: { pathname?: string }) 
                 href="/home"
                 className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:brightness-110"
               >
-                回到发现页 →
+                {t("backDiscover")}
               </Link>
             </RailPanel>
             <RailQuickActions links={globalQuickLinks} index={1} />

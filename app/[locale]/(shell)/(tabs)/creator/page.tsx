@@ -2,27 +2,22 @@ import { Link } from "@/i18n/navigation";
 import { PageHeader } from "@/components/PageHeader";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromCookies } from "@/lib/session";
-import { POST_TYPE_LABEL } from "@/lib/labels";
+import { getPostTypeLabel } from "@/lib/labels";
 import { isPostType } from "@/lib/domain/postType";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function CreatorPage() {
+  const t = await getTranslations("pages.creator");
+  const tPost = await getTranslations("postType");
   const uid = await getUserIdFromCookies();
   if (!uid) {
     return (
       <div className="space-y-4 pb-10">
-        <PageHeader
-          title="创作者中心"
-          subtitle="请先通过欢迎页登录后再查看你的内容。"
-          backHref="/me"
-        />
+        <PageHeader title={t("title")} subtitle={t("loginRequired")} backHref="/me" />
         <p className="glass-panel rounded-shell p-4 text-sm text-zinc-600 shadow-panel">
-          未检测到登录会话。请前往{" "}
-          <Link className="font-semibold text-brand-800 hover:underline" href="/welcome/login">
-            欢迎页登录
-          </Link>
-          后再查看创作者数据。
+          {t("noSession")}
         </p>
       </div>
     );
@@ -58,25 +53,30 @@ export default async function CreatorPage() {
   return (
     <div className="space-y-4 pb-10">
       <PageHeader
-        title="创作者中心"
-        subtitle={`${user?.displayName ?? "创作者"} · 笔记 ${postCount} 条 · 累计 ♥ ${sumLikes._sum.likes ?? 0} · 收藏 ${sumSaves._sum.saves ?? 0}`}
+        title={t("title")}
+        subtitle={t("stats", {
+          name: user?.displayName ?? t("title"),
+          notes: postCount,
+          likes: sumLikes._sum.likes ?? 0,
+          saves: sumSaves._sum.saves ?? 0,
+        })}
         backHref="/me"
         right={
           <Link
             href="/publish"
             className="rounded-2xl bg-gradient-to-r from-brand-600 to-fuchsia-600 px-3 py-2 text-[11px] font-semibold text-white shadow-glow"
           >
-            发布
+            {t("publish")}
           </Link>
         }
       />
 
       <section className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {[
-          { k: "笔记", v: postCount },
-          { k: "累计点赞", v: sumLikes._sum.likes ?? 0 },
-          { k: "累计收藏", v: sumSaves._sum.saves ?? 0 },
-          { k: "近端排序", v: "最新优先" },
+          { k: t("statNotes"), v: postCount },
+          { k: t("statLikes"), v: sumLikes._sum.likes ?? 0 },
+          { k: t("statSaves"), v: sumSaves._sum.saves ?? 0 },
+          { k: t("sortMode"), v: t("newestFirst") },
         ].map((x) => (
           <div
             key={x.k}
@@ -90,7 +90,7 @@ export default async function CreatorPage() {
 
       {drafts.length > 0 ? (
         <section className="space-y-2">
-          <h2 className="text-sm font-semibold text-zinc-900">草稿箱</h2>
+          <h2 className="text-sm font-semibold text-zinc-900">{t("drafts")}</h2>
           <ul className="space-y-2">
             {drafts.map((p) => (
               <li key={p.id}>
@@ -98,7 +98,7 @@ export default async function CreatorPage() {
                   href={`/publish?draftId=${p.id}`}
                   className="glass-panel block rounded-shell px-3 py-3 text-sm ring-1 ring-amber-200/70"
                 >
-                  <span className="text-[10px] font-semibold text-amber-800">草稿</span>
+                  <span className="text-[10px] font-semibold text-amber-800">{t("draft")}</span>
                   <p className="mt-1 font-semibold text-zinc-950">{p.title}</p>
                 </Link>
               </li>
@@ -108,10 +108,10 @@ export default async function CreatorPage() {
       ) : null}
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-zinc-900">我的笔记</h2>
+        <h2 className="text-sm font-semibold text-zinc-900">{t("myNotes")}</h2>
         <ul className="space-y-2">
           {posts.map((p) => {
-            const label = isPostType(p.type) ? POST_TYPE_LABEL[p.type] : p.type;
+            const label = isPostType(p.type) ? getPostTypeLabel(tPost, p.type) : p.type;
             return (
               <li key={p.id}>
                 <Link
@@ -124,10 +124,10 @@ export default async function CreatorPage() {
                     </span>
                     <p className="mt-1 truncate text-sm font-semibold text-zinc-950">{p.title}</p>
                     <p className="text-[11px] text-zinc-500">
-                      ♥ {p.likes} · 收藏 {p.saves}
+                      {t("engagement", { likes: p.likes, saves: p.saves })}
                     </p>
                   </div>
-                  <span className="shrink-0 text-[11px] font-semibold text-brand-800">查看</span>
+                  <span className="shrink-0 text-[11px] font-semibold text-brand-800">{t("view")}</span>
                 </Link>
               </li>
             );
@@ -135,7 +135,7 @@ export default async function CreatorPage() {
         </ul>
         {posts.length === 0 ? (
           <p className="glass-panel rounded-shell p-4 text-xs text-zinc-600 shadow-panel">
-            暂无笔记，去发布一条吧。
+            {t("empty")}
           </p>
         ) : null}
       </section>

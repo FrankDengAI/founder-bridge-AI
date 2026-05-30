@@ -2,6 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   ArrowUpRight,
   Crown,
@@ -49,6 +50,8 @@ type ToolSort = "rating" | "reviews" | "name";
 
 export function ToolsClient({ initialTools, initialMarket }: Props) {
   const isWeb = useIsWebMode();
+  const t = useTranslations("pages.tools");
+  const tCommon = useTranslations("common");
   const [cat, setCat] = useState("all");
   const [toast, setToast] = useState<string | null>(null);
   const [q, setQ] = useState("");
@@ -79,7 +82,7 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
         body: JSON.stringify({ marketId: m.id }),
       });
       if (!res.ok) {
-        setToast("请先登录后再使用心愿单");
+        setToast(t("loginWishlist"));
         window.setTimeout(() => setToast(null), 2200);
         return;
       }
@@ -89,10 +92,10 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
         else n.add(m.id);
         return n;
       });
-      setToast(on ? "已从心愿单移除" : `已加入心愿单：${m.title}`);
+      setToast(on ? t("removedWishlist") : t("addedWishlist", { title: m.title }));
       window.setTimeout(() => setToast(null), 2200);
     } catch {
-      setToast("网络异常");
+      setToast(t("networkError"));
       window.setTimeout(() => setToast(null), 2200);
     }
   };
@@ -127,6 +130,16 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
     );
   }, [initialMarket, marketQ]);
 
+  const sortOptions = useMemo(
+    () =>
+      [
+        { id: "rating" as const, label: t("sortRating") },
+        { id: "reviews" as const, label: t("sortReviews") },
+        { id: "name" as const, label: t("sortName") },
+      ] satisfies { id: ToolSort; label: string }[],
+    [t],
+  );
+
   return (
     <div className="space-y-4 pb-4">
       {toast ? (
@@ -136,30 +149,30 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
       ) : null}
 
       <PageHeader
-        title="工具与商城"
-        subtitle="场景筛选 · 搜索排序 · 用户评价 · 工具商城一站逛完。"
+        title={t("title")}
+        subtitle={t("subtitle")}
         right={
           <div className="flex gap-1">
             <button
               type="button"
-              title="快捷命令"
-              aria-label="打开快捷命令面板"
+              title={tCommon("commandPalette")}
+              aria-label={t("openCommand")}
               onClick={() => window.dispatchEvent(new Event("vibe-open-command-palette"))}
               className="rounded-2xl bg-white/80 px-2.5 py-2 text-[11px] font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-white"
             >
-              快捷命令
+              {tCommon("commandPalette")}
             </button>
             <Link
               href="/search"
               className="rounded-2xl bg-white/80 px-3 py-2 text-[11px] font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-white"
             >
-              去搜索
+              {t("goSearch")}
             </Link>
             <Link
               href="/orders"
               className="rounded-2xl bg-white/80 px-3 py-2 text-[11px] font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-white"
             >
-              订单
+              {t("orders")}
             </Link>
           </div>
         }
@@ -174,8 +187,8 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
               <Crown className="h-4 w-4" />
             </span>
             <div>
-              <p className="text-sm font-bold text-zinc-900">本周工具榜 Top 3</p>
-              <p className="text-[11px] text-zinc-600">综合评分 + 评价数 + 收藏热度</p>
+              <p className="text-sm font-bold text-zinc-900">{t("topTools")}</p>
+              <p className="text-[11px] text-zinc-600">{t("topToolsDesc")}</p>
             </div>
           </div>
           <ol className="relative mt-3 grid gap-2 sm:grid-cols-3">
@@ -221,18 +234,12 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="筛选工具名称、描述、分类…"
+              placeholder={t("filterPlaceholder")}
               className="min-w-0 flex-1 bg-transparent text-xs outline-none"
             />
           </div>
           <div className="flex items-center gap-1 rounded-xl bg-zinc-100/80 p-0.5 ring-1 ring-zinc-200/60">
-            {(
-              [
-                { id: "rating" as const, label: "评分优先" },
-                { id: "reviews" as const, label: "评价数" },
-                { id: "name" as const, label: "名称" },
-              ] satisfies { id: ToolSort; label: string }[]
-            ).map((x) => (
+            {sortOptions.map((x) => (
               <button
                 key={x.id}
                 type="button"
@@ -248,7 +255,7 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
         </div>
         <div className="mb-2 flex items-center gap-1 text-[10px] font-semibold text-zinc-400">
           <SlidersHorizontal className="h-3 w-3" />
-          场景分类
+          {t("scenarios")}
         </div>
         <ToolCategoryNav value={cat} onChange={setCat} />
         <ul
@@ -257,13 +264,13 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
             isWeb ? "grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4" : "gap-2 sm:grid-cols-2",
           )}
         >
-          {filtered.map((t, idx) => {
-            const stars = Math.round(t.avgRating * 2) / 2;
-            const initial = t.name.replace(/[^A-Za-z一-龥]/g, "").slice(0, 1) || "T";
+          {filtered.map((tool, idx) => {
+            const stars = Math.round(tool.avgRating * 2) / 2;
+            const initial = tool.name.replace(/[^A-Za-z一-龥]/g, "").slice(0, 1) || "T";
             return (
-              <li key={t.id}>
+              <li key={tool.id}>
                 <Link
-                  href={`/tools/${t.id}`}
+                  href={`/tools/${tool.id}`}
                   className="group relative block overflow-hidden rounded-2xl border border-zinc-200/70 bg-white/85 p-3 transition hover:-translate-y-0.5 hover:border-violet-300/70 hover:shadow-[0_18px_46px_-22px_rgba(139,92,246,0.45)]"
                 >
                   {/* 角部装饰光 */}
@@ -287,16 +294,16 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
                     </span>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-1">
-                        <p className="truncate text-sm font-bold text-zinc-950">{t.name}</p>
-                        {t.avgRating >= 4.7 ? (
+                        <p className="truncate text-sm font-bold text-zinc-950">{tool.name}</p>
+                        {tool.avgRating >= 4.7 ? (
                           <span className="inline-flex items-center gap-0.5 rounded-full bg-rose-100 px-1.5 py-0.5 text-[9px] font-bold text-rose-700">
                             <Flame className="h-2.5 w-2.5" />
-                            热门
+                            {t("hot")}
                           </span>
                         ) : null}
                       </div>
                       <p className="text-[10px] font-medium text-violet-700">
-                        {t.category}
+                        {tool.category}
                       </p>
                       {/* 星条 */}
                       <div className="mt-1 flex items-center gap-1">
@@ -315,28 +322,28 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
                           ))}
                         </div>
                         <span className="text-[10px] font-mono font-bold text-amber-700 num-tab">
-                          {t.avgRating.toFixed(1)}
+                          {tool.avgRating.toFixed(1)}
                         </span>
                         <span className="text-[10px] text-zinc-400">·</span>
                         <span className="text-[10px] text-zinc-500">
-                          {t.reviewCount} 评价
+                          {t("reviewCount", { count: tool.reviewCount })}
                         </span>
                       </div>
                     </div>
                   </div>
                   <p className="mt-2 line-clamp-2 text-[11px] leading-relaxed text-zinc-600">
-                    {t.description}
+                    {tool.description}
                   </p>
                   <div className="mt-2 flex items-center justify-between border-t border-zinc-100 pt-2 text-[11px]">
                     <span className="inline-flex items-center gap-1 text-zinc-500">
                       <TrendingUp className="h-3 w-3" />
                       <span className="text-zinc-700">
-                        {Math.max(8, Math.round(t.reviewCount * 1.3))}
+                        {Math.max(8, Math.round(tool.reviewCount * 1.3))}
                       </span>
-                      <span>本周热度</span>
+                      <span>{t("weeklyHeat")}</span>
                     </span>
                     <span className="inline-flex items-center gap-0.5 font-semibold text-violet-700 transition group-hover:gap-1">
-                      详情
+                      {t("details")}
                       <ArrowUpRight className="h-3 w-3" />
                     </span>
                   </div>
@@ -346,16 +353,16 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
           })}
         </ul>
         {filtered.length === 0 ? (
-          <p className="py-6 text-center text-xs text-zinc-600">该分类暂无工具</p>
+          <p className="py-6 text-center text-xs text-zinc-600">{t("noTools")}</p>
         ) : null}
       </section>
 
       <section className="glass-panel rounded-3xl p-4 shadow-soft ring-1 ring-white/70">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-sm font-semibold text-zinc-950">工具商城</h2>
+          <h2 className="text-sm font-semibold text-zinc-950">{t("marketTitle")}</h2>
           <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-600">
             <ShoppingBag className="h-4 w-4 text-brand-700" />
-            可扩展订单系统
+            {t("marketSubtitle")}
           </span>
         </div>
         <div className="mt-3 flex items-center gap-2 rounded-2xl bg-white/80 px-3 py-2 ring-1 ring-zinc-200/70">
@@ -363,7 +370,7 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
           <input
             value={marketQ}
             onChange={(e) => setMarketQ(e.target.value)}
-            placeholder="筛选商品标题、类型、描述…"
+            placeholder={t("marketFilter")}
             className="min-w-0 flex-1 bg-transparent text-xs outline-none"
           />
         </div>
@@ -411,7 +418,7 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
                   <button
                     type="button"
                     aria-pressed={onWish}
-                    aria-label={onWish ? "从心愿单移除" : "加入心愿单"}
+                    aria-label={onWish ? t("removeWishlist") : t("addWishlist")}
                     onClick={() => void toggleWishlist(m)}
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ring-1 transition ${
                       onWish
@@ -433,14 +440,14 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
                     </p>
                     <p className="mt-0.5 inline-flex items-center gap-0.5 text-[10px] text-zinc-500">
                       <Sparkles className="h-2.5 w-2.5 text-amber-500" />
-                      已售 {Math.max(12, idx * 47 + 86)}
+                      {t("sold", { count: Math.max(12, idx * 47 + 86) })}
                     </p>
                   </div>
                   <Link
                     href={`/market/${m.id}`}
                     className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-brand-600 to-fuchsia-600 px-3.5 py-1.5 text-[11px] font-bold text-white shadow-glow transition hover:opacity-95"
                   >
-                    立即购买
+                    {t("buyNow")}
                     <ArrowUpRight className="h-3 w-3" />
                   </Link>
                 </div>
@@ -449,7 +456,7 @@ export function ToolsClient({ initialTools, initialMarket }: Props) {
           })}
         </ul>
         {marketFiltered.length === 0 ? (
-          <p className="py-6 text-center text-xs text-zinc-600">没有匹配的商品，清空筛选试试</p>
+          <p className="py-6 text-center text-xs text-zinc-600">{t("noProducts")}</p>
         ) : null}
       </section>
     </div>

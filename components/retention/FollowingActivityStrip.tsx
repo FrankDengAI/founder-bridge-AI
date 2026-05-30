@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type Item = {
   postId: string;
@@ -14,6 +15,7 @@ type Item = {
 };
 
 export function FollowingActivityStrip() {
+  const t = useTranslations("retention.following");
   const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
@@ -29,7 +31,7 @@ export function FollowingActivityStrip() {
     <section className="rounded-2xl bg-cyan-50/80 p-3 ring-1 ring-cyan-200/60">
       <p className="flex items-center gap-1.5 text-xs font-semibold text-cyan-950">
         <Users className="h-3.5 w-3.5" />
-        关注的人 · 最新动态
+        {t("title")}
       </p>
       <ul className="mt-2 space-y-2">
         {items.map((it) => (

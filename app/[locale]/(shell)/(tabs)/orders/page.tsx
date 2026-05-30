@@ -2,6 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { PageHeader } from "@/components/PageHeader";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromCookies } from "@/lib/session";
+import { getLocale, getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
@@ -9,29 +10,31 @@ function formatPrice(cents: number) {
   return `¥${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)}`;
 }
 
-function formatOrderStatus(status: string) {
-  const map: Record<string, string> = {
-    paid: "已支付",
-    pending: "待支付",
-    cancelled: "已取消",
-    completed: "已完成",
-    DEMO_PAID: "已支付",
-  };
-  return map[status] ?? "处理中";
-}
-
 export default async function OrdersPage() {
+  const t = await getTranslations("pages.orders");
+  const locale = await getLocale();
   const uid = await getUserIdFromCookies();
   if (!uid) {
     return (
       <div className="space-y-4 pb-10">
-        <PageHeader title="订单与心愿单" backHref="/tools" />
+        <PageHeader title={t("title")} backHref="/tools" />
         <p className="glass-panel rounded-shell p-4 text-sm text-zinc-600 shadow-panel">
-          请先登录后查看订单与心愿单。
+          {t("loginRequired")}
         </p>
       </div>
     );
   }
+
+  const formatOrderStatus = (status: string) => {
+    const map: Record<string, string> = {
+      paid: t("statusPaid"),
+      pending: t("statusPending"),
+      cancelled: t("statusCancelled"),
+      completed: t("statusCompleted"),
+      DEMO_PAID: t("statusPaid"),
+    };
+    return map[status] ?? t("statusProcessing");
+  };
 
   const [wishlist, orders] = await Promise.all([
     prisma.wishlistItem.findMany({
@@ -46,16 +49,14 @@ export default async function OrdersPage() {
     }),
   ]);
 
+  const dateLocale = locale === "zh" ? "zh-CN" : "en-US";
+
   return (
     <div className="space-y-4 pb-10">
-      <PageHeader
-        title="订单与心愿单"
-        subtitle="心愿单收藏与购买记录，当前为模拟支付流程。"
-        backHref="/tools"
-      />
+      <PageHeader title={t("title")} subtitle={t("subtitle")} backHref="/tools" />
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-zinc-900">心愿单</h2>
+        <h2 className="text-sm font-semibold text-zinc-900">{t("wishlist")}</h2>
         <ul className="space-y-2">
           {wishlist.map((w) => (
             <li
@@ -70,18 +71,18 @@ export default async function OrdersPage() {
                 href={`/market/${w.marketId}`}
                 className="shrink-0 rounded-xl bg-brand-50 px-3 py-1.5 text-[11px] font-semibold text-brand-900 ring-1 ring-brand-200/70"
               >
-                详情
+                {t("details")}
               </Link>
             </li>
           ))}
         </ul>
         {wishlist.length === 0 ? (
-          <p className="text-xs text-zinc-500">暂无心愿单条目。在工具商城点击「加入心愿单」。</p>
+          <p className="text-xs text-zinc-500">{t("emptyWishlist")}</p>
         ) : null}
       </section>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-zinc-900">我的订单</h2>
+        <h2 className="text-sm font-semibold text-zinc-900">{t("myOrders")}</h2>
         <ul className="space-y-2">
           {orders.map((o) => (
             <li
@@ -92,14 +93,14 @@ export default async function OrdersPage() {
                 <p className="truncate text-sm font-semibold text-zinc-950">{o.market.title}</p>
                 <p className="text-[11px] text-zinc-500">
                   {formatPrice(o.market.priceCents)} · {formatOrderStatus(o.status)} ·{" "}
-                  {o.createdAt.toLocaleDateString("zh-CN")}
+                  {o.createdAt.toLocaleDateString(dateLocale)}
                 </p>
               </div>
             </li>
           ))}
         </ul>
         {orders.length === 0 ? (
-          <p className="text-xs text-zinc-500">暂无订单。在商品详情页完成购买即可在此查看。</p>
+          <p className="text-xs text-zinc-500">{t("emptyOrders")}</p>
         ) : null}
       </section>
     </div>

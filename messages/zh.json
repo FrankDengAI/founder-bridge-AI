@@ -1,4 +1,14 @@
 {
+  "meta": {
+    "title": "VibeCoding 创业社交",
+    "description": "学习、展示、工具与创业伙伴匹配"
+  },
+  "account": {
+    "menu": "账户菜单",
+    "me": "我的",
+    "settingsLogout": "设置（含退出）",
+    "logout": "退出登录"
+  },
   "common": {
     "loading": "加载中…",
     "save": "保存",
@@ -17,6 +27,7 @@
     "languageEn": "English",
     "switchToEn": "切换到 English",
     "switchToZh": "切换到中文",
+    "switchToZhShort": "中文",
     "commandPalette": "命令面板",
     "openSearch": "搜索",
     "hot": "热",
@@ -79,7 +90,11 @@
     "modeSameContent": "同一套内容 · 两种界面",
     "modeEntering": "即将进入：{target}",
     "modeRecommend": "推荐",
-    "modeFooter": "关闭浏览器标签页后需重新选择 · 数据与账号在两种模式下完全同步"
+    "modeFooter": "关闭浏览器标签页后需重新选择 · 数据与账号在两种模式下完全同步",
+    "forgotPasswordTitle": "找回密码",
+    "forgotPasswordDesc": "当前版本使用账号密码登录，暂未开放邮箱自助找回。若忘记密码，请重新注册新账号，或联系站点管理员重置。",
+    "forgotPasswordRegister": "注册新账号",
+    "forgotPasswordBackLogin": "返回登录"
   },
   "viewMode": {
     "app": "App 模式",
@@ -179,7 +194,9 @@
     "publishFeed": "发布到发现",
     "publishing": "发布中…",
     "draftSaved": "草稿已保存，可在创作者中心继续编辑。",
-    "publishOk": "发布成功！正在跳转到笔记详情…"
+    "publishOk": "发布成功！正在跳转到笔记详情…",
+    "subtitleFlow": "四步完成：类型 → 内容 → 封面 → 确认。",
+    "loadingWizard": "加载发布向导…"
   },
   "auth": {
     "login": "登录",
@@ -233,7 +250,12 @@
     "completeDesc": "8 步闭环已完成，去发布或匹配找伙伴吧。",
     "stepsDone": "已完成 {count}/{total} 步",
     "publishHint": "建议先完成学习路线当前步骤，再发布到发现页。",
-    "publishHintLink": "继续学习"
+    "publishHintLink": "继续学习",
+    "stepHeader": "第 {current} 步 · {title}",
+    "checklistTitle": "行动清单",
+    "prevStep": "上一步",
+    "nextStep": "下一步",
+    "publishFirst": "去发布第一条笔记"
   },
   "webShell": {
     "searchPlaceholder": "搜索笔记、工具、用户…",
@@ -248,5 +270,545 @@
     "publishNote": "发布笔记",
     "learnPath": "学习路线",
     "toolMarket": "工具商城"
+  },
+  "navExtra": {
+    "main": "主导航"
+  },
+  "missions": {
+    "home": {
+      "tagline": "先留下来，再遇见对的人",
+      "purpose": "笔记、工具与讨论是冷启动期的主战场——你的每一次浏览与表达，都在帮匹配引擎读懂你。"
+    },
+    "match": {
+      "tagline": "30 秒找到能开工的伙伴",
+      "purpose": "七维可解释加权：角色互补、技能重叠、方向一致——「为什么是他」看得见，聊完就能动手。"
+    },
+    "tools": {
+      "tagline": "选对工具，少踩坑",
+      "purpose": "真实评分 + 场景分类，帮你在 Vibe Coding 全流程里快速找到趁手的 AI 与生产力工具。"
+    },
+    "models": {
+      "tagline": "社区共建的真实体验榜",
+      "purpose": "官方评测看通用能力；这里记录编程、写作、性价比下的真实体感，帮你在创业路上选模型、聊观点、做决策。"
+    },
+    "learn": {
+      "tagline": "17 步从 0 到上线",
+      "purpose": "结构化学习路线降低入门焦虑——每完成一步，你就离「能独立 ship 产品」更近一点。"
+    },
+    "messages": {
+      "tagline": "匹配之后，一句话开工",
+      "purpose": "私聊是协作的起点：来自匹配的会话带标签，减少破冰成本，让对话直接落到项目上。"
+    },
+    "search": {
+      "tagline": "用关键词打捞灵感",
+      "purpose": "标题检索 + 类型筛选，帮你在海量笔记里快速找到可复用的方案与可聊的同路人。"
+    },
+    "workspace": {
+      "tagline": "你的创业指挥台",
+      "purpose": "数据总览、收藏与学习进度一屏尽览——把分散在各 Tab 的信号，收成可行动的仪表盘。"
+    },
+    "publish": {
+      "tagline": "表达即信号",
+      "purpose": "每一篇笔记、每一条短评，都是喂给社区与匹配引擎的公开画像——先被看见，再被匹配。"
+    },
+    "me": {
+      "tagline": "你的公开名片",
+      "purpose": "角色、技能与方向集中展示——让别人在 10 秒内判断「要不要和你聊」。"
+    }
+  },
+  "rail": {
+    "hotList": {
+      "title": "社区热榜",
+      "purpose": "此刻大家在讨论什么——跟上热度，更容易找到共鸣与协作契机。"
+    },
+    "quickActions": {
+      "title": "快捷入口",
+      "purpose": "高频动作一键直达，减少在 Tab 间来回找的心智负担。"
+    },
+    "todayMission": {
+      "title": "今日任务",
+      "purpose": "小目标驱动留存：完成一条，就离「真正在用这个平台创业」更近。"
+    },
+    "learnProgress": {
+      "title": "学习进度",
+      "purpose": "可视化成长路径，让「我在进步」这件事看得见、摸得着。"
+    },
+    "matchTips": {
+      "title": "匹配小贴士",
+      "purpose": "补全资料与选对角色，能显著提高互补匹配的通过率。"
+    },
+    "roleDistribution": {
+      "title": "社区角色分布",
+      "purpose": "了解供需结构，帮你判断该补位还是找互补。"
+    },
+    "recentPaths": {
+      "title": "最近浏览",
+      "purpose": "断点续看——创业探索往往被打断，这条帮你接上次的思路。"
+    },
+    "explore": {
+      "title": "探索",
+      "purpose": "迷路时回到发现页，重新从社区信号里找灵感。"
+    },
+    "startMatch": "开始匹配",
+    "publishNote": "发布笔记",
+    "learnPath": "学习路线",
+    "toolMarket": "工具商城",
+    "viewMessages": "查看消息",
+    "modelCommunity": "模型社区",
+    "toolsDesc": "真实评分帮你少踩坑——在 Vibe Coding 全流程里快速找到趁手的 AI 与生产力工具。",
+    "modelsDesc": "按场景看真实短评：编程、写作、性价比下的体感，比官方榜更贴近创业实战。",
+    "viewModels": "去看模型榜 →",
+    "viewTools": "去看工具商城 →",
+    "learnDesc": "17 步 Vibe Coding 实战：从环境搭建到上线部署，降低「不知道从哪开始」的焦虑。",
+    "githubGuide": "GitHub 协作指南 →",
+    "messageCenter": "消息中心",
+    "messagesDesc": "私聊是协作的起点——来自匹配的会话带标签，减少破冰，直接聊项目。",
+    "unreadCount": "{count} 条未读会话",
+    "noUnread": "暂无未读。去匹配页认识新伙伴，或回复社区里感兴趣的人。",
+    "goMatch": "去匹配 →",
+    "backDiscover": "回到发现页 →",
+    "matchTip1": "产品 × 运营 组合通过率更高——一个出产品，一个撑增长。",
+    "matchTip2": "方向一致 + 技能互补 = 更高匹配分；资料越完整，结果越准。",
+    "improveProfile": "完善资料，提高匹配率 →",
+    "roleProduct": "产品/全栈",
+    "roleGrowth": "增长/运营",
+    "roleDesign": "设计/内容",
+    "stepProgress": "第 {current}/{total} 步",
+    "continueLearn": "继续学习 →"
+  },
+  "command": {
+    "groups": {
+      "nav": "导航",
+      "create": "创作与连接",
+      "learn": "学习与工具",
+      "system": "系统"
+    },
+    "home": { "label": "发现首页", "hint": "双列信息流" },
+    "me": { "label": "我的", "hint": "账号与快捷入口" },
+    "messages": { "label": "消息", "hint": "会话列表 · 未读提醒" },
+    "achievements": { "label": "成就墙", "hint": "徽章与分享卡" },
+    "search": { "label": "全局搜索", "hint": "标题检索" },
+    "publish": { "label": "发布笔记" },
+    "creator": { "label": "创作者中心", "hint": "我的笔记与指标" },
+    "orders": { "label": "心愿单与订单" },
+    "match": { "label": "创业匹配", "hint": "画像与推荐" },
+    "saved": { "label": "我的收藏", "hint": "已保存的笔记" },
+    "workspace": { "label": "工作台", "hint": "数据看板与快捷能力" },
+    "learn": { "label": "继续学习路线" },
+    "github": { "label": "绑定 GitHub" },
+    "models": { "label": "大模型评分榜", "hint": "真实体验 · 排行榜 · 讨论" },
+    "tools": { "label": "工具与商城" },
+    "templates": { "label": "模板市场" },
+    "profileEdit": { "label": "编辑主页" },
+    "admin": { "label": "账号切换" },
+    "settings": { "label": "设置" },
+    "paletteTitle": "命令面板",
+    "paletteNavHint": "使用上下键选择，回车打开，Esc 关闭。",
+    "palettePlaceholder": "跳转页面、搜索功能…",
+    "recentVisits": "最近访问",
+    "noMatch": "没有匹配项，换个词试试",
+    "select": "选择",
+    "open": "打开"
+  },
+  "pages": {
+    "search": {
+      "title": "搜索",
+      "subtitle": "标题检索 · 类型与排序与发现页对齐 · 高亮关键词。",
+      "placeholder": "例如：全栈开发 / 部署上线 / 写作助手 / 伙伴匹配",
+      "history": "搜索历史",
+      "hotWords": "热门词",
+      "type": "类型",
+      "all": "全部",
+      "sort": "排序",
+      "newest": "最新",
+      "searching": "检索中…",
+      "resultCount": "共 {count} 条结果",
+      "empty": "没有匹配到内容，试试更短的关键词或切换类型筛选。"
+    },
+    "workspace": {
+      "title": "工作台",
+      "subtitle": "数据总览 · 我的收藏 · 快捷命令",
+      "community": "社区",
+      "liveStats": "动态数据",
+      "liveUpdate": "实时更新",
+      "mine": "我的",
+      "bookmarks": "收藏书签",
+      "reviewAnytime": "随时回看",
+      "productivity": "效率",
+      "commandPalette": "快捷命令",
+      "oneClick": "一键直达",
+      "resources": "资源",
+      "toolMarket": "工具商城",
+      "curated": "精选好物",
+      "snapshotTitle": "社区数据一览",
+      "snapshotDesc": "以下为平台内实时统计，帮助你了解社区活跃度与资源规模。",
+      "statPosts": "笔记",
+      "statUsers": "用户",
+      "statTools": "工具",
+      "statMarket": "商城商品",
+      "statProjects": "项目",
+      "statActivity": "活跃指数",
+      "savedLocal": "我的收藏（本地）",
+      "savedDesc": "收藏保存在本机浏览器，清除站点数据会丢失；可从发现页卡片右上角星标添加。",
+      "noSaved": "暂无收藏。去 发现 点亮书签。",
+      "session": "会话",
+      "sessionDesc": "在公共设备上使用后请退出登录，保护你的账号与隐私。",
+      "logout": "退出登录"
+    },
+    "me": {
+      "title": "我的",
+      "subtitle": "个人中心 · 快捷入口 · 任意页右上角「账户」也可退出登录。",
+      "accountSecurity": "账户与安全",
+      "logoutDesc": "退出后将清除会话 Cookie 与本地当前用户 id，并回到欢迎页。与「设置」页中的退出为同一套逻辑。",
+      "logout": "退出登录",
+      "openSettings": "打开设置（数据 / 账户）",
+      "quickLinks": "快捷入口",
+      "loadFail": "暂时无法加载资料，请稍后重试。",
+      "loginRequired": "请先登录后查看个人资料",
+      "goLogin": "去登录",
+      "user": "用户",
+      "roleFromProfile": "角色定位（来自资料库）",
+      "myProfile": "我的主页",
+      "profileDesc": "查看笔记/项目聚合展示。",
+      "open": "打开",
+      "loginFirst": "请先登录",
+      "links": {
+        "workspace": { "label": "工作台", "desc": "统计与收藏" },
+        "creator": { "label": "创作者中心", "desc": "我的笔记与指标" },
+        "orders": { "label": "订单/心愿单", "desc": "购买记录与收藏" },
+        "publish": { "label": "发布", "desc": "分享笔记与想法" },
+        "profile": { "label": "编辑主页", "desc": "资料与技能" },
+        "search": { "label": "搜索", "desc": "标题检索" },
+        "messages": { "label": "消息", "desc": "私聊会话" },
+        "match": { "label": "匹配", "desc": "算法推荐" },
+        "tools": { "label": "工具", "desc": "导航/商城" },
+        "settings": { "label": "设置", "desc": "账户 / 数据" },
+        "achievements": { "label": "成就墙", "desc": "徽章与分享" }
+      }
+    },
+    "tools": {
+      "title": "工具与商城",
+      "subtitle": "场景筛选 · 搜索排序 · 用户评价 · 工具商城一站逛完。",
+      "loginWishlist": "请先登录后再使用心愿单",
+      "removedWishlist": "已从心愿单移除",
+      "addedWishlist": "已加入心愿单：{title}",
+      "networkError": "网络异常",
+      "openCommand": "打开快捷命令面板",
+      "goSearch": "去搜索",
+      "orders": "订单",
+      "topTools": "本周工具榜 Top 3",
+      "topToolsDesc": "综合评分 + 评价数 + 收藏热度",
+      "filterPlaceholder": "筛选工具名称、描述、分类…",
+      "sortRating": "评分优先",
+      "sortReviews": "评价数",
+      "sortName": "名称",
+      "scenarios": "场景分类",
+      "hot": "热门",
+      "reviewCount": "{count} 评价",
+      "weeklyHeat": "本周热度",
+      "details": "详情",
+      "noTools": "该分类暂无工具",
+      "marketTitle": "工具商城",
+      "marketSubtitle": "可扩展订单系统",
+      "marketFilter": "筛选商品标题、类型、描述…",
+      "removeWishlist": "从心愿单移除",
+      "addWishlist": "加入心愿单",
+      "sold": "已售 {count}",
+      "buyNow": "立即购买",
+      "noProducts": "没有匹配的商品，清空筛选试试"
+    },
+    "models": {
+      "title": "大模型评分榜",
+      "subtitle": "按场景的真实体验榜 · 帮你在创业路上选模型、聊观点、做决策。",
+      "backDiscover": "回发现",
+      "communityBuilt": "社区共建 · 真实体验",
+      "discussBeforeMatch": "不用等匹配成功，也能先参与讨论",
+      "engageDesc": "给模型打星、写短评、发起讨论帖 —— 解锁「模型观察员」「榜单共建者」徽章。",
+      "writeReview": "写一条短评",
+      "startDiscussion": "发起讨论",
+      "firstReviewBadge": "首评解锁徽章",
+      "reviewCount": "已有 {count} 条社区短评在沉淀口碑",
+      "weeklyChampion": "本周口碑王 · {name}",
+      "whyUserRatings": "为什么用户评分更有参考价值？",
+      "whyUserRatingsDesc": "官方评测看通用能力；这里记录你在 编程、原型、写作、推理、性价比 下的真实体验。",
+      "top3": "综合榜 Top 3",
+      "sortOverall": "综合分",
+      "sortUserRating": "用户评分",
+      "sortReviews": "评价数",
+      "sortNewest": "最新",
+      "noModels": "该场景暂无模型，试试「全部」"
+    },
+    "messages": {
+      "title": "消息",
+      "matchTitle": "创业伙伴匹配",
+      "sent": "消息已发出",
+      "sentHint": "对方可能稍后回复，记得回来查看会话。",
+      "justNow": "刚刚",
+      "loginRequired": "登录后可使用私聊",
+      "loginHint": "请先 登录 后再查看消息。",
+      "syncHint": "会话保存在服务器，多端同步。",
+      "conversations": "会话",
+      "goMatch": "去匹配",
+      "noConversations": "还没有会话。去「匹配」点「发起沟通」会自动创建一条。",
+      "new": "新",
+      "selectConversation": "请选择会话",
+      "context": "上下文：{title}",
+      "selectHint": "从左侧选择会话，或通过匹配页发起沟通。",
+      "selectToChat": "选择左侧会话开始聊天。",
+      "inputPlaceholder": "输入消息…",
+      "selectFirst": "先选择会话",
+      "send": "发送",
+      "loading": "加载消息…"
+    },
+    "orders": {
+      "title": "订单与心愿单",
+      "subtitle": "心愿单收藏与购买记录，当前为模拟支付流程。",
+      "loginRequired": "请先登录后查看订单与心愿单。",
+      "wishlist": "心愿单",
+      "details": "详情",
+      "emptyWishlist": "暂无心愿单条目。在工具商城点击「加入心愿单」。",
+      "myOrders": "我的订单",
+      "statusPaid": "已支付",
+      "statusPending": "待支付",
+      "statusCancelled": "已取消",
+      "statusCompleted": "已完成",
+      "statusProcessing": "处理中",
+      "emptyOrders": "暂无订单。在商品详情页完成购买即可在此查看。"
+    },
+    "templates": {
+      "title": "模板市场",
+      "subtitle": "项目模板与提示词包 · 一键复制 · 快速上手",
+      "download": "下载",
+      "empty": "暂无模板，敬请期待新内容上线。",
+      "shareHint": "从 发布 分享你的模板使用心得"
+    },
+    "creator": {
+      "title": "创作者中心",
+      "loginRequired": "请先通过欢迎页登录后再查看你的内容。",
+      "noSession": "未检测到登录会话。请前往 欢迎页登录 后再查看创作者数据。",
+      "stats": "{name} · 笔记 {notes} 条 · 累计 ♥ {likes} · 收藏 {saves}",
+      "publish": "发布",
+      "statNotes": "笔记",
+      "statLikes": "累计点赞",
+      "statSaves": "累计收藏",
+      "newestFirst": "最新优先",
+      "sortMode": "排序",
+      "drafts": "草稿箱",
+      "draft": "草稿",
+      "myNotes": "我的笔记",
+      "engagement": "♥ {likes} · 收藏 {saves}",
+      "view": "查看",
+      "empty": "暂无笔记，去发布一条吧。"
+    },
+    "achievements": { "title": "成就墙" },
+    "profileEdit": { "title": "编辑主页" },
+    "userProfile": { "title": "用户主页", "followers": "粉丝 {followers} · 关注 {following}", "matchLink": "去找 Ta 匹配", "messageLink": "发消息" },
+    "project": { "title": "项目主页" },
+    "market": { "title": "商品详情" },
+    "learnGithub": {
+      "title": "绑定 GitHub",
+      "subtitle": "关联你的代码仓库，在项目与协作页展示贡献记录，方便伙伴了解你的技术背景。",
+      "benefitsTitle": "绑定后可以做什么",
+      "benefit1": "在个人主页展示 GitHub 昵称与公开仓库",
+      "benefit2": "项目协作页同步代码贡献，让伙伴一眼看到你的交付能力",
+      "benefit3": "仅读取公开信息，可随时在设置中解除绑定",
+      "privacyTitle": "隐私与安全",
+      "privacyDesc": "我们不会访问你的私有仓库与密码。授权范围仅限公开资料，解除绑定后相关展示会立即移除。",
+      "trustTip": "绑定 GitHub 能让匹配到的伙伴更快建立信任——代码贡献是最直观的「能力名片」。完成绑定后，记得在项目页更新你的协作状态。"
+    },
+    "collab": { "title": "协作看板" },
+    "loading": {
+      "searchTitle": "搜索",
+      "searchSubtitle": "加载检索…",
+      "homeTitle": "发现",
+      "homeSubtitle": "加载信息流…"
+    },
+    "homeExtra": {
+      "savedSubtitle": "我的收藏：与卡片右上角书签同步，登录后可在多设备查看。",
+      "forYouSubtitle": "为你推荐：根据你的兴趣标签与技能关键词智能排序。",
+      "defaultSubtitle": "笔记 · 工具 · 大模型口碑 · 匹配伙伴 —— 在这里发现灵感与同路人。",
+      "empty": "暂无内容。发布第一条笔记，或邀请伙伴一起加入社区吧。",
+      "feedTitle": "灵感瀑布流",
+      "feedDesc": "笔记与讨论是你的公开信号——先表达，匹配引擎才读得懂你要什么、能做什么。",
+      "dailyPath": "你的今日动线",
+      "dailyPathDesc": "小步快跑：任务、学习与匹配提示，把「随便看看」变成「真的在推进」。"
+    }
+  },
+  "models": {
+    "discussion": {
+      "title": "社区讨论",
+      "startDiscussion": "发起讨论",
+      "intro": "围绕 <name>{modelName}</name> 的真实体验、选型与踩坑，讨论帖会关联到本模型页。",
+      "emptyTitle": "还没有讨论帖",
+      "emptyHint": "试试这些话题：写前端稳不稳？和 GPT-4 比性价比如何？长上下文会不会丢指令？",
+      "emptyCta": "做第一个讨论的人",
+      "likesMeta": "{likes} 赞 · {date}"
+    }
+  },
+  "errors": {
+    "title": "页面出了点问题",
+    "fallbackMessage": "请稍后重试，或返回上一页。",
+    "retry": "重试"
+  },
+  "collab": {
+    "subtitle": "{projectName} · 与伙伴对齐任务进度，把沟通落到行动上",
+    "organizerHint": "发起人 {name} · 在此查看与更新项目协作任务。",
+    "columnTodo": "待办",
+    "columnInProgress": "进行中",
+    "columnDone": "已完成",
+    "syncInMessages": "在消息里同步进度"
+  },
+  "post": {
+    "draftPreview": "草稿预览",
+    "detail": "笔记详情",
+    "draftBanner": "此笔记尚未发布，仅你可见。",
+    "continueEdit": "继续编辑并发布",
+    "author": "作者",
+    "viewProfile": "进主页",
+    "recruitInfo": "招募信息",
+    "recruitRole": "需求角色：{value}",
+    "recruitTime": "时间投入：{value}",
+    "recruitComp": "报酬方式：{value}",
+    "bindGithub": "绑定 GitHub",
+    "productPreview": "产品预览",
+    "externalLink": "外链示例"
+  },
+  "project": {
+    "revenueBand": "收入区间（自述）：",
+    "teamNeeds": "团队需求",
+    "repo": "仓库",
+    "preview": "在线预览",
+    "collabBoard": "协作看板",
+    "contactFounder": "联系创始人",
+    "founder": "创始人"
+  },
+  "modelsDetail": {
+    "badge": "大模型详情",
+    "rating": "评分 {rating} · {count} 条",
+    "overall": "综合 {score}",
+    "website": "官网",
+    "startDiscussion": "发起讨论",
+    "strengths": "擅长：",
+    "prosSummary": "优点摘要",
+    "consSummary": "槽点摘要",
+    "noPros": "暂无集中提到的优点。",
+    "noCons": "暂无集中提到的槽点。"
+  },
+  "toolsDetail": {
+    "badge": "工具详情",
+    "rating": "评分 {rating}",
+    "writeReview": "写一篇测评笔记",
+    "findPartner": "找伙伴一起落地"
+  },
+  "retention": {
+    "streak": {
+      "risk": "今晚再签 1 次，保住连续 {days} 天",
+      "checkIn": "去签到"
+    },
+    "draft": {
+      "banner": "你还有未完成的发布草稿",
+      "continue": "继续",
+      "close": "关闭"
+    },
+    "profile": {
+      "strength": "资料完善度 {pct}%",
+      "hint": "完善至 80% 可提升匹配推荐质量与人脉可信度",
+      "improve": "去完善"
+    },
+    "following": {
+      "title": "关注的人 · 最新动态"
+    },
+    "activation": {
+      "progress": "新手路线 {pct}% · 下一步：{label}",
+      "title": "创业新手 · 7 日路线",
+      "desc": "完成激活漏斗，更快找到靠谱伙伴"
+    },
+    "socialProof": {
+      "matchedToday": "今日约 {count} 人完成匹配",
+      "newGreetings": "{count} 条新招呼",
+      "modelReviews": "社区已沉淀 {count} 条模型短评"
+    },
+    "weekReview": {
+      "title": "本周回顾",
+      "checkIn": "签到天",
+      "missions": "任务通关",
+      "matches": "匹配次",
+      "badges": "徽章",
+      "share": "分享本周成长",
+      "shareText": "本周我在 VibeHub：签到…",
+      "shareOpened": "已唤起分享",
+      "copied": "周回顾已复制",
+      "cancelled": "分享已取消"
+    },
+    "missions": {
+      "allDone": "今日 3 项任务全部完成！",
+      "complete": "任务完成：{label}"
+    }
+  },
+  "marketing": {
+    "meta": {
+      "title": "VibeCoding — 创业社交 · 网页端",
+      "description": "连接创始人、创作者与增长伙伴。品牌站与 App 演示已合并为同一站点。"
+    },
+    "loginMeta": {
+      "title": "登录 · VibeCoding",
+      "description": "通过嵌入演示完成登录，会话与数据在同一站点的 App 区（PostgreSQL）。"
+    },
+    "nav": {
+      "aria": "页面内导航",
+      "vision": "愿景",
+      "features": "能力",
+      "roadmap": "路线图",
+      "demo": "产品体验",
+      "login": "登录",
+      "openApp": "打开 App 演示",
+      "appPending": "App 演示（待配置）",
+      "appPendingTitle": "在部署环境设置 NEXT_PUBLIC_MINIAPP_URL 后可用"
+    },
+    "hero": {
+      "badge1": "极速匹配",
+      "badge1Sub": "约 30 秒仪式动效",
+      "badge2": "多维加权",
+      "badge2Sub": "角色 × 关键词 × 方向 × 资金 × …",
+      "badge3": "兴趣图谱",
+      "badge3Sub": "可生长的内容兴趣向量",
+      "badge4": "首屏感知",
+      "badge4Sub": "Edge 友好的骨架预渲染",
+      "stats1": "新匹配",
+      "stats2": "心愿单",
+      "stats3": "Demo 订单",
+      "title": "内容 · 工具 · 创业匹配 · 一体化 Vibe Coding 社区",
+      "subtitle": "把 创业社交 做成一场 可生长的协作演出",
+      "desc": "来自笔记、工具、项目与个人画像的多维信号…",
+      "explore": "浏览能力矩阵",
+      "demoLogin": "登录演示",
+      "openApp": "打开 App 壳",
+      "appPending": "App 壳（待配置）",
+      "matchPool": "今日匹配池",
+      "matchPoolDesc": "角色 × 兴趣向量 × 方向语义",
+      "candidates": "候选池",
+      "avgScore": "平均分",
+      "newThreads": "新会话",
+      "githubConnected": "GitHub 已直连",
+      "aiScore": "AI 评分",
+      "matchReason": "「方向语义 + 关键词向量都高度匹配，建议优先邀约。」",
+      "mutualIntent": "双向意向命中",
+      "techStack": "技术栈 · 部署能力"
+    },
+    "cta": {
+      "title": "准备好接好下一棒了吗？",
+      "desc": "在另一窗口启动 App 壳演示，与本页并排…",
+      "openApp": "打开 App 演示",
+      "appPending": "App 演示（待配置 NEXT_PUBLIC_MINIAPP_URL）",
+      "demoLogin": "登录演示账号",
+      "stat1": "30 秒",
+      "stat1Sub": "找到伙伴",
+      "stat2": "7 维",
+      "stat2Sub": "可解释匹配",
+      "stat3": "1 个",
+      "stat3Sub": "平台闭环",
+      "copyright": "© {year} 演示工程",
+      "socialPending": "演示工程，社交链接暂未配置"
+    }
   }
 }

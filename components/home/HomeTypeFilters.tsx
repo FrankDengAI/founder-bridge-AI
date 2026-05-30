@@ -1,7 +1,10 @@
+"use client";
+
 import { Link } from "@/i18n/navigation";
-import { POST_TYPES } from "@/lib/domain/postType";
-import { POST_TYPE_LABEL } from "@/lib/labels";
+import { useTranslations } from "next-intl";
 import clsx from "clsx";
+import { POST_TYPES } from "@/lib/domain/postType";
+import { getPostTypeLabel } from "@/lib/labels";
 
 function withSortAndView(href: string, sort: string, view?: string) {
   let out = href;
@@ -23,6 +26,9 @@ type Props = {
 };
 
 export function HomeTypeFilters({ current, sort = "new", view }: Props) {
+  const tSearch = useTranslations("pages.search");
+  const tPost = useTranslations("postType");
+
   return (
     <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <Link
@@ -34,20 +40,20 @@ export function HomeTypeFilters({ current, sort = "new", view }: Props) {
             : "border-zinc-200/80 bg-white/70 text-zinc-600 hover:border-zinc-300",
         )}
       >
-        全部
+        {tSearch("all")}
       </Link>
-      {POST_TYPES.map((t) => (
+      {POST_TYPES.map((pt) => (
         <Link
-          key={t}
-          href={withSortAndView(`/home?type=${encodeURIComponent(t)}`, sort, view)}
+          key={pt}
+          href={withSortAndView(`/home?type=${encodeURIComponent(pt)}`, sort, view)}
           className={clsx(
             "shrink-0 rounded-full border px-3 py-1.5 text-xs transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
-            current === t
+            current === pt
               ? "border-brand-300 bg-brand-50 text-brand-900 shadow-sm"
               : "border-zinc-200/80 bg-white/70 text-zinc-600 hover:border-zinc-300",
           )}
         >
-          {POST_TYPE_LABEL[t]}
+          {getPostTypeLabel(tPost, pt)}
         </Link>
       ))}
     </div>

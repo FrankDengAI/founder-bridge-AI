@@ -2,7 +2,7 @@
 
 import { Crown, Flame, TrendingUp } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { RAIL_MISSIONS } from "@/lib/webModuleMission";
+import { useTranslations } from "next-intl";
 import { RailPanel } from "./RailPanel";
 
 type HotPost = { id: string; title: string; likes: number };
@@ -28,12 +28,15 @@ export function RailHotList({
   hotModels = [],
   index = 2,
 }: Props) {
+  const t = useTranslations("rail");
+  const tw = useTranslations("webShell");
+
   if (hotPosts.length === 0 && hotTools.length === 0 && hotModels.length === 0) return null;
 
   return (
     <RailPanel
-      title={RAIL_MISSIONS.hotList.title}
-      purpose={RAIL_MISSIONS.hotList.purpose}
+      title={t("hotList.title")}
+      purpose={t("hotList.purpose")}
       icon={<Flame className="h-4 w-4 text-orange-500" />}
       index={index}
     >
@@ -41,7 +44,7 @@ export function RailHotList({
         <div>
           <p className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
             <TrendingUp className="h-3 w-3" />
-            热门笔记
+            {tw("hotPosts")}
           </p>
           <ul className="mt-2 space-y-1.5">
             {hotPosts.map((p, i) => (
@@ -70,17 +73,17 @@ export function RailHotList({
       ) : null}
       {hotTools.length > 0 ? (
         <div className="mt-4">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">热门工具</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{tw("hotTools")}</p>
           <ul className="mt-2 space-y-1">
-            {hotTools.map((t, i) => (
-              <li key={t.id}>
+            {hotTools.map((tool) => (
+              <li key={tool.id}>
                 <Link
-                  href={`/tools/${t.id}`}
+                  href={`/tools/${tool.id}`}
                   className="flex items-center justify-between rounded-lg px-2 py-1.5 text-xs text-zinc-700 transition hover:bg-amber-50 hover:text-amber-900"
                 >
-                  <span className="truncate">{t.name}</span>
+                  <span className="truncate">{tool.name}</span>
                   <span className="ml-2 shrink-0 font-mono text-[10px] text-amber-700">
-                    ★ {t.avgRating.toFixed(1)}
+                    ★ {tool.avgRating.toFixed(1)}
                   </span>
                 </Link>
               </li>
@@ -90,7 +93,7 @@ export function RailHotList({
       ) : null}
       {hotModels.length > 0 ? (
         <div className="mt-4">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">热门模型</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{tw("hotModels")}</p>
           <ul className="mt-2 space-y-1">
             {hotModels.slice(0, 4).map((m) => (
               <li key={m.id}>

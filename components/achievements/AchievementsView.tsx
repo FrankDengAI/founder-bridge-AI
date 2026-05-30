@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Share2, Trophy } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { PageHeader } from "@/components/PageHeader";
 import {
   getAllBadges,
@@ -11,6 +12,7 @@ import {
 import { readCheckIn } from "@/lib/retention";
 
 export function AchievementsView() {
+  const t = useTranslations("pages.achievements");
   const cardRef = useRef<HTMLDivElement>(null);
   const [unlocked, setUnlocked] = useState<BadgeDef[]>([]);
   const [streak, setStreak] = useState(0);
@@ -51,7 +53,7 @@ export function AchievementsView() {
 
   return (
     <div className="space-y-4 pb-10">
-      <PageHeader title="成就墙" backHref="/me" />
+      <PageHeader title={t("title")} backHref="/me" />
 
       <div
         ref={cardRef}

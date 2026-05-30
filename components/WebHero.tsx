@@ -13,27 +13,30 @@ import {
   Zap,
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { appDemoReady, isExternalMiniapp } from "@/lib/miniappOrigin";
 import { useAppEntryHref } from "@/lib/hooks/useAppEntryHref";
 
-const HERO_STATS = [
-  { v: "30s", k: "极速匹配", sub: "约 30 秒仪式动效" },
-  { v: "7轨", k: "多维加权", sub: "角色 × 关键词 × 方向 × 资金 × …" },
-  { v: "∞", k: "兴趣图谱", sub: "可生长的内容兴趣向量" },
-  { v: "100ms", k: "首屏感知", sub: "Edge 友好的骨架预渲染" },
-] as const;
-
-const FLOATING_TICKERS = [
-  { label: "新匹配", value: "+42", trend: "up" as const, color: "violet" },
-  { label: "心愿单", value: "918", trend: "up" as const, color: "fuchsia" },
-  { label: "Demo 订单", value: "256", trend: "up" as const, color: "cyan" },
-];
-
 export function WebHero() {
+  const t = useTranslations("marketing.hero");
+  const tNav = useTranslations("marketing.nav");
   const appEntry = useAppEntryHref();
   const homeHref = appEntry("/home");
   const external = isExternalMiniapp();
   const appReady = appDemoReady();
+
+  const HERO_STATS = [
+    { v: "30s", k: t("badge1"), sub: t("badge1Sub") },
+    { v: "7轨", k: t("badge2"), sub: t("badge2Sub") },
+    { v: "∞", k: t("badge3"), sub: t("badge3Sub") },
+    { v: "100ms", k: t("badge4"), sub: t("badge4Sub") },
+  ] as const;
+
+  const FLOATING_TICKERS = [
+    { label: t("stats1"), value: "+42" },
+    { label: t("stats2"), value: "918" },
+    { label: t("stats3"), value: "256" },
+  ] as const;
 
   return (
     <section
@@ -72,19 +75,13 @@ export function WebHero() {
         >
           <p className="chip-strong">
             <Sparkles className="h-3.5 w-3.5" />
-            内容 · 工具 · 创业匹配 · 一体化 Vibe Coding 社区
+            {t("title")}
           </p>
           <h1 className="mt-5 font-display text-4xl font-extrabold leading-[1.06] tracking-tight text-zinc-900 sm:text-5xl lg:text-[3.6rem]">
-            把
-            <span className="text-gradient-anim"> 创业社交 </span>
-            <br />
-            做成一场
-            <br className="sm:hidden" />
-            <span className="text-gradient-cool">可生长的协作演出</span>
+            <span className="text-gradient-anim">{t("subtitle")}</span>
           </h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-zinc-600 sm:text-lg">
-            来自笔记、工具、项目与个人画像的多维信号，被一个可解释的匹配引擎实时编织——
-            让你在 30 秒内遇到那位 <span className="font-semibold text-zinc-900">真正能开工</span> 的伙伴。
+            {t("desc")}
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -95,11 +92,11 @@ export function WebHero() {
               className="btn-primary"
             >
               <Zap className="h-4 w-4" />
-              浏览能力矩阵
+              {t("explore")}
               <ArrowRight className="h-4 w-4" />
             </motion.a>
             <Link href="/login" className="btn-ghost">
-              登录演示
+              {t("demoLogin")}
             </Link>
             {appReady ? (
               <a
@@ -109,14 +106,14 @@ export function WebHero() {
                 className="btn-ghost"
               >
                 <Layers className="h-4 w-4" />
-                打开 App 壳
+                {t("openApp")}
               </a>
             ) : (
               <span
-                title="在部署环境设置 NEXT_PUBLIC_MINIAPP_URL 后可用"
+                title={tNav("appPendingTitle")}
                 className="inline-flex cursor-default items-center gap-2 rounded-full border border-zinc-200/80 bg-zinc-50 px-6 py-3 text-sm font-semibold text-zinc-500"
               >
-                App 壳（待配置）
+                {t("appPending")}
               </span>
             )}
           </div>
@@ -184,10 +181,10 @@ export function WebHero() {
               {/* 标题 */}
               <div className="mt-6">
                 <p className="font-display text-2xl font-bold leading-tight text-zinc-900 sm:text-[1.7rem]">
-                  今日匹配池
+                  {t("matchPool")}
                 </p>
                 <p className="mt-1 text-sm text-zinc-600">
-                  <span className="text-gradient">角色 × 兴趣向量 × 方向语义</span>
+                  <span className="text-gradient">{t("matchPoolDesc")}</span>
                 </p>
               </div>
 
@@ -255,7 +252,7 @@ export function WebHero() {
               <div className="mt-auto grid grid-cols-3 gap-2 border-t border-violet-200/50 pt-4">
                 <div className="text-center">
                   <p className="text-[9px] uppercase tracking-wider text-zinc-500">
-                    候选池
+                    {t("candidates")}
                   </p>
                   <p className="mt-0.5 font-mono text-sm font-bold text-zinc-900 num-tab">
                     1,284
@@ -263,7 +260,7 @@ export function WebHero() {
                 </div>
                 <div className="text-center">
                   <p className="text-[9px] uppercase tracking-wider text-zinc-500">
-                    平均分
+                    {t("avgScore")}
                   </p>
                   <p className="mt-0.5 font-mono text-sm font-bold text-gradient num-tab">
                     72.4
@@ -271,7 +268,7 @@ export function WebHero() {
                 </div>
                 <div className="text-center">
                   <p className="text-[9px] uppercase tracking-wider text-zinc-500">
-                    新会话
+                    {t("newThreads")}
                   </p>
                   <p className="mt-0.5 font-mono text-sm font-bold text-cyan-600 num-tab">
                     +18
@@ -318,7 +315,7 @@ export function WebHero() {
           >
             <div className="glass-v2 flex items-center gap-2 rounded-full px-3.5 py-2 text-xs font-semibold text-zinc-700">
               <Github className="h-3.5 w-3.5 text-cyan-600" />
-              GitHub 已直连
+              {t("githubConnected")}
               <span className="pulse-dot text-cyan-400" />
             </div>
           </motion.div>
@@ -333,14 +330,14 @@ export function WebHero() {
             <div className="glass-v2 rounded-2xl p-3">
               <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-fuchsia-700">
                 <Cpu className="h-3 w-3" />
-                AI 评分
+                {t("aiScore")}
               </div>
               <p className="mt-2 line-clamp-2 text-[11px] leading-snug text-zinc-600">
-                「方向语义 + 关键词向量都高度匹配，建议优先邀约。」
+                {t("matchReason")}
               </p>
               <div className="mt-2 flex items-center gap-1.5 text-[10px] text-rose-600">
                 <Heart className="h-3 w-3 fill-current" />
-                双向意向命中
+                {t("mutualIntent")}
               </div>
             </div>
           </motion.div>
@@ -350,7 +347,7 @@ export function WebHero() {
       {/* 滚动信任标识 */}
       <div className="relative mx-auto mt-20 max-w-6xl px-4 sm:px-6">
         <p className="mb-4 text-center text-[10px] font-medium uppercase tracking-[0.3em] text-zinc-500">
-          技术栈 · 部署能力
+          {t("techStack")}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[11px] font-mono text-zinc-500">
           {[

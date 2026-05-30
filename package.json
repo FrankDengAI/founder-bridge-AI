@@ -19,6 +19,7 @@
     "db:seed:reset": "cross-env SEED_MODE=reset prisma db seed",
     "auth:smoke": "node scripts/auth-smoke-test.cjs",
     "smoke:pages": "node scripts/smoke-protected-pages.cjs",
+    "check:i18n": "node scripts/check-i18n-hardcoded.mjs",
     "postinstall": "node scripts/prisma-generate.cjs"
   },
   "prisma": {

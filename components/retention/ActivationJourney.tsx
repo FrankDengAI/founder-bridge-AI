@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { ChevronRight, Map } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   ACTIVATION_STEPS,
   readActivationProgress,
@@ -11,6 +12,7 @@ import {
 type Props = { compact?: boolean };
 
 export function ActivationJourney({ compact = false }: Props) {
+  const t = useTranslations("retention.activation");
   const [progress, setProgress] = useState(readActivationProgress());
 
   useEffect(() => {
@@ -32,7 +34,7 @@ export function ActivationJourney({ compact = false }: Props) {
         className="flex items-center justify-between gap-2 rounded-2xl bg-violet-50 px-3 py-2 ring-1 ring-violet-200/60"
       >
         <span className="text-[11px] font-semibold text-violet-950">
-          新手路线 {pct}% · 下一步：{next.label}
+          {t("progress", { pct, label: next.label })}
         </span>
         <ChevronRight className="h-4 w-4 text-violet-600" />
       </Link>
@@ -45,11 +47,9 @@ export function ActivationJourney({ compact = false }: Props) {
         <div>
           <p className="flex items-center gap-1.5 text-xs font-semibold">
             <Map className="h-3.5 w-3.5 text-violet-300" />
-            创业新手 · 7 日路线
+            {t("title")}
           </p>
-          <p className="mt-0.5 text-[10px] text-violet-200/90">
-            完成激活漏斗，更快找到靠谱伙伴
-          </p>
+          <p className="mt-0.5 text-[10px] text-violet-200/90">{t("desc")}</p>
         </div>
         <span className="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-bold tabular-nums">
           {pct}%

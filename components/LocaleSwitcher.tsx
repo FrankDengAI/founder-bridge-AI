@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import clsx from "clsx";
 import type { AppLocale } from "@/i18n/routing";
+import { currentBrowserLocale, localizedPath } from "@/lib/localePath";
 
 type Props = {
   variant?: "compact" | "settings";
@@ -19,7 +20,12 @@ export function LocaleSwitcher({ variant = "compact", className }: Props) {
   const switchTo = (next: AppLocale) => {
     if (next === locale) return;
     router.replace(pathname, { locale: next });
-    router.refresh();
+    window.setTimeout(() => {
+      if (typeof window === "undefined") return;
+      if (currentBrowserLocale() !== next) {
+        window.location.assign(localizedPath(pathname || "/", next));
+      }
+    }, 120);
   };
 
   if (variant === "settings") {
@@ -60,7 +66,7 @@ export function LocaleSwitcher({ variant = "compact", className }: Props) {
       )}
       title={locale === "zh" ? t("switchToEn") : t("switchToZh")}
     >
-      {locale === "zh" ? "EN" : "中文"}
+      {locale === "zh" ? "EN" : t("switchToZhShort")}
     </button>
   );
 }

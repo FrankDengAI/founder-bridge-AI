@@ -1,6 +1,16 @@
 import { Suspense } from "react";
+import { getTranslations } from "next-intl/server";
 import { AdaptiveTabsFrame } from "@/components/view-mode/AdaptiveTabsFrame";
 import { ViewModeProvider } from "@/components/view-mode/ViewModeProvider";
+
+async function TabsLoadingFallback() {
+  const t = await getTranslations("common");
+  return (
+    <div className="flex min-h-screen items-center justify-center text-sm text-zinc-500">
+      {t("loading")}
+    </div>
+  );
+}
 
 export default function TabsLayout({
   children,
@@ -9,13 +19,7 @@ export default function TabsLayout({
 }) {
   return (
     <ViewModeProvider>
-      <Suspense
-        fallback={
-          <div className="flex min-h-screen items-center justify-center text-sm text-zinc-500">
-            加载中…
-          </div>
-        }
-      >
+      <Suspense fallback={<TabsLoadingFallback />}>
         <AdaptiveTabsFrame>{children}</AdaptiveTabsFrame>
       </Suspense>
     </ViewModeProvider>

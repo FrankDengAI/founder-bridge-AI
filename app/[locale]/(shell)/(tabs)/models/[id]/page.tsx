@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { ExternalLink, Sparkles } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { ModelDiscussionList } from "@/components/models/ModelDiscussionList";
 import { ModelReviewPanel } from "@/components/models/ModelReviewPanel";
 import { PageHeader } from "@/components/PageHeader";
@@ -26,6 +27,7 @@ function topMentions(values: string[], take = 3) {
 }
 
 export default async function ModelDetailPage({ params }: Props) {
+  const t = await getTranslations("modelsDetail");
   const model = await prisma.aiModel.findUnique({
     where: { id: params.id },
     include: {
@@ -79,14 +81,17 @@ export default async function ModelDetailPage({ params }: Props) {
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold text-violet-800">大模型详情</p>
+            <p className="text-xs font-semibold text-violet-800">{t("badge")}</p>
             <p className="mt-1 text-sm leading-relaxed text-zinc-700">{model.description}</p>
             <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
               <span className="rounded-full bg-amber-50 px-2.5 py-1 font-semibold text-amber-900 ring-1 ring-amber-200/70">
-                评分 {model.avgRating.toFixed(1)} · {model.reviewCount} 条
+                {t("rating", {
+                  rating: model.avgRating.toFixed(1),
+                  count: model.reviewCount,
+                })}
               </span>
               <span className="rounded-full bg-violet-50 px-2.5 py-1 font-semibold text-violet-900 ring-1 ring-violet-200/70">
-                综合 {model.rankScore.toFixed(1)}
+                {t("overall", { score: model.rankScore.toFixed(1) })}
               </span>
               {model.websiteUrl ? (
                 <a
@@ -95,7 +100,7 @@ export default async function ModelDetailPage({ params }: Props) {
                   rel="noreferrer"
                   className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 font-semibold text-zinc-800 ring-1 ring-zinc-200/80 hover:bg-zinc-50"
                 >
-                  官网
+                  {t("website")}
                   <ExternalLink className="h-3 w-3" />
                 </a>
               ) : null}
@@ -104,7 +109,7 @@ export default async function ModelDetailPage({ params }: Props) {
                 className="inline-flex items-center gap-1 rounded-full bg-zinc-950 px-2.5 py-1 font-semibold text-white hover:bg-zinc-800"
               >
                 <Sparkles className="h-3 w-3" />
-                发起讨论
+                {t("startDiscussion")}
               </Link>
             </div>
             {scenarios.length > 0 ? (
@@ -121,7 +126,7 @@ export default async function ModelDetailPage({ params }: Props) {
             ) : null}
             {strengths.length > 0 ? (
               <p className="mt-2 text-[11px] text-zinc-600">
-                <span className="font-semibold text-zinc-800">擅长：</span>
+                <span className="font-semibold text-zinc-800">{t("strengths")}</span>
                 {strengths.join(" · ")}
               </p>
             ) : null}
@@ -132,7 +137,7 @@ export default async function ModelDetailPage({ params }: Props) {
       {(prosSummary.length > 0 || consSummary.length > 0) ? (
         <section className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-2xl bg-emerald-50/80 p-3 ring-1 ring-emerald-200/70">
-            <p className="text-xs font-semibold text-emerald-950">优点摘要</p>
+            <p className="text-xs font-semibold text-emerald-950">{t("prosSummary")}</p>
             {prosSummary.length > 0 ? (
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {prosSummary.map((p) => (
@@ -146,11 +151,11 @@ export default async function ModelDetailPage({ params }: Props) {
                 ))}
               </div>
             ) : (
-              <p className="mt-2 text-[11px] text-emerald-900/70">暂无集中提到的优点。</p>
+              <p className="mt-2 text-[11px] text-emerald-900/70">{t("noPros")}</p>
             )}
           </div>
           <div className="rounded-2xl bg-rose-50/80 p-3 ring-1 ring-rose-200/70">
-            <p className="text-xs font-semibold text-rose-950">槽点摘要</p>
+            <p className="text-xs font-semibold text-rose-950">{t("consSummary")}</p>
             {consSummary.length > 0 ? (
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {consSummary.map((p) => (
@@ -164,7 +169,7 @@ export default async function ModelDetailPage({ params }: Props) {
                 ))}
               </div>
             ) : (
-              <p className="mt-2 text-[11px] text-rose-900/70">暂无集中提到的槽点。</p>
+              <p className="mt-2 text-[11px] text-rose-900/70">{t("noCons")}</p>
             )}
           </div>
         </section>

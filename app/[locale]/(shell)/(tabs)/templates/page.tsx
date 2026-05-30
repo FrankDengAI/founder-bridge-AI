@@ -1,8 +1,8 @@
-import { Link } from "@/i18n/navigation";
-import { Copy, Download } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { TemplateCopyButton } from "@/components/templates/TemplateCopyButton";
 import { prisma } from "@/lib/prisma";
+import { Download } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
@@ -16,31 +16,28 @@ function parseStack(raw: string): string[] {
 }
 
 export default async function TemplatesPage() {
+  const t = await getTranslations("pages.templates");
   const templates = await prisma.template.findMany({
     orderBy: { createdAt: "desc" },
   });
 
   return (
     <div className="space-y-4 pb-10">
-      <PageHeader
-        title="模板市场"
-        subtitle="项目模板与提示词包 · 一键复制 · 快速上手"
-        backHref="/home"
-      />
+      <PageHeader title={t("title")} subtitle={t("subtitle")} backHref="/home" />
 
       <div className="grid gap-3 sm:grid-cols-2">
-        {templates.map((t) => {
-          const stack = parseStack(t.stack);
+        {templates.map((tpl) => {
+          const stack = parseStack(tpl.stack);
           return (
             <article
-              key={t.id}
+              key={tpl.id}
               className="glass-panel rounded-3xl p-4 shadow-sm ring-1 ring-white/70"
             >
               <p className="text-[10px] font-semibold uppercase tracking-wider text-violet-700">
-                {t.category}
+                {tpl.category}
               </p>
-              <h2 className="mt-1 text-sm font-semibold text-zinc-950">{t.title}</h2>
-              <p className="mt-2 text-xs leading-relaxed text-zinc-600">{t.description}</p>
+              <h2 className="mt-1 text-sm font-semibold text-zinc-950">{tpl.title}</h2>
+              <p className="mt-2 text-xs leading-relaxed text-zinc-600">{tpl.description}</p>
               <div className="mt-2 flex flex-wrap gap-1">
                 {stack.map((s) => (
                   <span
@@ -52,16 +49,16 @@ export default async function TemplatesPage() {
                 ))}
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
-                <TemplateCopyButton cmd={t.copyCmd} />
-                {t.downloadUrl ? (
+                <TemplateCopyButton cmd={tpl.copyCmd} />
+                {tpl.downloadUrl ? (
                   <a
-                    href={t.downloadUrl}
+                    href={tpl.downloadUrl}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1 rounded-xl bg-zinc-950 px-3 py-2 text-[11px] font-semibold text-white"
                   >
                     <Download className="h-3.5 w-3.5" />
-                    下载
+                    {t("download")}
                   </a>
                 ) : null}
               </div>
@@ -71,13 +68,10 @@ export default async function TemplatesPage() {
       </div>
 
       {templates.length === 0 ? (
-        <p className="text-center text-sm text-zinc-600">暂无模板，敬请期待新内容上线。</p>
+        <p className="text-center text-sm text-zinc-600">{t("empty")}</p>
       ) : null}
 
-      <p className="text-center text-[11px] text-zinc-500">
-        从 <Link href="/publish" className="font-semibold text-violet-800 hover:underline">发布</Link>{" "}
-        分享你的模板使用心得
-      </p>
+      <p className="text-center text-[11px] text-zinc-500">{t("shareHint")}</p>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import {
@@ -20,7 +21,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { LearnProgressCard } from "@/components/learn/LearnProgressCard";
 import { performLogout } from "@/lib/authLogout";
 import { readSavedPostIds } from "@/lib/appHub";
-import { POST_TYPE_LABEL } from "@/lib/labels";
+import { getPostTypeLabel } from "@/lib/labels";
 import { isPostType } from "@/lib/domain/postType";
 import { syncLessonProgressGamification } from "@/lib/gamification";
 import { useIsWebMode } from "@/lib/hooks/useIsWebMode";
@@ -43,17 +44,22 @@ type PostHit = {
   author: { id: string; displayName: string };
 };
 
-const shortcuts = [
-  { href: "/home", label: "发现", Icon: LayoutGrid },
-  { href: "/publish", label: "发布", Icon: PenSquare },
-  { href: "/match", label: "匹配", Icon: Sparkles },
-  { href: "/search", label: "搜索", Icon: Search },
-  { href: "/messages", label: "消息", Icon: MessageCircle },
-  { href: "/tools", label: "工具", Icon: Wrench },
+const shortcutKeys = [
+  { href: "/home", navKey: "home", Icon: LayoutGrid },
+  { href: "/publish", navKey: "publish", Icon: PenSquare },
+  { href: "/match", navKey: "match", Icon: Sparkles },
+  { href: "/search", navKey: "search", Icon: Search },
+  { href: "/messages", navKey: "messages", Icon: MessageCircle },
+  { href: "/tools", navKey: "tools", Icon: Wrench },
 ] as const;
 
 export function WorkspaceDashboard({ stats }: { stats: Stats }) {
   const isWeb = useIsWebMode();
+  const t = useTranslations("pages.workspace");
+  const tNav = useTranslations("nav");
+  const tPost = useTranslations("postType");
+  const tCommon = useTranslations("common");
+  const tRail = useTranslations("rail");
   const [savedPosts, setSavedPosts] = useState<PostHit[]>([]);
 
   useEffect(() => {
@@ -104,11 +110,33 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
     [stats],
   );
 
+  const statCards = useMemo(
+    () => [
+      { label: t("community"), title: t("liveStats"), sub: t("liveUpdate"), from: "from-violet-600", to: "to-indigo-600" },
+      { label: t("mine"), title: t("bookmarks"), sub: t("reviewAnytime"), from: "from-fuchsia-600", to: "to-pink-600" },
+      { label: t("productivity"), title: t("commandPalette"), sub: t("oneClick"), from: "from-sky-500", to: "to-cyan-600" },
+      { label: t("resources"), title: t("toolMarket"), sub: t("curated"), from: "from-amber-500", to: "to-orange-600" },
+    ],
+    [t],
+  );
+
+  const statItems = useMemo(
+    () => [
+      { label: t("statPosts"), value: stats.posts },
+      { label: t("statUsers"), value: stats.users },
+      { label: t("statTools"), value: stats.tools },
+      { label: t("statMarket"), value: stats.market },
+      { label: t("statProjects"), value: stats.projects },
+      { label: t("statActivity"), value: totalEngagement },
+    ],
+    [t, stats, totalEngagement],
+  );
+
   return (
     <div className="space-y-4 pb-4">
       <PageHeader
-        title="工作台"
-        subtitle="数据总览 · 我的收藏 · 快捷命令"
+        title={t("title")}
+        subtitle={t("subtitle")}
         backHref="/home"
       />
 
@@ -120,36 +148,7 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
           isWeb ? "grid-cols-2 lg:grid-cols-4" : "grid-cols-2 gap-2 sm:grid-cols-4",
         )}
       >
-        {[
-          {
-            label: "社区",
-            title: "动态数据",
-            sub: "实时更新",
-            from: "from-violet-600",
-            to: "to-indigo-600",
-          },
-          {
-            label: "我的",
-            title: "收藏书签",
-            sub: "随时回看",
-            from: "from-fuchsia-600",
-            to: "to-pink-600",
-          },
-          {
-            label: "效率",
-            title: "快捷命令",
-            sub: "一键直达",
-            from: "from-sky-500",
-            to: "to-cyan-600",
-          },
-          {
-            label: "资源",
-            title: "工具商城",
-            sub: "精选好物",
-            from: "from-amber-500",
-            to: "to-orange-600",
-          },
-        ].map((b) => (
+        {statCards.map((b) => (
           <div
             key={b.title}
             className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${b.from} ${b.to} p-[1px] shadow-lg`}
@@ -166,20 +165,13 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
       <section className="glass-panel rounded-3xl p-4 shadow-soft ring-1 ring-white/70">
         <div className="flex items-center gap-2 text-xs font-semibold text-zinc-900">
           <LineChart className="h-4 w-4 text-brand-600" />
-          社区数据一览
+          {t("snapshotTitle")}
         </div>
         <p className="mt-1 text-[11px] text-zinc-500">
-          以下为平台内实时统计，帮助你了解社区活跃度与资源规模。
+          {t("snapshotDesc")}
         </p>
         <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {[
-            { label: "笔记", value: stats.posts },
-            { label: "用户", value: stats.users },
-            { label: "工具", value: stats.tools },
-            { label: "商城商品", value: stats.market },
-            { label: "项目", value: stats.projects },
-            { label: "活跃指数", value: totalEngagement },
-          ].map((c) => (
+          {statItems.map((c) => (
             <div
               key={c.label}
               className="rounded-2xl bg-gradient-to-br from-white to-zinc-50/80 px-3 py-3 ring-1 ring-zinc-200/70"
@@ -192,16 +184,16 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
       </section>
 
       <section className="glass-panel rounded-3xl p-4 shadow-soft ring-1 ring-white/70">
-        <p className="text-xs font-semibold text-zinc-900">快捷入口</p>
+        <p className="text-xs font-semibold text-zinc-900">{tRail("quickActions.title")}</p>
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {shortcuts.map(({ href, label, Icon }) => (
+          {shortcutKeys.map(({ href, navKey, Icon }) => (
             <Link
               key={href}
               href={href}
               className="flex items-center gap-2 rounded-2xl bg-white/80 px-3 py-3 text-xs font-semibold text-zinc-900 ring-1 ring-zinc-200/70 transition hover:bg-white hover:shadow-sm"
             >
               <Icon className="h-4 w-4 text-brand-600" />
-              {label}
+              {tNav(navKey)}
             </Link>
           ))}
           <button
@@ -210,7 +202,7 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
             className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 py-3 text-xs font-semibold text-white transition hover:opacity-95"
           >
             <Command className="h-4 w-4" />
-            命令面板
+            {tCommon("commandPalette")}
           </button>
         </div>
       </section>
@@ -221,23 +213,19 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
       >
         <div className="flex items-center gap-2 text-xs font-semibold text-zinc-900">
           <Bookmark className="h-4 w-4 text-amber-600" />
-          我的收藏（本地）
+          {t("savedLocal")}
         </div>
         <p className="mt-1 text-[11px] text-zinc-500">
-          收藏保存在本机浏览器，清除站点数据会丢失；可从发现页卡片右上角星标添加。
+          {t("savedDesc")}
         </p>
         {savedPosts.length === 0 ? (
           <p className="mt-4 rounded-2xl bg-zinc-50 px-3 py-4 text-center text-xs text-zinc-600">
-            暂无收藏。去{" "}
-            <Link href="/home" className="font-semibold text-brand-800 underline">
-              发现
-            </Link>{" "}
-            点亮书签。
+            {t("noSaved")}
           </p>
         ) : (
           <ul className="mt-3 space-y-2">
             {savedPosts.map((p) => {
-              const label = isPostType(p.type) ? POST_TYPE_LABEL[p.type] : p.type;
+              const label = isPostType(p.type) ? getPostTypeLabel(tPost, p.type) : p.type;
               return (
                 <li key={p.id}>
                   <Link
@@ -270,9 +258,9 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
       </section>
 
       <section className="glass-panel rounded-3xl p-4 shadow-soft ring-1 ring-white/70">
-        <p className="text-xs font-semibold text-zinc-900">会话</p>
+        <p className="text-xs font-semibold text-zinc-900">{t("session")}</p>
         <p className="mt-1 text-[11px] text-zinc-600">
-          在公共设备上使用后请退出登录，保护你的账号与隐私。
+          {t("sessionDesc")}
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Link
@@ -280,7 +268,7 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
             className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-white px-3 py-2.5 text-xs font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-zinc-50 sm:flex-none"
           >
             <Settings className="h-4 w-4" />
-            设置
+            {tNav("settings")}
           </Link>
           <button
             type="button"
@@ -288,7 +276,7 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
             className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-rose-600 px-3 py-2.5 text-xs font-bold text-white shadow-md transition hover:bg-rose-700 sm:flex-none"
           >
             <LogOut className="h-4 w-4" />
-            退出登录
+            {t("logout")}
           </button>
         </div>
       </section>

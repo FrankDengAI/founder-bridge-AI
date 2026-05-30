@@ -3,15 +3,24 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight, Github, Mail, MessageCircle, Twitter } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { appDemoReady, isExternalMiniapp } from "@/lib/miniappOrigin";
 import { useAppEntryHref } from "@/lib/hooks/useAppEntryHref";
 
 export function WebCta() {
+  const t = useTranslations("marketing.cta");
   const appEntry = useAppEntryHref();
   const homeHref = appEntry("/home");
   const external = isExternalMiniapp();
   const appReady = appDemoReady();
   const demoLabel = homeHref.replace(/^https?:\/\//, "");
+
+  const stats = [
+    { v: t("stat1"), k: t("stat1Sub") },
+    { v: t("stat2"), k: t("stat2Sub") },
+    { v: t("stat3"), k: t("stat3Sub") },
+  ] as const;
+
   return (
     <section
       id="cta"
@@ -24,7 +33,6 @@ export function WebCta() {
           viewport={{ once: true }}
           className="relative overflow-hidden rounded-[2rem] border border-violet-200/60 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 p-10 text-center shadow-[0_24px_80px_-32px_rgba(139,92,246,0.35)] sm:p-16"
         >
-          {/* 多层装饰 */}
           <div className="pointer-events-none absolute inset-0 bg-conic-glow opacity-30 blur-3xl" />
           <div className="pointer-events-none absolute inset-0 dot-grid opacity-30 [mask-image:radial-gradient(ellipse_70%_50%_at_50%_50%,black,transparent)]" />
           <div
@@ -43,12 +51,9 @@ export function WebCta() {
               ready · for · take-off
             </p>
             <h2 className="mt-5 font-display text-3xl font-bold sm:text-4xl lg:text-5xl">
-              <span className="text-gradient-anim">准备好接好下一棒了吗？</span>
+              <span className="text-gradient-anim">{t("title")}</span>
             </h2>
-            <p className="relative mx-auto mt-4 max-w-xl text-zinc-600 sm:text-base">
-              在另一窗口启动 App 壳演示，与本页并排：
-              一边走完整用户流，一边对外讲品牌故事。
-            </p>
+            <p className="relative mx-auto mt-4 max-w-xl text-zinc-600 sm:text-base">{t("desc")}</p>
             <div className="relative mt-9 flex flex-wrap justify-center gap-3">
               {appReady ? (
                 <a
@@ -57,42 +62,33 @@ export function WebCta() {
                   rel={external ? "noopener noreferrer" : undefined}
                   className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-500/25 transition hover:opacity-95"
                 >
-                  打开 App 演示
-                  <span className="font-mono text-[11px] text-slate-500">
-                    {demoLabel}
-                  </span>
+                  {t("openApp")}
+                  <span className="font-mono text-[11px] text-slate-500">{demoLabel}</span>
                   <ArrowUpRight className="h-4 w-4 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </a>
               ) : (
                 <span
-                  title="在 Vercel 等项目环境变量中设置 NEXT_PUBLIC_MINIAPP_URL"
+                  title={t("appPending")}
                   className="inline-flex cursor-default rounded-full border border-violet-200 bg-violet-50/80 px-8 py-3.5 text-sm font-semibold text-zinc-500"
                 >
-                  App 演示（待配置 NEXT_PUBLIC_MINIAPP_URL）
+                  {t("appPending")}
                 </span>
               )}
               <Link
                 href="/login"
                 className="inline-flex items-center gap-2 rounded-full border border-violet-300/60 bg-white px-8 py-3.5 text-sm font-semibold text-violet-800 transition hover:bg-violet-50"
               >
-                登录演示账号
+                {t("demoLogin")}
               </Link>
             </div>
 
-            {/* 三栏要点 */}
             <div className="relative mx-auto mt-12 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3">
-              {[
-                { v: "30 秒", k: "找到伙伴" },
-                { v: "7 维", k: "可解释匹配" },
-                { v: "1 个", k: "平台闭环" },
-              ].map((it) => (
+              {stats.map((it) => (
                 <div
                   key={it.k}
                   className="rounded-2xl border border-violet-200/60 bg-white/80 p-4 backdrop-blur"
                 >
-                  <p className="font-display text-2xl font-bold text-gradient num-tab">
-                    {it.v}
-                  </p>
+                  <p className="font-display text-2xl font-bold text-gradient num-tab">{it.v}</p>
                   <p className="mt-1 text-xs text-zinc-500">{it.k}</p>
                 </div>
               ))}
@@ -106,10 +102,10 @@ export function WebCta() {
               VibeCoding
             </span>
             <span>·</span>
-            <p>© {new Date().getFullYear()} 演示工程</p>
+            <p>{t("copyright", { year: new Date().getFullYear() })}</p>
           </div>
           <div className="flex items-center gap-4 text-zinc-400">
-            <span className="inline-flex" title="演示工程，社交链接暂未配置" aria-hidden>
+            <span className="inline-flex" title={t("socialPending")} aria-hidden>
               <Github className="h-4 w-4" />
             </span>
             <span className="inline-flex" aria-hidden>

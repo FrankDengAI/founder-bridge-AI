@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import clsx from "clsx";
 import { WelcomeSessionReset } from "@/components/view-mode/WelcomeSessionReset";
 import { stripLocalePrefix } from "@/lib/localePath";
@@ -21,6 +22,7 @@ function isCompactWelcomePath(pathname: string) {
 
 export function WelcomeShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() ?? "";
+  const t = useTranslations("welcome");
   const base = stripLocalePrefix(pathname).replace(/\/$/, "") || "/";
   const isModePage = base === "/welcome/mode";
   const compact = isCompactWelcomePath(pathname);
@@ -56,10 +58,10 @@ export function WelcomeShell({ children }: { children: React.ReactNode }) {
               VibeCoding
             </p>
             <h1 className="mt-3 text-3xl font-black tracking-tight text-zinc-900 sm:text-4xl">
-              <span className="text-holo">欢迎登舰</span>
+              <span className="text-holo">{t("boardTitle")}</span>
             </h1>
             <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-zinc-600">
-              登录 / 注册 / 先选兴趣，解锁底部 Tab、命令面板与极光工作台体验。
+              {t("boardSubtitle")}
             </p>
           </div>
         ) : (

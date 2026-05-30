@@ -1,4 +1,14 @@
 {
+  "meta": {
+    "title": "VibeCoding · Startup Social",
+    "description": "Learn, showcase, tools, and co-founder matching"
+  },
+  "account": {
+    "menu": "Account menu",
+    "me": "Me",
+    "settingsLogout": "Settings (incl. log out)",
+    "logout": "Log out"
+  },
   "common": {
     "loading": "Loading…",
     "save": "Save",
@@ -17,6 +27,7 @@
     "languageEn": "English",
     "switchToEn": "Switch to English",
     "switchToZh": "Switch to Chinese",
+    "switchToZhShort": "中文",
     "commandPalette": "Command palette",
     "openSearch": "Search",
     "hot": "Hot",
@@ -79,7 +90,11 @@
     "modeSameContent": "Same content · Two layouts",
     "modeEntering": "Next: {target}",
     "modeRecommend": "Recommended",
-    "modeFooter": "Mode resets when you close the tab · Data stays in sync across modes"
+    "modeFooter": "Mode resets when you close the tab · Data stays in sync across modes",
+    "forgotPasswordTitle": "Reset password",
+    "forgotPasswordDesc": "This version uses username/password login. Email self-service reset is not available yet. Register a new account or contact the site admin.",
+    "forgotPasswordRegister": "Create new account",
+    "forgotPasswordBackLogin": "Back to log in"
   },
   "viewMode": {
     "app": "App mode",
@@ -131,6 +146,7 @@
     "shortcuts": "Shortcuts",
     "shortcutPalette": "Global command palette",
     "shortcutPaletteHint": "Any page",
+    "shortcutKeys": "Ctrl + K",
     "shortcutDiscover": "Or use the command icon in Discover toolbar",
     "logoutAgainTitle": "Log out again",
     "logoutAgainDesc": "If you scrolled to the bottom, you can log out here too — same as the button above.",
@@ -147,7 +163,7 @@
     "subtitle": "Multi-signal complementary scoring · Fast or ritual animation",
     "subtitleUser": " · {name}",
     "noCandidates": "No candidates this round",
-    "noCandidatesHint": "Matching needs at least 2 profiles. Invite a friend or run npm run db:seed for demo users.",
+    "noCandidatesHint": "Matching needs at least 2 profiles. Invite friends to register and complete roles and skills to start matching.",
     "loginFirst": "Please log in to match",
     "saveProfileFail": "Could not save profile",
     "resultsTitle": "Recommendations for you",
@@ -178,7 +194,9 @@
     "publishFeed": "Publish to Discover",
     "publishing": "Publishing…",
     "draftSaved": "Draft saved — continue in Creator Hub.",
-    "publishOk": "Published! Opening post…"
+    "publishOk": "Published! Opening post…",
+    "subtitleFlow": "Four steps: type → content → cover → confirm.",
+    "loadingWizard": "Loading publish wizard…"
   },
   "auth": {
     "login": "Log in",
@@ -232,7 +250,12 @@
     "completeDesc": "All 8 steps done — publish or match next.",
     "stepsDone": "{count}/{total} steps done",
     "publishHint": "Finish your current learning step before publishing to Discover.",
-    "publishHintLink": "Continue learning"
+    "publishHintLink": "Continue learning",
+    "stepHeader": "Step {current} · {title}",
+    "checklistTitle": "Action checklist",
+    "prevStep": "Previous step",
+    "nextStep": "Next step",
+    "publishFirst": "Publish your first note"
   },
   "webShell": {
     "searchPlaceholder": "Search notes, tools, people…",
@@ -247,5 +270,545 @@
     "publishNote": "Publish note",
     "learnPath": "Learning path",
     "toolMarket": "Tool market"
+  },
+  "navExtra": {
+    "main": "Main navigation"
+  },
+  "missions": {
+    "home": {
+      "tagline": "Stay first, then meet the right people",
+      "purpose": "Notes, tools, and discussions are the cold-start battlefield — every browse and post helps the match engine understand you."
+    },
+    "match": {
+      "tagline": "Find a partner ready to ship in 30 seconds",
+      "purpose": "Seven explainable dimensions: complementary roles, skill overlap, aligned direction — see why them, then start building."
+    },
+    "tools": {
+      "tagline": "Pick the right tools, avoid pitfalls",
+      "purpose": "Real ratings plus scenario filters help you find the right AI and productivity tools across your Vibe Coding workflow."
+    },
+    "models": {
+      "tagline": "Community-built real experience rankings",
+      "purpose": "Official benchmarks test general ability; here we capture real feel in coding, writing, and value for startup decisions."
+    },
+    "learn": {
+      "tagline": "17 steps from zero to launch",
+      "purpose": "A structured path lowers onboarding anxiety — each step brings you closer to shipping independently."
+    },
+    "messages": {
+      "tagline": "After matching, one message to start",
+      "purpose": "Chat is where collaboration begins — match threads are tagged to skip icebreakers and land on projects."
+    },
+    "search": {
+      "tagline": "Fish for inspiration with keywords",
+      "purpose": "Title search plus type filters help you find reusable ideas and people to talk to."
+    },
+    "workspace": {
+      "tagline": "Your startup command center",
+      "purpose": "Overview, saves, and learning progress in one screen — turn scattered signals into an actionable dashboard."
+    },
+    "publish": {
+      "tagline": "Expression is signal",
+      "purpose": "Every note and review feeds your public profile for the community and match engine — get seen, then get matched."
+    },
+    "me": {
+      "tagline": "Your public card",
+      "purpose": "Role, skills, and direction in one place — help others decide in 10 seconds whether to reach out."
+    }
+  },
+  "rail": {
+    "hotList": {
+      "title": "Community trending",
+      "purpose": "See what people discuss now — ride the trend to find resonance and collaboration."
+    },
+    "quickActions": {
+      "title": "Quick actions",
+      "purpose": "One-tap shortcuts to reduce tab-hopping."
+    },
+    "todayMission": {
+      "title": "Today's missions",
+      "purpose": "Small goals drive retention — each completion means you're really using the platform to build."
+    },
+    "learnProgress": {
+      "title": "Learning progress",
+      "purpose": "Visualize growth so progress feels tangible."
+    },
+    "matchTips": {
+      "title": "Match tips",
+      "purpose": "Complete your profile and pick the right role to improve match success."
+    },
+    "roleDistribution": {
+      "title": "Community role mix",
+      "purpose": "See supply and demand to decide whether to fill a gap or find a complement."
+    },
+    "recentPaths": {
+      "title": "Recently viewed",
+      "purpose": "Pick up where you left off when exploration gets interrupted."
+    },
+    "explore": {
+      "title": "Explore",
+      "purpose": "When lost, return to Discover and find inspiration from community signals."
+    },
+    "startMatch": "Start matching",
+    "publishNote": "Publish note",
+    "learnPath": "Learning path",
+    "toolMarket": "Tool marketplace",
+    "viewMessages": "View messages",
+    "modelCommunity": "Model community",
+    "toolsDesc": "Real ratings help you avoid pitfalls — find the right AI and productivity tools across your workflow.",
+    "modelsDesc": "Scene-based real reviews (coding, writing, value) closer to startup reality than official benchmarks.",
+    "viewModels": "View model rankings →",
+    "viewTools": "View tool marketplace →",
+    "learnDesc": "17-step Vibe Coding path from setup to deploy — less “where do I start?” anxiety.",
+    "githubGuide": "GitHub collaboration guide →",
+    "messageCenter": "Message center",
+    "messagesDesc": "Chat is where collaboration starts — match conversations are tagged to skip icebreakers.",
+    "unreadCount": "{count} unread conversations",
+    "noUnread": "No unread messages. Find partners on Match or reply to interesting people.",
+    "goMatch": "Go to Match →",
+    "backDiscover": "Back to Discover →",
+    "matchTip1": "Product × Growth pairs match best — one builds, one scales.",
+    "matchTip2": "Aligned direction + complementary skills = higher scores; fuller profiles = better results.",
+    "improveProfile": "Complete profile to improve matches →",
+    "roleProduct": "Product / Full-stack",
+    "roleGrowth": "Growth / Ops",
+    "roleDesign": "Design / Content",
+    "stepProgress": "Step {current}/{total}",
+    "continueLearn": "Continue learning →"
+  },
+  "command": {
+    "groups": {
+      "nav": "Navigation",
+      "create": "Create & connect",
+      "learn": "Learn & tools",
+      "system": "System"
+    },
+    "home": { "label": "Discover home", "hint": "Two-column feed" },
+    "me": { "label": "Me", "hint": "Account & shortcuts" },
+    "messages": { "label": "Messages", "hint": "Threads · unread" },
+    "achievements": { "label": "Achievements", "hint": "Badges & share cards" },
+    "search": { "label": "Global search", "hint": "Title search" },
+    "publish": { "label": "Publish note" },
+    "creator": { "label": "Creator Hub", "hint": "My notes & metrics" },
+    "orders": { "label": "Wishlist & orders" },
+    "match": { "label": "Co-founder match", "hint": "Profile & recommendations" },
+    "saved": { "label": "My saves", "hint": "Saved notes" },
+    "workspace": { "label": "Workspace", "hint": "Dashboard & shortcuts" },
+    "learn": { "label": "Continue learning path" },
+    "github": { "label": "Connect GitHub" },
+    "models": { "label": "Model rankings", "hint": "Real reviews · leaderboard · discussion" },
+    "tools": { "label": "Tools & marketplace" },
+    "templates": { "label": "Template market" },
+    "profileEdit": { "label": "Edit profile" },
+    "admin": { "label": "Switch account" },
+    "settings": { "label": "Settings" },
+    "paletteTitle": "Command palette",
+    "paletteNavHint": "Use arrow keys to select, Enter to open, Esc to close.",
+    "palettePlaceholder": "Jump to a page or search features…",
+    "recentVisits": "Recent",
+    "noMatch": "No matches — try another term",
+    "select": "Select",
+    "open": "Open"
+  },
+  "pages": {
+    "search": {
+      "title": "Search",
+      "subtitle": "Title search · type & sort aligned with Discover · keyword highlight.",
+      "placeholder": "e.g. full-stack / deploy / writing assistant / partner match",
+      "history": "Search history",
+      "hotWords": "Hot words",
+      "type": "Type",
+      "all": "All",
+      "sort": "Sort",
+      "newest": "Newest",
+      "searching": "Searching…",
+      "resultCount": "{count} results",
+      "empty": "No matches — try a shorter keyword or change type filter."
+    },
+    "workspace": {
+      "title": "Workspace",
+      "subtitle": "Overview · saves · command palette",
+      "community": "Community",
+      "liveStats": "Live stats",
+      "liveUpdate": "Updated in real time",
+      "mine": "Mine",
+      "bookmarks": "Saved bookmarks",
+      "reviewAnytime": "Review anytime",
+      "productivity": "Productivity",
+      "commandPalette": "Command palette",
+      "oneClick": "One-click access",
+      "resources": "Resources",
+      "toolMarket": "Tool marketplace",
+      "curated": "Curated picks",
+      "snapshotTitle": "Community snapshot",
+      "snapshotDesc": "Live platform stats showing activity and resource scale.",
+      "statPosts": "Notes",
+      "statUsers": "Users",
+      "statTools": "Tools",
+      "statMarket": "Marketplace items",
+      "statProjects": "Projects",
+      "statActivity": "Activity index",
+      "savedLocal": "My saves (local)",
+      "savedDesc": "Saves are stored locally; clearing site data removes them. Add from the bookmark on Discover cards.",
+      "noSaved": "No saves yet. Go to Discover and bookmark a card.",
+      "session": "Session",
+      "sessionDesc": "Log out on shared devices to protect your account.",
+      "logout": "Log out"
+    },
+    "me": {
+      "title": "Me",
+      "subtitle": "Profile hub · quick links · you can also log out from the account menu.",
+      "accountSecurity": "Account & security",
+      "logoutDesc": "Logging out clears your session cookie and local user id and returns you to welcome — same as Settings.",
+      "logout": "Log out",
+      "openSettings": "Open settings (data / account)",
+      "quickLinks": "Quick links",
+      "loadFail": "Couldn't load profile. Try again later.",
+      "loginRequired": "Please log in to view your profile",
+      "goLogin": "Log in",
+      "user": "User",
+      "roleFromProfile": "Role (from profile)",
+      "myProfile": "My public profile",
+      "profileDesc": "View aggregated notes and projects.",
+      "open": "Open",
+      "loginFirst": "Please log in first",
+      "links": {
+        "workspace": { "label": "Workspace", "desc": "Stats & bookmarks" },
+        "creator": { "label": "Creator Hub", "desc": "My notes & metrics" },
+        "orders": { "label": "Orders / Wishlist", "desc": "Purchase history & saves" },
+        "publish": { "label": "Publish", "desc": "Share notes & ideas" },
+        "profile": { "label": "Edit profile", "desc": "Profile & skills" },
+        "search": { "label": "Search", "desc": "Title search" },
+        "messages": { "label": "Messages", "desc": "Private chats" },
+        "match": { "label": "Match", "desc": "Recommendations" },
+        "tools": { "label": "Tools", "desc": "Directory / marketplace" },
+        "settings": { "label": "Settings", "desc": "Account / data" },
+        "achievements": { "label": "Achievements", "desc": "Badges & sharing" }
+      }
+    },
+    "tools": {
+      "title": "Tools & marketplace",
+      "subtitle": "Scenario filters · search & sort · reviews · marketplace in one place.",
+      "loginWishlist": "Log in to use the wishlist",
+      "removedWishlist": "Removed from wishlist",
+      "addedWishlist": "Added to wishlist: {title}",
+      "networkError": "Network error",
+      "openCommand": "Open command palette",
+      "goSearch": "Search",
+      "orders": "Orders",
+      "topTools": "Top 3 tools this week",
+      "topToolsDesc": "Rating + review count + save heat",
+      "filterPlaceholder": "Filter by name, description, category…",
+      "sortRating": "Rating first",
+      "sortReviews": "Review count",
+      "sortName": "Name",
+      "scenarios": "Scenarios",
+      "hot": "Hot",
+      "reviewCount": "{count} reviews",
+      "weeklyHeat": "Weekly heat",
+      "details": "Details",
+      "noTools": "No tools in this category",
+      "marketTitle": "Tool marketplace",
+      "marketSubtitle": "Extensible order system",
+      "marketFilter": "Filter by title, type, description…",
+      "removeWishlist": "Remove from wishlist",
+      "addWishlist": "Add to wishlist",
+      "sold": "{count} sold",
+      "buyNow": "Buy now",
+      "noProducts": "No matching products — clear filters"
+    },
+    "models": {
+      "title": "AI model rankings",
+      "subtitle": "Real scene-based reviews to choose models, discuss, and decide.",
+      "backDiscover": "Back to Discover",
+      "communityBuilt": "Community-built · real experience",
+      "discussBeforeMatch": "Join discussions before matching",
+      "engageDesc": "Rate, review, and discuss — unlock Model Observer and Rank Builder badges.",
+      "writeReview": "Write a review",
+      "startDiscussion": "Start a discussion",
+      "firstReviewBadge": "First review unlocks a badge",
+      "reviewCount": "{count} community reviews building reputation",
+      "weeklyChampion": "Weekly champion · {name}",
+      "whyUserRatings": "Why user ratings matter more",
+      "whyUserRatingsDesc": "Official benchmarks test general ability; here we capture real use in coding, prototyping, writing, reasoning, and value.",
+      "top3": "Overall top 3",
+      "sortOverall": "Overall",
+      "sortUserRating": "User rating",
+      "sortReviews": "Reviews",
+      "sortNewest": "Newest",
+      "noModels": "No models in this scenario — try All"
+    },
+    "messages": {
+      "title": "Messages",
+      "matchTitle": "Co-founder matching",
+      "sent": "Message sent",
+      "sentHint": "They may reply later — check back on this thread.",
+      "justNow": "Just now",
+      "loginRequired": "Log in to use private chat",
+      "loginHint": "Please log in to view messages.",
+      "syncHint": "Conversations sync across devices.",
+      "conversations": "Conversations",
+      "goMatch": "Go to Match",
+      "noConversations": "No conversations yet. Start one from Match → “Reach out”.",
+      "new": "New",
+      "selectConversation": "Select a conversation",
+      "context": "Context: {title}",
+      "selectHint": "Select a thread on the left or start from Match.",
+      "selectToChat": "Select a conversation to start chatting.",
+      "inputPlaceholder": "Type a message…",
+      "selectFirst": "Select a conversation first",
+      "send": "Send",
+      "loading": "Loading messages…"
+    },
+    "orders": {
+      "title": "Orders & wishlist",
+      "subtitle": "Wishlist and purchase history — simulated checkout.",
+      "loginRequired": "Log in to view orders and wishlist.",
+      "wishlist": "Wishlist",
+      "details": "Details",
+      "emptyWishlist": "Wishlist empty — add items from the tool marketplace.",
+      "myOrders": "My orders",
+      "statusPaid": "Paid",
+      "statusPending": "Pending",
+      "statusCancelled": "Cancelled",
+      "statusCompleted": "Completed",
+      "statusProcessing": "Processing",
+      "emptyOrders": "No orders yet — complete a purchase on the product page."
+    },
+    "templates": {
+      "title": "Template marketplace",
+      "subtitle": "Project templates & prompt packs · copy · get started fast",
+      "download": "Download",
+      "empty": "No templates yet — check back soon.",
+      "shareHint": "Share template tips from Publish"
+    },
+    "creator": {
+      "title": "Creator Hub",
+      "loginRequired": "Log in via welcome to view your content.",
+      "noSession": "No session — log in on welcome to view creator stats.",
+      "stats": "{name} · {notes} notes · ♥ {likes} · {saves} saves",
+      "publish": "Publish",
+      "statNotes": "Notes",
+      "statLikes": "Total likes",
+      "statSaves": "Total saves",
+      "newestFirst": "Newest first",
+      "sortMode": "Sort",
+      "drafts": "Drafts",
+      "draft": "Draft",
+      "myNotes": "My notes",
+      "engagement": "♥ {likes} · {saves} saves",
+      "view": "View",
+      "empty": "No notes yet — publish one."
+    },
+    "achievements": { "title": "Achievements" },
+    "profileEdit": { "title": "Edit profile" },
+    "userProfile": { "title": "User profile", "followers": "{followers} followers · {following} following", "matchLink": "Match with them", "messageLink": "Message" },
+    "project": { "title": "Project" },
+    "market": { "title": "Product details" },
+    "learnGithub": {
+      "title": "Connect GitHub",
+      "subtitle": "Link your repos to show contributions on project and collab pages.",
+      "benefitsTitle": "What you get after connecting",
+      "benefit1": "Show your GitHub handle and public repos on your profile",
+      "benefit2": "Sync code contributions on collab pages so partners see your delivery track record",
+      "benefit3": "Read-only public info — disconnect anytime in Settings",
+      "privacyTitle": "Privacy & security",
+      "privacyDesc": "We never access private repos or passwords. Scope is public profile only; disconnecting removes all related display immediately.",
+      "trustTip": "Connecting GitHub helps matched partners trust you faster — contributions are the clearest proof of skill. After connecting, update your collab status on project pages."
+    },
+    "collab": { "title": "Collab board" },
+    "loading": {
+      "searchTitle": "Search",
+      "searchSubtitle": "Loading search…",
+      "homeTitle": "Discover",
+      "homeSubtitle": "Loading feed…"
+    },
+    "homeExtra": {
+      "savedSubtitle": "My saves: synced with card bookmarks; log in for multi-device sync.",
+      "forYouSubtitle": "For you: ranked by your interest tags and skill keywords.",
+      "defaultSubtitle": "Notes · tools · model reviews · partners — find inspiration and peers here.",
+      "empty": "Nothing here yet. Publish your first note or invite friends to join.",
+      "feedTitle": "Inspiration feed",
+      "feedDesc": "Notes and discussions signal who you are — express first so matching understands you.",
+      "dailyPath": "Your daily path",
+      "dailyPathDesc": "Small steps — missions, learning, and match tips turn browsing into progress."
+    }
+  },
+  "models": {
+    "discussion": {
+      "title": "Community discussions",
+      "startDiscussion": "Start a discussion",
+      "intro": "Real experience, choices, and pitfalls around <name>{modelName}</name> — posts link back to this model page.",
+      "emptyTitle": "No discussions yet",
+      "emptyHint": "Try: stable for frontend? Value vs GPT-4? Does long context drop instructions?",
+      "emptyCta": "Be the first to discuss",
+      "likesMeta": "{likes} likes · {date}"
+    }
+  },
+  "errors": {
+    "title": "Something went wrong",
+    "fallbackMessage": "Please try again later or go back.",
+    "retry": "Retry"
+  },
+  "collab": {
+    "subtitle": "{projectName} · Align tasks with partners and turn talk into action",
+    "organizerHint": "Organizer {name} · View and update collab tasks here.",
+    "columnTodo": "To do",
+    "columnInProgress": "In progress",
+    "columnDone": "Done",
+    "syncInMessages": "Sync progress in Messages"
+  },
+  "post": {
+    "draftPreview": "Draft preview",
+    "detail": "Note details",
+    "draftBanner": "This note is not published yet — only you can see it.",
+    "continueEdit": "Continue editing & publish",
+    "author": "Author",
+    "viewProfile": "View profile",
+    "recruitInfo": "Recruitment info",
+    "recruitRole": "Role needed: {value}",
+    "recruitTime": "Time commitment: {value}",
+    "recruitComp": "Compensation: {value}",
+    "bindGithub": "Connect GitHub",
+    "productPreview": "Product preview",
+    "externalLink": "External link demo"
+  },
+  "project": {
+    "revenueBand": "Revenue band (self-reported):",
+    "teamNeeds": "Team needs",
+    "repo": "Repository",
+    "preview": "Live preview",
+    "collabBoard": "Collab board",
+    "contactFounder": "Contact founder",
+    "founder": "Founder"
+  },
+  "modelsDetail": {
+    "badge": "Model details",
+    "rating": "Rating {rating} · {count} reviews",
+    "overall": "Overall {score}",
+    "website": "Website",
+    "startDiscussion": "Start discussion",
+    "strengths": "Strengths:",
+    "prosSummary": "Pros summary",
+    "consSummary": "Cons summary",
+    "noPros": "No commonly mentioned pros yet.",
+    "noCons": "No commonly mentioned cons yet."
+  },
+  "toolsDetail": {
+    "badge": "Tool details",
+    "rating": "Rating {rating}",
+    "writeReview": "Write a review note",
+    "findPartner": "Find a partner to ship"
+  },
+  "retention": {
+    "streak": {
+      "risk": "Check in once tonight to keep your {days}-day streak",
+      "checkIn": "Check in"
+    },
+    "draft": {
+      "banner": "You have an unfinished publish draft",
+      "continue": "Continue",
+      "close": "Close"
+    },
+    "profile": {
+      "strength": "Profile completeness {pct}%",
+      "hint": "Reach 80% to improve match quality and credibility",
+      "improve": "Complete profile"
+    },
+    "following": {
+      "title": "Following · latest activity"
+    },
+    "activation": {
+      "progress": "Onboarding {pct}% · Next: {label}",
+      "title": "Startup onboarding · 7-day path",
+      "desc": "Complete activation to find partners faster"
+    },
+    "socialProof": {
+      "matchedToday": "~{count} people matched today",
+      "newGreetings": "{count} new greetings",
+      "modelReviews": "{count} model reviews in the community"
+    },
+    "weekReview": {
+      "title": "Weekly recap",
+      "checkIn": "Check-in days",
+      "missions": "Mission days",
+      "matches": "Matches",
+      "badges": "Badges",
+      "share": "Share this week's progress",
+      "shareText": "My week on VibeHub: check-ins…",
+      "shareOpened": "Share opened",
+      "copied": "Copied",
+      "cancelled": "Share cancelled"
+    },
+    "missions": {
+      "allDone": "All 3 daily missions complete!",
+      "complete": "Mission complete: {label}"
+    }
+  },
+  "marketing": {
+    "meta": {
+      "title": "VibeCoding — Startup social · Web",
+      "description": "Connect founders, creators, and growth partners. Brand site and app demo live on one site."
+    },
+    "loginMeta": {
+      "title": "Log in · VibeCoding",
+      "description": "Sign in via the embedded demo. Session and data live in the app area (PostgreSQL) on the same site."
+    },
+    "nav": {
+      "aria": "In-page navigation",
+      "vision": "Vision",
+      "features": "Features",
+      "roadmap": "Roadmap",
+      "demo": "Product demo",
+      "login": "Log in",
+      "openApp": "Open app demo",
+      "appPending": "App demo (not configured)",
+      "appPendingTitle": "Set NEXT_PUBLIC_MINIAPP_URL in deployment to enable"
+    },
+    "hero": {
+      "badge1": "Fast matching",
+      "badge1Sub": "~30s ritual animation",
+      "badge2": "Multi-dimensional",
+      "badge2Sub": "Role × keywords × direction × funding × …",
+      "badge3": "Interest graph",
+      "badge3Sub": "Growing content interest vectors",
+      "badge4": "First paint",
+      "badge4Sub": "Edge-friendly skeleton prerender",
+      "stats1": "New matches",
+      "stats2": "Wishlist",
+      "stats3": "Demo orders",
+      "title": "Content · tools · matching · unified Vibe Coding community",
+      "subtitle": "Turn startup social into a growing collaboration performance",
+      "desc": "Multi-signal matching from notes, tools, projects, and profiles…",
+      "explore": "Explore capabilities",
+      "demoLogin": "Demo login",
+      "openApp": "Open app shell",
+      "appPending": "App shell (not configured)",
+      "matchPool": "Today's match pool",
+      "matchPoolDesc": "Role × interest vector × direction semantics",
+      "candidates": "Candidate pool",
+      "avgScore": "Avg score",
+      "newThreads": "New threads",
+      "githubConnected": "GitHub connected",
+      "aiScore": "AI score",
+      "matchReason": "Direction and keyword vectors align — prioritize outreach.",
+      "mutualIntent": "Mutual intent match",
+      "techStack": "Tech stack · deployment"
+    },
+    "cta": {
+      "title": "Ready to take the next step?",
+      "desc": "Open the app demo in another window alongside this page…",
+      "openApp": "Open app demo",
+      "appPending": "App demo (set NEXT_PUBLIC_MINIAPP_URL)",
+      "demoLogin": "Log in with demo account",
+      "stat1": "30 seconds",
+      "stat1Sub": "Find a partner",
+      "stat2": "7 dimensions",
+      "stat2Sub": "Explainable matching",
+      "stat3": "One",
+      "stat3Sub": "Closed-loop platform",
+      "copyright": "© {year} Demo project",
+      "socialPending": "Demo project — social links not configured"
+    }
   }
 }

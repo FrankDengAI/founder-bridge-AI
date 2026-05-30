@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
@@ -21,6 +22,8 @@ function parseJsonArray(raw: string): string[] {
 }
 
 export default async function ProjectPage({ params }: Props) {
+  const tPage = await getTranslations("pages.project");
+  const t = await getTranslations("project");
   const project = await prisma.project.findUnique({
     where: { id: params.id },
     include: {
@@ -38,7 +41,7 @@ export default async function ProjectPage({ params }: Props) {
 
   return (
     <div className="space-y-4 pb-10">
-      <PageHeader title="项目主页" backHref={`/user/${project.userId}`} />
+      <PageHeader title={tPage("title")} backHref={`/user/${project.userId}`} />
 
       <section className="glass-panel overflow-hidden rounded-3xl shadow-soft ring-1 ring-white/70">
         {project.coverUrl ? (
@@ -66,14 +69,15 @@ export default async function ProjectPage({ params }: Props) {
           ) : null}
           {project.revenueBand ? (
             <p className="text-xs text-zinc-500">
-              收入区间（自述）：<span className="font-medium text-zinc-800">{project.revenueBand}</span>
+              {t("revenueBand")}
+              <span className="font-medium text-zinc-800">{project.revenueBand}</span>
             </p>
           ) : null}
           {project.teamNeeds ? (
             <div className="rounded-2xl bg-amber-50/80 p-3 ring-1 ring-amber-200/60">
               <p className="flex items-center gap-1.5 text-xs font-semibold text-amber-950">
                 <Users className="h-3.5 w-3.5" />
-                团队需求
+                {t("teamNeeds")}
               </p>
               <p className="mt-1 text-[11px] leading-relaxed text-amber-900/90">
                 {project.teamNeeds}
@@ -89,12 +93,12 @@ export default async function ProjectPage({ params }: Props) {
                 {s}
               </span>
             ))}
-            {tags.map((t) => (
+            {tags.map((tag) => (
               <span
-                key={t}
+                key={tag}
                 className="rounded-full bg-fuchsia-50 px-2 py-0.5 text-[10px] font-medium text-fuchsia-800 ring-1 ring-fuchsia-200/60"
               >
-                {t}
+                {tag}
               </span>
             ))}
           </div>
@@ -107,7 +111,7 @@ export default async function ProjectPage({ params }: Props) {
                 className="inline-flex items-center gap-1 rounded-2xl bg-zinc-950 px-3 py-2 text-xs font-semibold text-white"
               >
                 <FolderGit2 className="h-3.5 w-3.5" />
-                仓库
+                {t("repo")}
               </a>
             ) : null}
             {project.previewUrl ? (
@@ -118,27 +122,27 @@ export default async function ProjectPage({ params }: Props) {
                 className="inline-flex items-center gap-1 rounded-2xl bg-white px-3 py-2 text-xs font-semibold text-zinc-900 ring-1 ring-zinc-200/80"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
-                在线预览
+                {t("preview")}
               </a>
             ) : null}
             <Link
               href={`/collab/${project.id}`}
               className="inline-flex items-center gap-1 rounded-2xl bg-violet-100 px-3 py-2 text-xs font-semibold text-violet-900 ring-1 ring-violet-200/70"
             >
-              协作看板
+              {t("collabBoard")}
             </Link>
             <Link
               href={`/messages?peer=${encodeURIComponent(project.userId)}&intent=collab`}
               className="inline-flex items-center gap-1 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 py-2 text-xs font-semibold text-white"
             >
-              联系创始人
+              {t("contactFounder")}
             </Link>
           </div>
         </div>
       </section>
 
       <section className="glass-panel rounded-2xl p-4 text-sm shadow-sm ring-1 ring-white/70">
-        <p className="text-xs font-semibold text-zinc-900">创始人</p>
+        <p className="text-xs font-semibold text-zinc-900">{t("founder")}</p>
         <Link
           href={`/user/${project.userId}`}
           className="mt-2 inline-flex flex-wrap items-center gap-2 text-violet-800 hover:underline"

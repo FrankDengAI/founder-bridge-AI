@@ -2,11 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { ChevronDown, LogOut, Settings, UserRound } from "lucide-react";
 import { performLogout } from "@/lib/authLogout";
 import clsx from "clsx";
 
 export function AccountMenu() {
+  const t = useTranslations("account");
+  const tn = useTranslations("nav");
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -32,7 +35,7 @@ export function AccountMenu() {
         )}
         aria-expanded={open}
         aria-haspopup="menu"
-        aria-label="账户菜单"
+        aria-label={t("menu")}
       >
         <UserRound className="h-5 w-5" />
         <ChevronDown
@@ -52,7 +55,7 @@ export function AccountMenu() {
             className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-zinc-800 hover:bg-violet-50 dark:text-zinc-100 dark:hover:bg-zinc-900"
           >
             <UserRound className="h-4 w-4 text-violet-600" />
-            我的
+            {tn("me")}
           </Link>
           <Link
             role="menuitem"
@@ -61,7 +64,7 @@ export function AccountMenu() {
             className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-zinc-800 hover:bg-violet-50 dark:text-zinc-100 dark:hover:bg-zinc-900"
           >
             <Settings className="h-4 w-4 text-zinc-500" />
-            设置（含退出）
+            {t("settingsLogout")}
           </Link>
           <div className="my-1 h-px bg-zinc-100 dark:bg-zinc-800" />
           <button
@@ -71,7 +74,7 @@ export function AccountMenu() {
             className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm font-semibold text-rose-700 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40"
           >
             <LogOut className="h-4 w-4" />
-            退出登录
+            {t("logout")}
           </button>
         </div>
       ) : null}

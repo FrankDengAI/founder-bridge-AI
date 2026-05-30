@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   isAllTodayMissionsDone,
   MISSION_LABELS,
@@ -31,6 +32,7 @@ function MiniConfetti() {
 }
 
 export function MissionCompleteToast() {
+  const t = useTranslations("retention.missions");
   const [msg, setMsg] = useState<string | null>(null);
   const [celebrate, setCelebrate] = useState(false);
   const allDoneDayRef = useRef<string | null>(null);
@@ -43,7 +45,7 @@ export function MissionCompleteToast() {
       allDoneDayRef.current = day;
       recordGamifyEvent("daily_missions_done");
       setCelebrate(true);
-      setMsg("今日 3 项任务全部完成！");
+      setMsg(t("allDone"));
       window.setTimeout(() => setCelebrate(false), 1200);
       window.setTimeout(() => setMsg(null), 3200);
     };
@@ -51,7 +53,7 @@ export function MissionCompleteToast() {
     const onItem = (e: Event) => {
       const id = (e as CustomEvent<{ id: DailyMissionId }>).detail?.id;
       if (!id) return;
-      setMsg(`任务完成：${MISSION_LABELS[id] ?? id}`);
+      setMsg(t("complete", { label: MISSION_LABELS[id] ?? id }));
       window.setTimeout(() => setMsg(null), 2200);
       fireAllDone();
     };

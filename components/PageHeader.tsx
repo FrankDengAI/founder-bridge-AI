@@ -5,8 +5,9 @@ import { usePathname } from "@/i18n/navigation";
 import { ChevronLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import { useViewModeOptional } from "@/components/view-mode/ViewModeProvider";
-import { missionForPath } from "@/lib/webModuleMission";
+import { missionKeyForPath } from "@/lib/webModuleMission";
 
 type Props = {
   title: string;
@@ -18,8 +19,12 @@ type Props = {
 export function PageHeader({ title, subtitle, backHref, right }: Props) {
   const isWeb = useViewModeOptional()?.isWeb ?? false;
   const pathname = usePathname() ?? "/home";
-  const mission = isWeb ? missionForPath(pathname) : null;
-  const displaySubtitle = subtitle ?? mission?.purpose;
+  const missionKey = isWeb ? missionKeyForPath(pathname) : null;
+  const tCommon = useTranslations("common");
+  const tMissions = useTranslations("missions");
+  const missionTagline = missionKey ? tMissions(`${missionKey}.tagline`) : null;
+  const missionPurpose = missionKey ? tMissions(`${missionKey}.purpose`) : null;
+  const displaySubtitle = subtitle ?? missionPurpose;
 
   if (isWeb) {
     return (
@@ -35,7 +40,7 @@ export function PageHeader({ title, subtitle, backHref, right }: Props) {
               <Link
                 href={backHref}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-100 text-zinc-700 transition hover:bg-zinc-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
-                aria-label="返回"
+                aria-label={tCommon("back")}
               >
                 <ChevronLeft className="h-5 w-5" />
               </Link>
@@ -45,8 +50,8 @@ export function PageHeader({ title, subtitle, backHref, right }: Props) {
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-violet-600">
                   VibeCoding
                 </p>
-                {mission ? (
-                  <span className="chip-strong text-[10px]">{mission.tagline}</span>
+                {missionTagline ? (
+                  <span className="chip-strong text-[10px]">{missionTagline}</span>
                 ) : null}
               </div>
               <h1 className="truncate text-2xl font-bold tracking-tight text-zinc-900 xl:text-3xl">
@@ -78,7 +83,7 @@ export function PageHeader({ title, subtitle, backHref, right }: Props) {
             <Link
               href={backHref}
               className="inline-flex h-8 w-8 items-center justify-center rounded-panel bg-white/70 text-zinc-700 ring-1 ring-zinc-200/80 transition hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-              aria-label="返回"
+              aria-label={tCommon("back")}
             >
               <ChevronLeft className="h-4 w-4" />
             </Link>

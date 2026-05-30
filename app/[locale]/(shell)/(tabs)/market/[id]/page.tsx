@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { MarketCheckout } from "@/components/MarketCheckout";
 import { PageHeader } from "@/components/PageHeader";
@@ -12,12 +13,13 @@ function formatPrice(cents: number) {
 }
 
 export default async function MarketItemPage({ params }: Props) {
+  const t = await getTranslations("pages.market");
   const item = await prisma.marketItem.findUnique({ where: { id: params.id } });
   if (!item) notFound();
 
   return (
     <div className="space-y-3 pb-10">
-      <PageHeader title="商品详情" subtitle={item.itemType} backHref="/tools" />
+      <PageHeader title={t("title")} subtitle={item.itemType} backHref="/tools" />
       <MarketCheckout
         marketId={item.id}
         title={item.title}

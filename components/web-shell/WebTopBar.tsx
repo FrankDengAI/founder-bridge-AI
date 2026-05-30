@@ -9,7 +9,7 @@ import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { ViewModeSwitchButton } from "@/components/view-mode/ViewModeSwitchButton";
 import { useViewModeOptional } from "@/components/view-mode/ViewModeProvider";
 import { useViewModeLabel } from "@/lib/hooks/useViewModeLabel";
-import { missionForPath } from "@/lib/webModuleMission";
+import { missionKeyForPath } from "@/lib/webModuleMission";
 
 type Props = {
   pageLabelKey?: string;
@@ -17,11 +17,13 @@ type Props = {
 
 export function WebTopBar({ pageLabelKey }: Props) {
   const pathname = usePathname() ?? "/home";
-  const mission = missionForPath(pathname);
+  const missionKey = missionKeyForPath(pathname);
   const viewMode = useViewModeOptional();
   const t = useTranslations("nav");
   const tw = useTranslations("webShell");
+  const tMissions = useTranslations("missions");
   const modeLabel = useViewModeLabel(viewMode?.mode);
+  const missionTagline = missionKey ? tMissions(`${missionKey}.tagline`) : null;
 
   return (
     <header className="sticky top-0 z-30 border-b border-violet-200/50 bg-white/90 backdrop-blur-xl">
@@ -40,8 +42,8 @@ export function WebTopBar({ pageLabelKey }: Props) {
         {pageLabelKey ? (
           <div className="hidden min-w-0 shrink-0 lg:block lg:max-w-[200px] xl:max-w-[240px]">
             <p className="truncate text-sm font-bold text-zinc-900">{t(pageLabelKey)}</p>
-            {mission ? (
-              <p className="truncate text-[10px] leading-snug text-zinc-500">{mission.tagline}</p>
+            {missionTagline ? (
+              <p className="truncate text-[10px] leading-snug text-zinc-500">{missionTagline}</p>
             ) : null}
           </div>
         ) : null}

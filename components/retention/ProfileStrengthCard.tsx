@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { Gauge } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
 import { profileCompletenessScore } from "@/lib/retention";
 
 export function ProfileStrengthCard() {
+  const t = useTranslations("retention.profile");
   const userId = useClientUserId();
   const [score, setScore] = useState(0);
 
@@ -34,10 +36,8 @@ export function ProfileStrengthCard() {
       <div className="flex items-start gap-3">
         <Gauge className="h-5 w-5 shrink-0 text-violet-700" />
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold text-violet-950">资料完善度 {score}%</p>
-          <p className="mt-0.5 text-[10px] text-violet-900/80">
-            完善至 80% 可提升匹配推荐质量与人脉可信度
-          </p>
+          <p className="text-xs font-semibold text-violet-950">{t("strength", { pct: score })}</p>
+          <p className="mt-0.5 text-[10px] text-violet-900/80">{t("hint")}</p>
           <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/80">
             <div
               className="h-full rounded-full bg-violet-600 transition-all"
@@ -48,7 +48,7 @@ export function ProfileStrengthCard() {
             href="/settings/profile"
             className="mt-2 inline-flex rounded-xl bg-violet-600 px-3 py-1.5 text-[11px] font-semibold text-white"
           >
-            去完善
+            {t("improve")}
           </Link>
         </div>
       </div>

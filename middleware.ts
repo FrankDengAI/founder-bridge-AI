@@ -7,22 +7,16 @@ import {
   isSessionCookieValidEdge,
 } from "@/lib/auth/sessionCookieEdge";
 import { routing } from "@/i18n/routing";
+import {
+  detectLocaleFromPathname,
+  isAppLocale,
+  LOCALE_COOKIE,
+  localizedPath,
+  resolveLocaleFromRequest,
+  stripLocalePrefix,
+} from "@/lib/localePath";
 
 const intlMiddleware = createIntlMiddleware(routing);
-
-const LOCALE_PREFIXES = routing.locales
-  .filter((l) => l !== routing.defaultLocale)
-  .map((l) => `/${l}`);
-
-function stripLocalePrefix(pathname: string): string {
-  for (const prefix of LOCALE_PREFIXES) {
-    if (pathname === prefix) return "/";
-    if (pathname.startsWith(`${prefix}/`)) {
-      return pathname.slice(prefix.length) || "/";
-    }
-  }
-  return pathname;
-}
 
 function isPublicPath(pathname: string): boolean {
   const base = stripLocalePrefix(pathname);
@@ -43,12 +37,46 @@ function hasValidSession(req: NextRequest): boolean {
   return Boolean(done && uid);
 }
 
+function copyCookies(from: NextResponse, to: NextResponse) {
+  for (const cookie of from.cookies.getAll()) {
+    to.cookies.set(cookie);
+  }
+}
+
+function redirectWithIntlCookies(
+  req: NextRequest,
+  intlResponse: NextResponse,
+  pathname: string,
+  status = 307,
+): NextResponse {
+  const url = req.nextUrl.clone();
+  url.pathname = pathname;
+  url.search = req.nextUrl.search;
+  const response = NextResponse.redirect(url, status);
+  copyCookies(intlResponse, response);
+  return response;
+}
+
 export default function middleware(req: NextRequest) {
   const intlResponse = intlMiddleware(req);
   const pathname = req.nextUrl.pathname;
 
   if (intlResponse.status >= 300 && intlResponse.status < 400) {
     return intlResponse;
+  }
+
+  const cookieLocale = req.cookies.get(LOCALE_COOKIE)?.value;
+  const urlLocale = detectLocaleFromPathname(pathname);
+
+  // 仅当用户已选择英文（cookie=en）但 URL 仍为默认中文路径时，补跳 /en 前缀。
+  // 不可反向把 /en/* 剥回 /*：切换语言时 URL 往往先于 cookie 更新，否则会闪回中文。
+  if (
+    cookieLocale === "en" &&
+    urlLocale === routing.defaultLocale
+  ) {
+    const basePath = stripLocalePrefix(pathname);
+    const target = localizedPath(basePath, "en");
+    return redirectWithIntlCookies(req, intlResponse, target);
   }
 
   if (isPublicPath(pathname)) {
@@ -59,17 +87,10 @@ export default function middleware(req: NextRequest) {
     return intlResponse;
   }
 
-  const locale =
-    routing.locales.find(
-      (l) =>
-        l !== routing.defaultLocale &&
-        (pathname === `/${l}` || pathname.startsWith(`/${l}/`)),
-    ) ?? routing.defaultLocale;
-
-  const url = req.nextUrl.clone();
-  url.pathname =
+  const locale = resolveLocaleFromRequest(pathname, cookieLocale);
+  const welcomePath =
     locale === routing.defaultLocale ? "/welcome" : `/${locale}/welcome`;
-  return NextResponse.redirect(url);
+  return redirectWithIntlCookies(req, intlResponse, welcomePath);
 }
 
 export const config = {

@@ -13,11 +13,12 @@ export function BottomNav() {
   const userId = useClientUserId();
   const { unread: msgUnread } = useConversationStats(Boolean(userId));
   const t = useTranslations("nav");
+  const tNavExtra = useTranslations("navExtra");
 
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-40 pb-[env(safe-area-inset-bottom)]"
-      aria-label="主导航"
+      aria-label={tNavExtra("main")}
     >
       <div className="mx-auto max-w-lg px-3">
         <div className="mb-2 rounded-[22px] border border-violet-200/60 bg-white/90 p-1.5 shadow-[0_12px_40px_-20px_rgba(139,92,246,0.35)] backdrop-blur-2xl">

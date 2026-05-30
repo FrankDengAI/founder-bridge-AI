@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Award, Crown, Info, PenLine, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
@@ -19,6 +20,8 @@ type Props = {
 
 export function ModelsClient({ initialModels, totalReviews = 0 }: Props) {
   const isWeb = useIsWebMode();
+  const t = useTranslations("pages.models");
+  const tCommon = useTranslations("common");
   const [scenario, setScenario] = useState("all");
   const [sort, setSort] = useState<SortMode>("rank");
   const [models, setModels] = useState(initialModels);
@@ -58,17 +61,28 @@ export function ModelsClient({ initialModels, totalReviews = 0 }: Props) {
   const showTopThree = scenario === "all" && sort === "rank";
   const mainList = showTopThree ? list.slice(3) : list;
 
+  const sortOptions = useMemo(
+    () =>
+      [
+        { id: "rank" as const, label: t("sortOverall") },
+        { id: "rating" as const, label: t("sortUserRating") },
+        { id: "reviews" as const, label: t("sortReviews") },
+        { id: "new" as const, label: t("sortNewest") },
+      ] as const,
+    [t],
+  );
+
   return (
     <div className={clsx("space-y-4 pb-4", isWeb && "space-y-6")}>
       <PageHeader
-        title="大模型评分榜"
-        subtitle="按场景的真实体验榜 · 帮你在创业路上选模型、聊观点、做决策。"
+        title={t("title")}
+        subtitle={t("subtitle")}
         right={
           <Link
             href="/home"
             className="rounded-2xl bg-white/80 px-3 py-2 text-[11px] font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-white"
           >
-            回发现
+            {t("backDiscover")}
           </Link>
         }
       />
@@ -77,11 +91,11 @@ export function ModelsClient({ initialModels, totalReviews = 0 }: Props) {
         <div className="relative rounded-[22px] bg-zinc-950/92 px-4 py-4">
           <div className="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-fuchsia-400/30 blur-3xl" />
           <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-violet-200/90">
-            社区共建 · 真实体验
+            {t("communityBuilt")}
           </p>
-          <h2 className="mt-1 text-lg font-black text-white">不用等匹配成功，也能先参与讨论</h2>
+          <h2 className="mt-1 text-lg font-black text-white">{t("discussBeforeMatch")}</h2>
           <p className="mt-2 max-w-xl text-[11px] leading-relaxed text-zinc-400">
-            给模型打星、写短评、发起讨论帖 —— 解锁「模型观察员」「榜单共建者」徽章，你的观点会进入排行榜与摘要区。
+            {t("engageDesc")}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Link
@@ -89,7 +103,7 @@ export function ModelsClient({ initialModels, totalReviews = 0 }: Props) {
               className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[11px] font-bold text-zinc-900 hover:bg-zinc-100"
             >
               <PenLine className="h-3.5 w-3.5 text-violet-700" />
-              写一条短评
+              {t("writeReview")}
             </Link>
             <Link
               href={
@@ -100,16 +114,16 @@ export function ModelsClient({ initialModels, totalReviews = 0 }: Props) {
               className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-white ring-1 ring-white/20 hover:bg-white/15"
             >
               <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-              发起讨论
+              {t("startDiscussion")}
             </Link>
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2.5 py-1 text-[10px] font-semibold text-emerald-200 ring-1 ring-emerald-400/30">
               <Award className="h-3 w-3" />
-              首评解锁徽章
+              {t("firstReviewBadge")}
             </span>
           </div>
           {totalReviews > 0 ? (
             <p className="mt-3 text-[10px] text-zinc-500">
-              已有 <strong className="text-white">{totalReviews}</strong> 条社区短评在沉淀口碑
+              {t("reviewCount", { count: totalReviews })}
             </p>
           ) : null}
         </div>
@@ -119,7 +133,7 @@ export function ModelsClient({ initialModels, totalReviews = 0 }: Props) {
         <section className="rounded-2xl bg-gradient-to-r from-amber-50 via-white to-violet-50 p-3 ring-1 ring-amber-200/60">
           <p className="flex items-center gap-1.5 text-xs font-semibold text-amber-900">
             <Crown className="h-4 w-4" />
-            本周口碑王 · {champion.name}
+            {t("weeklyChampion", { name: champion.name })}
           </p>
           <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-zinc-700">
             {champion.description}
@@ -143,11 +157,9 @@ export function ModelsClient({ initialModels, totalReviews = 0 }: Props) {
             <Info className="h-4 w-4" />
           </span>
           <div>
-            <p className="text-sm font-bold text-zinc-900">为什么用户评分更有参考价值？</p>
+            <p className="text-sm font-bold text-zinc-900">{t("whyUserRatings")}</p>
             <p className="mt-1 text-[11px] leading-relaxed text-zinc-600">
-              官方评测看通用能力；这里记录你在
-              <strong> 编程、原型、写作、推理、性价比 </strong>
-              下的真实体验。综合分 = 评分 × 0.7 + log(评价数) × 0.8，避免一条五星刷榜。
+              {t("whyUserRatingsDesc")}
             </p>
           </div>
         </div>
@@ -164,7 +176,7 @@ export function ModelsClient({ initialModels, totalReviews = 0 }: Props) {
           <section className="rounded-2xl bg-white/80 p-3 ring-1 ring-amber-200/50">
             <p className="flex items-center gap-1.5 text-xs font-semibold text-zinc-900">
               <Crown className="h-3.5 w-3.5 text-amber-500" />
-              综合榜 Top 3
+              {t("top3")}
             </p>
             <ol className="mt-2 space-y-2">
               {list.slice(0, 3).map((m, i) => (
@@ -177,14 +189,7 @@ export function ModelsClient({ initialModels, totalReviews = 0 }: Props) {
         <section className="glass-panel rounded-3xl p-4 shadow-soft ring-1 ring-white/70">
           <ModelScenarioFilter value={scenario} onChange={setScenario} />
           <div className="mt-3 flex flex-wrap gap-1 rounded-xl bg-zinc-100/80 p-0.5 ring-1 ring-zinc-200/60">
-            {(
-              [
-                { id: "rank" as const, label: "综合分" },
-                { id: "rating" as const, label: "用户评分" },
-                { id: "reviews" as const, label: "评价数" },
-                { id: "new" as const, label: "最新" },
-              ] as const
-            ).map((x) => (
+            {sortOptions.map((x) => (
               <button
                 key={x.id}
                 type="button"
@@ -198,7 +203,7 @@ export function ModelsClient({ initialModels, totalReviews = 0 }: Props) {
             ))}
           </div>
           {loading ? (
-            <p className="mt-4 text-center text-xs text-zinc-500">加载中…</p>
+            <p className="mt-4 text-center text-xs text-zinc-500">{tCommon("loading")}</p>
           ) : (
             <ul
               className={clsx(
@@ -214,7 +219,7 @@ export function ModelsClient({ initialModels, totalReviews = 0 }: Props) {
             </ul>
           )}
           {!loading && mainList.length === 0 ? (
-            <p className="mt-4 text-center text-xs text-zinc-600">该场景暂无模型，试试「全部」</p>
+            <p className="mt-4 text-center text-xs text-zinc-600">{t("noModels")}</p>
           ) : null}
         </section>
       </div>
