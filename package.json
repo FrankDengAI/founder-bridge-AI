@@ -20,6 +20,8 @@
     "auth:smoke": "node scripts/auth-smoke-test.cjs",
     "smoke:pages": "node scripts/smoke-protected-pages.cjs",
     "check:i18n": "node scripts/check-i18n-hardcoded.mjs",
+    "docs:assets": "node scripts/capture-readme-assets.mjs",
+    "docs:assets:install": "npx playwright install chromium",
     "postinstall": "node scripts/prisma-generate.cjs"
   },
   "prisma": {
@@ -44,6 +46,10 @@
     "@types/react-dom": "^18",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
+    "gif-encoder-2": "^1.0.5",
+    "playwright": "^1.51.1",
+    "pngjs": "^7.0.0",
+    "sharp": "^0.34.1",
     "eslint": "^8",
     "eslint-config-next": "14.2.35",
     "postcss": "^8",
