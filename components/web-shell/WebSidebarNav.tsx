@@ -19,6 +19,7 @@ export function WebSidebarNav() {
   const { unread: msgUnread } = useConversationStats(Boolean(userId));
   const viewMode = useViewModeOptional();
   const t = useTranslations("nav");
+  const tNavExtra = useTranslations("navExtra");
   const tw = useTranslations("webShell");
   const modeLabel = useViewModeLabel(viewMode?.mode);
 
@@ -32,7 +33,7 @@ export function WebSidebarNav() {
       </Link>
       <p className="mb-6 px-2 text-[11px] font-medium text-zinc-500">{modeLabel}</p>
 
-      <nav className="flex flex-1 flex-col gap-1" aria-label="主导航">
+      <nav className="flex flex-1 flex-col gap-1" aria-label={tNavExtra("main")}>
         {MAIN_NAV_ITEMS.map((it) => {
           const active = tab === it.tab;
           const Icon = it.Icon;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { CheckCircle2, Circle } from "lucide-react";
 import { readLearnStepsDone, toggleLearnStepDone } from "@/lib/appHub";
@@ -12,6 +13,7 @@ import { LEARN_STEPS } from "@/lib/learnSteps";
 const STEP_COUNT = LEARN_STEPS.length;
 
 export function LearnHubStrip() {
+  const t = useTranslations("learnHub");
   const [done, setDone] = useState<Set<number>>(new Set());
   const [synced, setSynced] = useState(false);
   const [anonymous, setAnonymous] = useState(true);
@@ -74,15 +76,10 @@ export function LearnHubStrip() {
     <section className="glass-panel rounded-shell p-4 shadow-panel ring-1 ring-white/70">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <h2 className="text-sm font-semibold text-zinc-950">学习路线进度</h2>
-          <p className="mt-1 text-[11px] leading-relaxed text-zinc-600">
-            8 步走完「想法 → 需求 → 提示词 → 代码 → 设计 → GitHub → 部署 → 反馈」的
-            Vibe Coding 闭环。点击圆圈标记完成，或点步骤名进入详情按清单实操。
-          </p>
+          <h2 className="text-sm font-semibold text-zinc-950">{t("progressTitle")}</h2>
+          <p className="mt-1 text-[11px] leading-relaxed text-zinc-600">{t("progressDesc")}</p>
           <p className="mt-1 text-[10px] text-zinc-500">
-            {synced && !anonymous
-              ? "已登录：进度写入数据库，并与工作台成就（路线生 / 通关者）同步。"
-              : "未登录：进度仅保存在本机；登录后写入数据库并解锁成就。"}
+            {synced && !anonymous ? t("syncedLoggedIn") : t("syncedAnonymous")}
           </p>
         </div>
         <div className="text-right">
@@ -90,7 +87,7 @@ export function LearnHubStrip() {
             {pct}%
           </span>
           <p className="mt-1 text-[10px] text-zinc-500">
-            {done.size}/{STEP_COUNT} 步
+            {t("stepsCount", { done: done.size, total: STEP_COUNT })}
           </p>
         </div>
       </div>
@@ -111,7 +108,7 @@ export function LearnHubStrip() {
             >
               <button
                 type="button"
-                title={isDone ? "标记为未完成" : "标记为已完成"}
+                title={isDone ? t("markUndone") : t("markDone")}
                 aria-pressed={isDone}
                 onClick={() => void toggle(n)}
                 className="flex flex-col items-center gap-1 rounded-xl p-1 transition hover:bg-white/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"

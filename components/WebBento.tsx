@@ -17,6 +17,8 @@ import {
   Users,
   Zap,
 } from "lucide-react";
+import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 
 const container = {
   hidden: { opacity: 0 },
@@ -28,8 +30,102 @@ const itemMotion = {
   show: { opacity: 1, y: 0 },
 };
 
+const FEED_KEYS = ["note", "video", "code", "longform", "review", "showcase"] as const;
+const FEED_META: Record<
+  (typeof FEED_KEYS)[number],
+  {
+    seed: string;
+    chip: string;
+    icon: typeof FileText;
+    overlay?: "video" | "code" | "longform";
+    hot?: boolean;
+  }
+> = {
+  note: { seed: "vibe-feed-note", chip: "bg-white/95 text-zinc-900", icon: FileText },
+  video: {
+    seed: "vibe-feed-video",
+    chip: "bg-rose-500/95 text-white",
+    icon: PlayCircle,
+    overlay: "video",
+    hot: true,
+  },
+  code: {
+    seed: "vibe-feed-code",
+    chip: "bg-indigo-500/95 text-white",
+    icon: Code2,
+    overlay: "code",
+  },
+  longform: {
+    seed: "vibe-feed-article",
+    chip: "bg-cyan-500/95 text-white",
+    icon: BookOpen,
+    overlay: "longform",
+  },
+  review: {
+    seed: "vibe-feed-review",
+    chip: "bg-amber-500/95 text-white",
+    icon: Star,
+  },
+  showcase: {
+    seed: "vibe-feed-showcase",
+    chip: "bg-fuchsia-500/95 text-white",
+    icon: Layers,
+  },
+};
+
+const CARD_KEYS = ["match", "feed", "graph", "market", "stack"] as const;
+const CARD_ICONS = {
+  match: Radar,
+  feed: Zap,
+  graph: Users,
+  market: ShoppingBag,
+  stack: GitBranch,
+} as const;
+const CARD_LAYOUT: Record<
+  (typeof CARD_KEYS)[number],
+  { className: string; accent: string }
+> = {
+  match: {
+    className: "md:col-span-2 md:row-span-2",
+    accent: "from-violet-500/22 via-fuchsia-500/8 to-transparent",
+  },
+  feed: {
+    className: "md:col-span-2",
+    accent: "from-fuchsia-500/18 to-transparent",
+  },
+  graph: { className: "", accent: "from-cyan-500/16 to-transparent" },
+  market: {
+    className: "md:col-span-2",
+    accent: "from-lime-400/16 to-transparent",
+  },
+  stack: { className: "", accent: "from-violet-400/12 to-transparent" },
+};
+
+const MARKET_MINI_KEYS = ["prompt", "scaffold", "components", "agent"] as const;
+const MARKET_MINI_ICONS = ["🧠", "⚙️", "🎨", "🤖"] as const;
+const STACK_TAGS = [
+  "Next.js",
+  "Prisma",
+  "PostgreSQL",
+  "Playwright",
+  "Edge",
+  "Vercel",
+] as const;
+
+type FeedMiniCard = {
+  type: string;
+  title: string;
+  tag: string;
+  seed: string;
+  chip: string;
+  icon: typeof FileText;
+  overlay?: "video" | "code" | "longform";
+  hot?: boolean;
+};
+
 /** 角色互补矩阵 mini 热图 */
 function RoleMatrixViz() {
+  const t = useTranslations("marketingSite.bento");
   const labels = ["ADC", "JG", "SUP"];
   const matrix = [
     [0.4, 0.92, 0.78],
@@ -75,86 +171,20 @@ function RoleMatrixViz() {
       <div className="space-y-1.5 text-[10px] text-zinc-600">
         <p className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded bg-violet-400/80" />
-          强互补
+          {t("matrixStrong")}
         </p>
         <p className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded bg-violet-400/40" />
-          中互补
+          {t("matrixMedium")}
         </p>
         <p className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded bg-violet-400/15" />
-          同位
+          {t("matrixSame")}
         </p>
       </div>
     </div>
   );
 }
-
-type FeedMiniCard = {
-  type: string;
-  title: string;
-  tag: string;
-  seed: string;
-  chip: string;
-  icon: typeof FileText;
-  overlay?: "video" | "code" | "longform";
-  hot?: boolean;
-};
-
-const FEED_MINI_ITEMS: FeedMiniCard[] = [
-  {
-    type: "图文",
-    title: "Cursor 多文件 Agent",
-    tag: "Cursor",
-    seed: "vibe-feed-note",
-    chip: "bg-white/95 text-zinc-900",
-    icon: FileText,
-  },
-  {
-    type: "短视频",
-    title: "Claude Code 实战",
-    tag: "02:48",
-    seed: "vibe-feed-video",
-    chip: "bg-rose-500/95 text-white",
-    icon: PlayCircle,
-    overlay: "video",
-    hot: true,
-  },
-  {
-    type: "代码",
-    title: "RAG Agent 模板",
-    tag: ".ts",
-    seed: "vibe-feed-code",
-    chip: "bg-indigo-500/95 text-white",
-    icon: Code2,
-    overlay: "code",
-  },
-  {
-    type: "长文",
-    title: "独立开发工具栈",
-    tag: "8 min",
-    seed: "vibe-feed-article",
-    chip: "bg-cyan-500/95 text-white",
-    icon: BookOpen,
-    overlay: "longform",
-  },
-  {
-    type: "工具评测",
-    title: "Cursor 深度评测",
-    tag: "★ 4.8",
-    seed: "vibe-feed-review",
-    chip: "bg-amber-500/95 text-white",
-    icon: Star,
-  },
-  {
-    type: "项目展示",
-    title: "SaaS 首周复盘",
-    tag: "出海",
-    seed: "vibe-feed-showcase",
-    chip: "bg-fuchsia-500/95 text-white",
-    icon: Layers,
-  },
-];
 
 function FeedMiniCardView({ card }: { card: FeedMiniCard }) {
   const Icon = card.icon;
@@ -219,19 +249,18 @@ function FeedMiniCardView({ card }: { card: FeedMiniCard }) {
   );
 }
 
-/** 信息流 mini 卡片 —— 六种内容形态混排预览 */
-function FeedMiniViz() {
+function FeedMiniViz({ items }: { items: FeedMiniCard[] }) {
   return (
     <div className="mt-5 grid grid-cols-3 gap-1.5">
-      {FEED_MINI_ITEMS.map((card) => (
+      {items.map((card) => (
         <FeedMiniCardView key={card.title} card={card} />
       ))}
     </div>
   );
 }
 
-/** 关系链 mini */
 function GraphMiniViz() {
+  const t = useTranslations("marketingSite.bento");
   return (
     <div className="relative mt-5 h-28">
       <svg viewBox="0 0 220 110" className="absolute inset-0 h-full w-full">
@@ -261,33 +290,29 @@ function GraphMiniViz() {
         ))}
       </svg>
       <div className="absolute left-1 bottom-1 text-[9px] font-mono uppercase text-zinc-500">
-        关注图 · 演示
+        {t("graphDemo")}
       </div>
     </div>
   );
 }
 
-/** 工具商城 mini */
 function MarketMiniViz() {
-  const items = [
-    { name: "Prompt 包", price: "¥19", icon: "🧠" },
-    { name: "脚手架", price: "¥99", icon: "⚙️" },
-    { name: "组件库", price: "¥49", icon: "🎨" },
-    { name: "Agent", price: "¥199", icon: "🤖" },
-  ];
+  const t = useTranslations("marketingSite.bento");
   return (
     <div className="mt-5 grid grid-cols-2 gap-2">
-      {items.map((it) => (
+      {MARKET_MINI_KEYS.map((key, i) => (
         <div
-          key={it.name}
+          key={key}
           className="flex items-center gap-2 rounded-xl border border-zinc-200/80 bg-zinc-50 px-2.5 py-2"
         >
-          <span className="text-base">{it.icon}</span>
+          <span className="text-base">{MARKET_MINI_ICONS[i]}</span>
           <div className="min-w-0 flex-1">
             <p className="truncate text-[11px] font-semibold text-zinc-900">
-              {it.name}
+              {t(`marketMini.${key}.name`)}
             </p>
-            <p className="text-[9px] font-mono text-zinc-600">{it.price}</p>
+            <p className="text-[9px] font-mono text-zinc-600">
+              {t(`marketMini.${key}.price`)}
+            </p>
           </div>
           <ShoppingBag className="h-3 w-3 text-violet-600" />
         </div>
@@ -296,78 +321,70 @@ function MarketMiniViz() {
   );
 }
 
-/** 工程化 mini */
 function StackMiniViz() {
   return (
     <div className="mt-5 flex flex-wrap gap-1.5">
-      {[
-        "Next.js",
-        "Prisma",
-        "PostgreSQL",
-        "Playwright",
-        "Edge",
-        "Vercel",
-      ].map((t) => (
+      {STACK_TAGS.map((tag) => (
         <span
-          key={t}
+          key={tag}
           className="rounded-full border border-zinc-200/80 bg-zinc-50 px-2 py-0.5 text-[10px] font-mono text-zinc-600"
         >
-          {t}
+          {tag}
         </span>
       ))}
     </div>
   );
 }
 
-const items = [
-  {
-    title: "智能匹配 · 多轨可解释",
-    desc: "角色互补 × 关键词向量 × 方向语义 × 资金档 × 活跃度 × 双向意向，每一维独立可视化、可调权。",
-    icon: Radar,
-    className: "md:col-span-2 md:row-span-2",
-    accent: "from-violet-500/22 via-fuchsia-500/8 to-transparent",
-    badge: "核心",
-    viz: <RoleMatrixViz />,
-  },
-  {
-    title: "内容发现 · For You 流",
-    desc: "图文 / 视频 / 代码 / 长文 / 工具评测多形态混排，规则推荐 + 兴趣标签向量。",
-    icon: Zap,
-    className: "md:col-span-2",
-    accent: "from-fuchsia-500/18 to-transparent",
-    badge: "已上线",
-    viz: <FeedMiniViz />,
-  },
-  {
-    title: "关系链 · 全本地联动",
-    desc: "关注 / 评论 / 点赞 / 收藏 / 通知幂等写入，主页与消息互联。",
-    icon: Users,
-    className: "",
-    accent: "from-cyan-500/16 to-transparent",
-    badge: "稳定",
-    viz: <GraphMiniViz />,
-  },
-  {
-    title: "工具商城 · 创作者变现",
-    desc: "心愿单、演示订单、学习进度三端同源；模板、Agent、定制服务一站式上架。",
-    icon: ShoppingBag,
-    className: "md:col-span-2",
-    accent: "from-lime-400/16 to-transparent",
-    badge: "可交付",
-    viz: <MarketMiniViz />,
-  },
-  {
-    title: "工程化 · Edge 友好",
-    desc: "Next App Router、Prisma 双库、Playwright 烟测、Windows 轮询兜底。",
-    icon: GitBranch,
-    className: "",
-    accent: "from-violet-400/12 to-transparent",
-    badge: "Production",
-    viz: <StackMiniViz />,
-  },
-] as const;
+const CARD_VIZ: Record<
+  Exclude<(typeof CARD_KEYS)[number], "feed">,
+  () => JSX.Element
+> = {
+  match: RoleMatrixViz,
+  graph: GraphMiniViz,
+  market: MarketMiniViz,
+  stack: StackMiniViz,
+};
 
 export function WebBento() {
+  const t = useTranslations("marketingSite.bento");
+
+  const feedItems = useMemo(
+    () =>
+      FEED_KEYS.map((key) => {
+        const meta = FEED_META[key];
+        return {
+          type: t(`feed.${key}.type`),
+          title: t(`feed.${key}.title`),
+          tag: t(`feed.${key}.tag`),
+          ...meta,
+        };
+      }),
+    [t],
+  );
+
+  const items = useMemo(
+    () =>
+      CARD_KEYS.map((key) => {
+        const Icon = CARD_ICONS[key];
+        const layout = CARD_LAYOUT[key];
+        const Viz =
+          key === "feed"
+            ? () => <FeedMiniViz items={feedItems} />
+            : CARD_VIZ[key as Exclude<(typeof CARD_KEYS)[number], "feed">];
+        return {
+          key,
+          title: t(`cards.${key}.title`),
+          desc: t(`cards.${key}.desc`),
+          badge: t(`cards.${key}.badge`),
+          icon: Icon,
+          viz: <Viz />,
+          ...layout,
+        };
+      }),
+    [t, feedItems],
+  );
+
   return (
     <section
       id="features"
@@ -378,22 +395,19 @@ export function WebBento() {
           <div className="max-w-2xl">
             <p className="chip mb-3">
               <Activity className="h-3 w-3 text-violet-600" />
-              CAPABILITY · MATRIX
+              {t("chip")}
             </p>
             <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-[2.6rem]">
-              <span className="text-gradient-anim">能力矩阵</span>
+              <span className="text-gradient-anim">{t("title")}</span>
             </h2>
-            <p className="mt-4 text-zinc-600">
-              五个核心子系统协同工作。每一块都不是 PPT 截图 ——
-              都是真实跑在 Prisma 上的业务模块。
-            </p>
+            <p className="mt-4 text-zinc-600">{t("desc")}</p>
           </div>
           <div className="flex gap-2 text-[11px] font-mono uppercase tracking-wider text-zinc-500">
             <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-800">
-              ● 5 已上线
+              {t("statusShipped")}
             </span>
             <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-amber-800">
-              ◐ 2 公测
+              {t("statusBeta")}
             </span>
           </div>
         </div>
@@ -407,7 +421,7 @@ export function WebBento() {
         >
           {items.map((it) => (
             <motion.li
-              key={it.title}
+              key={it.key}
               variants={itemMotion}
               className={`group relative overflow-hidden rounded-3xl border border-zinc-200/80 bg-white/90 p-6 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-[0_0_64px_-16px_rgba(139,92,246,0.35)] ${it.className}`}
             >

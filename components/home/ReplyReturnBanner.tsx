@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { MessageCircle, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
 import { useConversations } from "@/lib/hooks/useConversationStats";
 
@@ -27,12 +28,14 @@ function dismissConversation(conversationId: string) {
 }
 
 export function ReplyReturnBanner() {
+  const t = useTranslations("homeUi.replyBanner");
+  const tRetention = useTranslations("retention.draft");
   const userId = useClientUserId();
   const { conversations } = useConversations(Boolean(userId));
   const [dismissed, setDismissed] = useState<Set<string>>(readDismissed);
 
   const pending = useMemo(
-    () => conversations.find((t) => t.unread && !dismissed.has(t.id)) ?? null,
+    () => conversations.find((conv) => conv.unread && !dismissed.has(conv.id)) ?? null,
     [conversations, dismissed],
   );
 
@@ -47,7 +50,7 @@ export function ReplyReturnBanner() {
     <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 p-3 text-white shadow-lg shadow-fuchsia-500/25">
       <button
         type="button"
-        aria-label="关闭"
+        aria-label={tRetention("close")}
         onClick={close}
         className="absolute right-2 top-2 rounded-lg bg-white/15 p-1 hover:bg-white/25"
       >
@@ -58,17 +61,17 @@ export function ReplyReturnBanner() {
           <MessageCircle className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-bold">有人回复你了</p>
+          <p className="text-xs font-bold">{t("title")}</p>
           <p className="mt-0.5 text-sm font-semibold">{pending.peerName}</p>
           <p className="mt-1 line-clamp-2 text-[11px] text-white/85">
-            {pending.lastMessage || "点击查看会话"}
+            {pending.lastMessage || t("viewConversation")}
           </p>
           <Link
             href={`/messages?peer=${encodeURIComponent(pending.peerId)}`}
             onClick={close}
             className="mt-2 inline-flex rounded-xl bg-white px-3 py-1.5 text-[11px] font-bold text-violet-900"
           >
-            查看回复
+            {t("viewReply")}
           </Link>
         </div>
       </div>

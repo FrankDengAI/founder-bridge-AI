@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { MessageSquarePlus, Star } from "lucide-react";
 
 type Review = {
@@ -22,14 +23,20 @@ type SortMode = "new" | "rating";
 
 export function ToolReviewsPanel({ toolId, initialReviews }: Props) {
   const router = useRouter();
+  const t = useTranslations("toolReview");
+  const locale = useLocale();
   const [reviews, setReviews] = useState(initialReviews);
   const [sort, setSort] = useState<SortMode>("new");
-  const [name, setName] = useState("我");
+  const [name, setName] = useState("");
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [replyDraft, setReplyDraft] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    setName(t("defaultName"));
+  }, [t]);
 
   const sorted = useMemo(() => {
     const list = [...reviews];
@@ -55,12 +62,12 @@ export function ToolReviewsPanel({ toolId, initialReviews }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userName: name, rating, comment }),
       });
-      if (!res.ok) throw new Error("提交失败");
+      if (!res.ok) throw new Error("submit failed");
       const now = new Date().toISOString();
       setReviews((prev) => [
         {
           id: `local_${Date.now()}`,
-          userName: name.trim() || "匿名用户",
+          userName: name.trim() || t("anonymous"),
           rating,
           comment: comment.trim(),
           createdAt: now,
@@ -68,10 +75,10 @@ export function ToolReviewsPanel({ toolId, initialReviews }: Props) {
         ...prev,
       ]);
       setComment("");
-      setMsg("评价已入库，并刷新平均分。");
+      setMsg(t("submitSuccess"));
       router.refresh();
     } catch {
-      setMsg("提交失败，请稍后再试。");
+      setMsg(t("submitFailed"));
     } finally {
       setBusy(false);
       window.setTimeout(() => setMsg(null), 2000);
@@ -81,7 +88,7 @@ export function ToolReviewsPanel({ toolId, initialReviews }: Props) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-zinc-900">用户评价</h2>
+        <h2 className="text-sm font-semibold text-zinc-900">{t("title")}</h2>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex gap-1 rounded-xl bg-zinc-100/80 p-0.5 ring-1 ring-zinc-200/60">
             <button
@@ -91,7 +98,7 @@ export function ToolReviewsPanel({ toolId, initialReviews }: Props) {
                 sort === "new" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-600"
               }`}
             >
-              最新
+              {t("sortNew")}
             </button>
             <button
               type="button"
@@ -100,11 +107,11 @@ export function ToolReviewsPanel({ toolId, initialReviews }: Props) {
                 sort === "rating" ? "bg-white text-zinc-900 shadow-sm" : "text-zinc-600"
               }`}
             >
-              评分优先
+              {t("sortRating")}
             </button>
           </div>
           <span className="rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-900 ring-1 ring-amber-200/70">
-            均值 {avg.toFixed(1)}
+            {t("avg", { avg: avg.toFixed(1) })}
           </span>
         </div>
       </div>
@@ -112,14 +119,14 @@ export function ToolReviewsPanel({ toolId, initialReviews }: Props) {
       <div className="glass-panel rounded-3xl p-4 shadow-sm ring-1 ring-white/70">
         <div className="flex items-center gap-2 text-xs font-semibold text-zinc-900">
           <MessageSquarePlus className="h-4 w-4 text-brand-700" />
-          写一条评价
+          {t("writeTitle")}
         </div>
         <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
           <input
             className="rounded-2xl border border-zinc-200/90 bg-white/80 px-3 py-2 text-sm"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="昵称"
+            placeholder={t("nickname")}
           />
           <select
             className="rounded-2xl border border-zinc-200/90 bg-white/80 px-3 py-2 text-sm"
@@ -128,7 +135,7 @@ export function ToolReviewsPanel({ toolId, initialReviews }: Props) {
           >
             {[5, 4, 3, 2, 1].map((n) => (
               <option key={n} value={n}>
-                {n} 星
+                {t("starOption", { n })}
               </option>
             ))}
           </select>
@@ -138,14 +145,14 @@ export function ToolReviewsPanel({ toolId, initialReviews }: Props) {
             onClick={() => void submit()}
             className="rounded-2xl bg-gradient-to-r from-brand-600 to-fuchsia-600 px-3 py-2 text-sm font-semibold text-white shadow-glow disabled:opacity-50"
           >
-            {busy ? "提交中…" : "提交"}
+            {busy ? t("submitBusy") : t("submit")}
           </button>
         </div>
         <textarea
           className="mt-2 min-h-[90px] w-full rounded-2xl border border-zinc-200/90 bg-white/80 px-3 py-2 text-sm"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          placeholder="说说真实使用场景、上手成本、适合人群…"
+          placeholder={t("placeholder")}
         />
         {msg ? <p className="mt-2 text-[11px] font-medium text-brand-900">{msg}</p> : null}
       </div>
@@ -160,17 +167,17 @@ export function ToolReviewsPanel({ toolId, initialReviews }: Props) {
                 {r.rating}.0
               </span>
             </div>
-            <p className="mt-2 text-xs leading-relaxed text-zinc-700">{r.comment || "（无文字）"}</p>
+            <p className="mt-2 text-xs leading-relaxed text-zinc-700">{r.comment || t("noText")}</p>
             {r.authorReply ? (
               <p className="mt-2 rounded-xl bg-violet-50/80 px-2.5 py-2 text-[11px] text-violet-950 ring-1 ring-violet-200/50">
-                <span className="font-semibold">开发者回复：</span>
+                <span className="font-semibold">{t("devReply")}</span>
                 {r.authorReply}
               </p>
             ) : (
               <div className="mt-2 flex gap-2">
                 <input
                   className="flex-1 rounded-xl border border-zinc-200 px-2 py-1.5 text-[11px]"
-                  placeholder="回复这条评价…"
+                  placeholder={t("replyPlaceholder")}
                   value={replyDraft[r.id] ?? ""}
                   onChange={(e) =>
                     setReplyDraft((d) => ({ ...d, [r.id]: e.target.value }))
@@ -196,12 +203,12 @@ export function ToolReviewsPanel({ toolId, initialReviews }: Props) {
                     }
                   }}
                 >
-                  回复
+                  {t("reply")}
                 </button>
               </div>
             )}
             <p className="mt-2 text-[10px] text-zinc-400">
-              {new Date(r.createdAt).toLocaleString("zh-CN")}
+              {new Date(r.createdAt).toLocaleString(locale)}
             </p>
           </li>
         ))}

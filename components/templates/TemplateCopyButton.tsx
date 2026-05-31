@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Copy } from "lucide-react";
 
 export function TemplateCopyButton({ cmd }: { cmd: string }) {
+  const t = useTranslations("templateCopy");
   const [ok, setOk] = useState(false);
   return (
     <button
@@ -20,7 +22,7 @@ export function TemplateCopyButton({ cmd }: { cmd: string }) {
       className="inline-flex items-center gap-1 rounded-xl bg-violet-100 px-3 py-2 text-[11px] font-semibold text-violet-900 ring-1 ring-violet-200/70"
     >
       <Copy className="h-3.5 w-3.5" />
-      {ok ? "已复制" : "复制命令"}
+      {ok ? t("copied") : t("copyCmd")}
     </button>
   );
 }

@@ -2,9 +2,16 @@
 
 import { useTranslations } from "next-intl";
 
-export function ViewModeLoading({ message }: { message?: string }) {
+export function ViewModeLoading({
+  message,
+  welcomeMode,
+}: {
+  message?: string;
+  welcomeMode?: boolean;
+}) {
   const t = useTranslations("common");
-  const text = message ?? t("loading");
+  const tWelcome = useTranslations("welcome");
+  const text = message ?? (welcomeMode ? tWelcome("modeLoading") : t("loading"));
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 px-4">
       <div className="relative h-10 w-10">

@@ -11,62 +11,29 @@ import {
   Sparkles,
   Wallet,
 } from "lucide-react";
+import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 
-/** 7 维评分演示（与 lib/matching/score.ts 对齐：role / keywords / direction / budget / freshness / location / activity / interestVector） */
-const dimensions = [
-  {
-    key: "role",
-    icon: Briefcase,
-    label: "角色互补",
-    value: 0.92,
-    hint: "ADC × JUNGLE 经典互补组合",
-  },
-  {
-    key: "keywords",
-    icon: Brain,
-    label: "能力关键词",
-    value: 0.84,
-    hint: "Jaccard 0.64 + 双向意向命中",
-  },
-  {
-    key: "direction",
-    icon: Compass,
-    label: "方向语义",
-    value: 0.88,
-    hint: "出海 SaaS × 开发者工具 · bigram 重叠 0.7",
-  },
-  {
-    key: "interest",
-    icon: Sparkles,
-    label: "兴趣向量",
-    value: 0.79,
-    hint: "笔记标签 cosine 相似度",
-  },
-  {
-    key: "budget",
-    icon: Wallet,
-    label: "资金档位",
-    value: 0.82,
-    hint: "差 1 档，节奏相近",
-  },
-  {
-    key: "location",
-    icon: MapPin,
-    label: "地域可达",
-    value: 0.7,
-    hint: "同城 + 远程混合可行",
-  },
-  {
-    key: "activity",
-    icon: Heart,
-    label: "近期活跃",
-    value: 0.95,
-    hint: "近 7 日 12 次发布",
-  },
-];
+const DIMENSION_DEFS = [
+  { key: "role", icon: Briefcase, value: 0.92 },
+  { key: "keywords", icon: Brain, value: 0.84 },
+  { key: "direction", icon: Compass, value: 0.88 },
+  { key: "interest", icon: Sparkles, value: 0.79 },
+  { key: "budget", icon: Wallet, value: 0.82 },
+  { key: "location", icon: MapPin, value: 0.7 },
+  { key: "activity", icon: Heart, value: 0.95 },
+] as const;
+
+type Dimension = {
+  key: string;
+  icon: typeof Briefcase;
+  label: string;
+  value: number;
+  hint: string;
+};
 
 /** SVG 雷达图 */
-function RadarChart() {
+function RadarChart({ dimensions }: { dimensions: Dimension[] }) {
   const cx = 200;
   const cy = 200;
   const max = 180;
@@ -89,7 +56,6 @@ function RadarChart() {
           <stop offset="100%" stopColor="rgba(236,72,153,0.18)" />
         </radialGradient>
       </defs>
-      {/* 同心环 */}
       {[0.25, 0.5, 0.75, 1].map((r, i) => (
         <circle
           key={i}
@@ -101,7 +67,6 @@ function RadarChart() {
           strokeWidth="1"
         />
       ))}
-      {/* 轴线 */}
       {dimensions.map((_, i) => {
         const a = -Math.PI / 2 + i * angleStep;
         return (
@@ -115,7 +80,6 @@ function RadarChart() {
           />
         );
       })}
-      {/* 数据多边形 */}
       <motion.polygon
         points={points}
         fill="url(#radar-fill)"
@@ -127,7 +91,6 @@ function RadarChart() {
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         style={{ transformOrigin: `${cx}px ${cy}px` }}
       />
-      {/* 顶点 */}
       {dimensions.map((d, i) => {
         const a = -Math.PI / 2 + i * angleStep;
         const r = d.value * max;
@@ -147,7 +110,6 @@ function RadarChart() {
           />
         );
       })}
-      {/* 标签 */}
       {dimensions.map((d, i) => {
         const a = -Math.PI / 2 + i * angleStep;
         const x = cx + Math.cos(a) * (max + 22);
@@ -172,8 +134,19 @@ function RadarChart() {
 }
 
 export function WebMatchPreview() {
+  const t = useTranslations("marketingSite.matchPreview");
+  const dimensions = useMemo(
+    () =>
+      DIMENSION_DEFS.map((d) => ({
+        ...d,
+        label: t(`dimensions.${d.key}.label`),
+        hint: t(`dimensions.${d.key}.hint`),
+      })),
+    [t],
+  );
   const total =
     dimensions.reduce((s, d) => s + d.value, 0) / dimensions.length;
+
   return (
     <section
       id="match"
@@ -188,20 +161,15 @@ export function WebMatchPreview() {
         <div className="mx-auto max-w-2xl text-center">
           <p className="chip mb-3 inline-flex">
             <Radar className="h-3 w-3 text-violet-600" />
-            MATCH · ENGINE
+            {t("chip")}
           </p>
           <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-[2.6rem]">
-            <span className="text-gradient-anim">7 维加权 · 全程可解释</span>
+            <span className="text-gradient-anim">{t("title")}</span>
           </h2>
-          <p className="mt-4 text-zinc-600">
-            不止「角色互补」一招——
-            我们把 7 个独立信号编织成一张雷达图，每条边都可以告诉你
-            「为什么是 TA」。
-          </p>
+          <p className="mt-4 text-zinc-600">{t("desc")}</p>
         </div>
 
         <div className="mt-14 grid gap-8 lg:grid-cols-[1fr_1.1fr] lg:items-center">
-          {/* 雷达图 */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -210,28 +178,25 @@ export function WebMatchPreview() {
             className="relative mx-auto aspect-square w-full max-w-md"
           >
             <div className="glass-v2-strong absolute inset-0 rounded-[2rem] p-6">
-              <RadarChart />
-              {/* 中心总分 */}
+              <RadarChart dimensions={dimensions} />
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="text-center">
                   <p className="text-[10px] font-mono uppercase tracking-wider text-slate-500">
-                    综合得分
+                    {t("totalScore")}
                   </p>
                   <p className="font-display text-5xl font-bold text-gradient num-tab leading-none">
                     {Math.round(total * 100)}
                   </p>
-                  <p className="mt-1 text-[10px] text-emerald-600">高匹配</p>
+                  <p className="mt-1 text-[10px] text-emerald-600">{t("highMatch")}</p>
                 </div>
               </div>
             </div>
-            {/* 装饰光环 */}
             <div
               aria-hidden
               className="pointer-events-none absolute -inset-8 -z-10 rounded-full border border-violet-400/10 spin-slow"
             />
           </motion.div>
 
-          {/* 维度列表 */}
           <div className="space-y-3">
             {dimensions.map((d, i) => (
               <motion.div
@@ -248,9 +213,7 @@ export function WebMatchPreview() {
                       <d.icon className="h-4 w-4 text-violet-700" />
                     </span>
                     <div>
-                      <p className="text-sm font-semibold text-zinc-900">
-                        {d.label}
-                      </p>
+                      <p className="text-sm font-semibold text-zinc-900">{d.label}</p>
                       <p className="text-[11px] text-zinc-600">{d.hint}</p>
                     </div>
                   </div>

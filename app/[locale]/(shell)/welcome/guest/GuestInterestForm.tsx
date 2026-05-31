@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import { INTEREST_OPTIONS } from "@/lib/interestPool";
 import { syncLocalUserId } from "@/lib/clientSession";
 import { writePersona } from "@/lib/retention";
@@ -9,14 +10,15 @@ import { completeActivationStep } from "@/lib/activation";
 import { useModePickerHref } from "@/lib/hooks/useModePickerHref";
 
 export function GuestInterestForm() {
+  const t = useTranslations("authGuest");
   const [tags, setTags] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   const modeHref = useModePickerHref();
 
-  const toggle = (t: string) => {
-    setTags((p) => (p.includes(t) ? p.filter((x) => x !== t) : [...p, t]));
+  const toggle = (tag: string) => {
+    setTags((p) => (p.includes(tag) ? p.filter((x) => x !== tag) : [...p, tag]));
   };
 
   const submit = async () => {
@@ -31,7 +33,7 @@ export function GuestInterestForm() {
       });
       if (!res.ok) {
         const j = (await res.json().catch(() => ({}))) as { error?: string };
-        throw new Error(j.error || "创建失败");
+        throw new Error(j.error || t("createFail"));
       }
       const data = (await res.json()) as { userId: string };
       syncLocalUserId(data.userId);
@@ -39,7 +41,7 @@ export function GuestInterestForm() {
       completeActivationStep("persona");
       window.location.href = modeHref("/home");
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "创建失败");
+      setErr(e instanceof Error ? e.message : t("createFail"));
     } finally {
       setBusy(false);
     }
@@ -48,19 +50,19 @@ export function GuestInterestForm() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
-        {INTEREST_OPTIONS.map((t) => (
+        {INTEREST_OPTIONS.map((tag) => (
           <button
-            key={t}
+            key={tag}
             type="button"
-            onClick={() => toggle(t)}
+            onClick={() => toggle(tag)}
             className={clsx(
               "rounded-full border px-3 py-1.5 text-xs font-semibold transition",
-              tags.includes(t)
+              tags.includes(tag)
                 ? "border-violet-400 bg-violet-50 text-violet-900"
                 : "border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-zinc-300",
             )}
           >
-            {t}
+            {tag}
           </button>
         ))}
       </div>
@@ -71,7 +73,7 @@ export function GuestInterestForm() {
         onClick={() => void submit()}
         className="w-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:opacity-95 disabled:opacity-50"
       >
-        {busy ? "创建中…" : "进入应用"}
+        {busy ? t("creating") : t("enterApp")}
       </button>
     </div>
   );

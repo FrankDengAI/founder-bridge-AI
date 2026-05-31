@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { FolderGit2 } from "lucide-react";
 import { FeedCard } from "@/components/FeedCard";
 import type { Role } from "@/lib/domain/role";
-import { isRole } from "@/lib/domain/role";
-import { ROLE_LABEL } from "@/lib/labels";
+import { getRoleLabel } from "@/lib/labels";
 
 type PostRow = {
   id: string;
@@ -43,31 +43,34 @@ type Props = {
   projects: ProjectRow[];
 };
 
-const TABS = ["动态", "项目", "关于"] as const;
+const TAB_IDS = ["posts", "projects", "about"] as const;
+type TabId = (typeof TAB_IDS)[number];
 
 export function UserPageTabs(props: Props) {
-  const [tab, setTab] = useState<(typeof TABS)[number]>("动态");
+  const t = useTranslations("userTabs");
+  const tRoles = useTranslations("roles");
+  const [tab, setTab] = useState<TabId>("posts");
 
   return (
     <div className="space-y-3">
       <div className="flex gap-1 rounded-2xl bg-zinc-100/80 p-1 ring-1 ring-zinc-200/60">
-        {TABS.map((t) => (
+        {TAB_IDS.map((id) => (
           <button
-            key={t}
+            key={id}
             type="button"
-            onClick={() => setTab(t)}
+            onClick={() => setTab(id)}
             className={`flex-1 rounded-xl py-2 text-xs font-semibold transition ${
-              tab === t
+              tab === id
                 ? "bg-white text-violet-900 shadow-sm"
                 : "text-zinc-600 hover:text-zinc-900"
             }`}
           >
-            {t}
+            {t(id)}
           </button>
         ))}
       </div>
 
-      {tab === "动态" ? (
+      {tab === "posts" ? (
         <div className="columns-2 gap-2 space-y-2 [column-fill:_balance]">
           {props.posts.map((p) => (
             <div key={p.id} className="mb-2 break-inside-avoid">
@@ -86,13 +89,13 @@ export function UserPageTabs(props: Props) {
           ))}
           {props.posts.length === 0 ? (
             <p className="glass-panel col-span-2 rounded-2xl p-4 text-xs text-zinc-600">
-              暂无笔记。
+              {t("emptyPosts")}
             </p>
           ) : null}
         </div>
       ) : null}
 
-      {tab === "项目" ? (
+      {tab === "projects" ? (
         <div className="space-y-2">
           {props.projects.map((proj) => (
             <Link
@@ -108,7 +111,9 @@ export function UserPageTabs(props: Props) {
                 <p className="mt-2 line-clamp-2 text-[11px] text-zinc-600">{proj.description}</p>
               ) : null}
               {proj.teamNeeds ? (
-                <p className="mt-2 text-[10px] text-amber-800">招募：{proj.teamNeeds}</p>
+                <p className="mt-2 text-[10px] text-amber-800">
+                  {t("recruit", { needs: proj.teamNeeds })}
+                </p>
               ) : null}
               <div className="mt-2 flex flex-wrap gap-1">
                 {proj.stack.map((s) => (
@@ -122,39 +127,39 @@ export function UserPageTabs(props: Props) {
               </div>
               <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-violet-800">
                 <FolderGit2 className="h-3.5 w-3.5" />
-                查看项目主页
+                {t("viewProject")}
               </span>
             </Link>
           ))}
           {props.projects.length === 0 ? (
-            <p className="glass-panel rounded-2xl p-4 text-xs text-zinc-600">暂无项目。</p>
+            <p className="glass-panel rounded-2xl p-4 text-xs text-zinc-600">{t("emptyProjects")}</p>
           ) : null}
         </div>
       ) : null}
 
-      {tab === "关于" ? (
+      {tab === "about" ? (
         <div className="glass-panel space-y-3 rounded-2xl p-4 text-sm shadow-sm ring-1 ring-white/70">
-          <p className="leading-relaxed text-zinc-700">
-            {props.intro || "这位创作者还没有写简介。"}
-          </p>
+          <p className="leading-relaxed text-zinc-700">{props.intro || t("noIntro")}</p>
           {props.direction ? (
             <p className="text-xs text-zinc-500">
-              方向：<span className="font-medium text-zinc-800">{props.direction}</span>
+              {t("direction")}
+              <span className="font-medium text-zinc-800">{props.direction}</span>
             </p>
           ) : null}
           {props.role ? (
             <p className="text-xs text-zinc-500">
-              角色：<span className="font-medium">{ROLE_LABEL[props.role]}</span>
+              {t("role")}
+              <span className="font-medium">{getRoleLabel(tRoles, props.role)}</span>
             </p>
           ) : null}
           {props.remoteOk ? (
             <span className="inline-block rounded-full bg-cyan-50 px-2.5 py-1 text-[10px] font-semibold text-cyan-900 ring-1 ring-cyan-200/70">
-              接受远程协作
+              {t("remoteOk")}
             </span>
           ) : null}
           {props.verified ? (
             <span className="ml-2 inline-block rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-900 ring-1 ring-emerald-200/70">
-              已验证链接
+              {t("verified")}
             </span>
           ) : null}
           {props.githubUrl ? (
@@ -164,12 +169,12 @@ export function UserPageTabs(props: Props) {
               rel="noreferrer"
               className="block text-xs font-semibold text-violet-800 hover:underline"
             >
-              GitHub / 作品链接
+              {t("githubLink")}
             </a>
           ) : null}
           {props.skillKeywords.length > 0 ? (
             <div>
-              <p className="mb-1.5 text-xs font-semibold text-zinc-900">技能标签</p>
+              <p className="mb-1.5 text-xs font-semibold text-zinc-900">{t("skills")}</p>
               <div className="flex flex-wrap gap-1.5">
                 {props.skillKeywords.map((k) => (
                   <span
@@ -184,14 +189,14 @@ export function UserPageTabs(props: Props) {
           ) : null}
           {props.desiredPartnerRoles.length > 0 ? (
             <div>
-              <p className="mb-1.5 text-xs font-semibold text-zinc-900">合作意向</p>
+              <p className="mb-1.5 text-xs font-semibold text-zinc-900">{t("partnerRoles")}</p>
               <div className="flex flex-wrap gap-1.5">
                 {props.desiredPartnerRoles.map((r) => (
                   <span
                     key={r}
                     className="rounded-full bg-fuchsia-50 px-2.5 py-1 text-[11px] font-medium text-fuchsia-900 ring-1 ring-fuchsia-200/50"
                   >
-                    寻找 {ROLE_LABEL[r]}
+                    {t("seekingRole", { role: getRoleLabel(tRoles, r) })}
                   </span>
                 ))}
               </div>

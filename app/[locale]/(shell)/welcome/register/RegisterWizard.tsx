@@ -16,6 +16,7 @@ const STEP_KEYS = ["regStepAccount", "regStepNickname", "regStepRole", "regStepI
 
 export function RegisterWizard() {
   const t = useTranslations("auth");
+  const tr = useTranslations("authRegister");
   const tCommon = useTranslations("common");
   const tRoles = useTranslations("roles");
   const steps = useMemo(() => STEP_KEYS.map((k) => t(k)), [t]);
@@ -61,11 +62,11 @@ export function RegisterWizard() {
       if (!res.ok) {
         const hint =
           j.userId && res.status === 503
-            ? `${j.error ?? "自动登录失败"}（账号已创建，请去登录）`
-            : j.error || (res.status === 503 ? "数据库未连接，请联系管理员配置 DATABASE_URL" : "注册失败");
+            ? `${j.error ?? tr("autoLoginFail")}${tr("accountCreatedGoLogin")}`
+            : j.error || (res.status === 503 ? tr("dbNotConnected") : tr("registerFail"));
         throw new Error(hint);
       }
-      if (!j.userId) throw new Error("注册响应无效");
+      if (!j.userId) throw new Error(tr("registerInvalidResponse"));
       writePersona(roleToPersona(role));
       syncLocalUserId(j.userId);
       window.location.href = modeHref("/home");
@@ -107,7 +108,7 @@ export function RegisterWizard() {
               className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="例如：xiaolin"
+              placeholder={tr("usernamePlaceholder")}
             />
           </label>
           <label className="block text-xs font-semibold text-zinc-600">
@@ -143,7 +144,7 @@ export function RegisterWizard() {
             className="mt-1.5 w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm text-zinc-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
-            placeholder="例如：小林"
+            placeholder={tr("displayNamePlaceholder")}
           />
         </label>
       ) : null}

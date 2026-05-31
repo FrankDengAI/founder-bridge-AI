@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { LayoutGrid } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useModePickerHref } from "@/lib/hooks/useModePickerHref";
 
 export function WelcomeQuickEntry() {
+  const t = useTranslations("welcomeQuick");
   const modeHref = useModePickerHref();
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -27,8 +29,8 @@ export function WelcomeQuickEntry() {
         <LayoutGrid className="h-6 w-6" />
       </span>
       <div className="min-w-0">
-        <p className="text-lg font-bold text-zinc-900">进入体验</p>
-        <p className="mt-1 text-sm text-zinc-600">已登录 · 选择 App 或网页模式后进入首页</p>
+        <p className="text-lg font-bold text-zinc-900">{t("enterExperience")}</p>
+        <p className="mt-1 text-sm text-zinc-600">{t("loggedInHint")}</p>
       </div>
     </Link>
   );

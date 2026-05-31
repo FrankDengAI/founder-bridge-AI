@@ -20,6 +20,7 @@ function isServiceError(message: string): boolean {
 }
 
 function LoginError({ message }: { message: string }) {
+  const t = useTranslations("authForm");
   const adminHint = isServiceError(message);
 
   if (adminHint) {
@@ -28,25 +29,23 @@ function LoginError({ message }: { message: string }) {
         role="alert"
         className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"
       >
-        <p className="font-semibold">暂时无法完成登录</p>
-        <p className="mt-1 leading-relaxed text-amber-900/90">
-          服务端尚未就绪，不是你的账号或密码问题。若刚更新过代码，请先在 Render 点击 Manual Deploy
-          重新部署；部署后仍失败再检查下方配置项。
-        </p>
+        <p className="font-semibold">{t("serviceErrorTitle")}</p>
+        <p className="mt-1 leading-relaxed text-amber-900/90">{t("serviceErrorDesc")}</p>
         <details className="mt-2 text-xs text-amber-900/80">
-          <summary className="cursor-pointer select-none font-medium">管理员排查</summary>
+          <summary className="cursor-pointer select-none font-medium">{t("adminSummary")}</summary>
           <p className="mt-1.5 leading-relaxed">{message}</p>
           <ul className="mt-2 list-disc space-y-1 pl-4">
             <li>
-              Render → Settings → Start Command 应为{" "}
+              {t("adminStartCommand")}{" "}
               <span className="font-mono">node scripts/render-start.cjs</span>
             </li>
             <li>
-              Environment → 添加{" "}
-              <span className="font-mono">SESSION_SECRET</span>（≥16 位随机字符串，推荐 32 位）
+              {t("adminSessionSecret")}{" "}
+              <span className="font-mono">SESSION_SECRET</span>
+              {t("adminSessionSecretHint")}
             </li>
-            <li>确认已配置 DATABASE_URL，且部署日志中 prisma migrate deploy 成功</li>
-            <li>保存后 Manual Deploy；完成后访问 /api/health 确认 auth 为 ready</li>
+            <li>{t("adminDatabase")}</li>
+            <li>{t("adminHealth")}</li>
           </ul>
         </details>
       </div>
@@ -62,6 +61,7 @@ function LoginError({ message }: { message: string }) {
 
 export function LoginForm() {
   const tAuth = useTranslations("auth");
+  const tForm = useTranslations("authForm");
   const tWelcome = useTranslations("welcome");
   const tCommon = useTranslations("common");
   const searchParams = useSearchParams();
@@ -116,9 +116,9 @@ export function LoginForm() {
       });
       const j = (await res.json().catch(() => ({}))) as { error?: string; userId?: string };
       if (!res.ok) {
-        throw new Error(j.error || (res.status === 503 ? "数据库未连接，请联系管理员配置 DATABASE_URL" : tAuth("loginFail")));
+        throw new Error(j.error || (res.status === 503 ? tForm("dbNotConnected") : tAuth("loginFail")));
       }
-      if (!j.userId) throw new Error("登录响应无效");
+      if (!j.userId) throw new Error(tForm("invalidLoginResponse"));
       syncLocalUserId(j.userId);
       if (embed && typeof window !== "undefined" && window.parent !== window) {
         window.parent.postMessage(
@@ -151,7 +151,7 @@ export function LoginForm() {
       });
       if (!res.ok) {
         const j = (await res.json().catch(() => ({}))) as { error?: string };
-        throw new Error(j.error || "体验登录失败");
+        throw new Error(j.error || tForm("demoLoginFail"));
       }
       const data = (await res.json()) as { userId: string };
       syncLocalUserId(data.userId);
@@ -163,7 +163,7 @@ export function LoginForm() {
       }
       window.location.href = modeHref("/home");
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "体验登录失败");
+      setErr(e instanceof Error ? e.message : tForm("demoLoginFail"));
     } finally {
       setBusy(false);
     }
@@ -242,7 +242,7 @@ export function LoginForm() {
               ·
             </span>
             <Link href="/welcome/forgot-password" className="hover:text-violet-700">
-              忘记密码
+              {tForm("forgotPassword")}
             </Link>
           </div>
         ) : null}
@@ -254,13 +254,11 @@ export function LoginForm() {
               onClick={() => setShowDemo((v) => !v)}
               className="text-xs font-semibold text-zinc-500 hover:text-violet-700"
             >
-              {showDemo ? "收起快速体验" : "快速体验（免注册登录）"}
+              {showDemo ? tForm("demoToggleClose") : tForm("demoToggleOpen")}
             </button>
             {showDemo ? (
               <div className="mt-3 space-y-3 rounded-2xl border border-amber-200/80 bg-amber-50/50 p-3">
-                <p className="text-[11px] text-amber-950">
-                  选择体验账号即可进入，无需注册。体验数据与正式账号相互独立。
-                </p>
+                <p className="text-[11px] text-amber-950">{tForm("demoDesc")}</p>
                 <ul className="max-h-40 space-y-1 overflow-y-auto">
                   {demoUsers.map((u) => (
                     <li key={u.id}>
@@ -292,7 +290,7 @@ export function LoginForm() {
                     type="password"
                     value={demoPassword}
                     onChange={(e) => setDemoPassword(e.target.value)}
-                    placeholder="体验口令（可选）"
+                    placeholder={tForm("demoPasswordPlaceholder")}
                     className="w-full rounded-xl border border-zinc-200 px-3 py-2 text-xs"
                   />
                 ) : null}
@@ -302,7 +300,7 @@ export function LoginForm() {
                   onClick={() => void submitDemo()}
                   className="w-full rounded-full bg-amber-900 py-2 text-xs font-semibold text-white disabled:opacity-40"
                 >
-                  进入体验
+                  {tForm("demoEnter")}
                 </button>
               </div>
             ) : null}

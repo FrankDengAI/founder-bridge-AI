@@ -7,15 +7,17 @@ import { completeActivationStep } from "@/lib/activation";
 import { useModePickerHref } from "@/lib/hooks/useModePickerHref";
 
 const PRESETS = [
-  { id: "student", titleKey: "personaStudent", role: "ADC", direction: "AI 编程教育", href: "/home" },
-  { id: "pm", titleKey: "personaPm", role: "SUPPORT", direction: "内容合作 / 访谈", href: "/match" },
-  { id: "founder", titleKey: "personaFounder", role: "JUNGLE", direction: "出海 SaaS", href: "/match" },
+  { id: "student", titleKey: "personaStudent", role: "ADC", href: "/home" },
+  { id: "pm", titleKey: "personaPm", role: "SUPPORT", href: "/match" },
+  { id: "founder", titleKey: "personaFounder", role: "JUNGLE", href: "/match" },
 ] as const;
 
 export function PersonaQuickPick() {
   const router = useRouter();
   const modeHref = useModePickerHref();
   const t = useTranslations("welcome");
+  const tDir = useTranslations("welcome.personaDirections");
+  const tPw = useTranslations("publishWizard");
   const [busy, setBusy] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
@@ -40,19 +42,19 @@ export function PersonaQuickPick() {
         credentials: "include",
         body: JSON.stringify({
           role: p.role,
-          direction: p.direction,
+          direction: tDir(p.id),
           intro: `${label} — exploring VibeHub.`,
         }),
       });
       if (!put.ok) {
         const body = (await put.json().catch(() => ({}))) as { error?: string };
-        throw new Error(body.error ?? "资料保存失败");
+        throw new Error(body.error ?? t("profileSaveFail"));
       }
       localStorage.setItem("vibe_persona", p.id);
       completeActivationStep("persona");
       window.location.href = modeHref(p.href);
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "操作失败");
+      setErr(e instanceof Error ? e.message : tPw("opFail"));
     } finally {
       setBusy(null);
     }

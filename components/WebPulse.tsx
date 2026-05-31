@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Activity, ArrowDownRight, ArrowUpRight, Clock, Flame } from "lucide-react";
+import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 
 const bars = [40, 72, 55, 88, 48, 92, 64, 78, 52, 95, 58, 84] as const;
 
@@ -18,38 +20,20 @@ const linePoints = [
   [360, 10],
 ] as const;
 
-const events = [
-  {
-    time: "12s",
-    text: "@林深 完成 ADC × JUNGLE 匹配 · 96 分",
-    badge: "match",
-    color: "violet",
-  },
-  {
-    time: "47s",
-    text: "@阿语 发布长文「Cursor 与 Claude Code 工作流对比」",
-    badge: "post",
-    color: "fuchsia",
-  },
-  {
-    time: "1m",
-    text: "@TZ 上架《出海 SaaS 落地模板》¥99",
-    badge: "tool",
-    color: "lime",
-  },
-  {
-    time: "2m",
-    text: "@Yo 收藏 12 篇 LLM 应用笔记 · 触发兴趣升级",
-    badge: "save",
-    color: "cyan",
-  },
-  {
-    time: "3m",
-    text: "@小七 双向意向命中：增长 × 产品",
-    badge: "match",
-    color: "rose",
-  },
-];
+const EVENT_DEFS = [
+  { id: "e1", time: "12s", badge: "match", color: "violet" },
+  { id: "e2", time: "47s", badge: "post", color: "fuchsia" },
+  { id: "e3", time: "1m", badge: "tool", color: "lime" },
+  { id: "e4", time: "2m", badge: "save", color: "cyan" },
+  { id: "e5", time: "3m", badge: "match", color: "rose" },
+] as const;
+
+const RING_DEFS = [
+  { value: 86, key: "matchRate", color: "#a78bfa" },
+  { value: 72, key: "retention", color: "#f472b6" },
+  { value: 94, key: "rating", color: "#22d3ee" },
+  { value: 68, key: "gmv", color: "#bef264" },
+] as const;
 
 const badgeColor: Record<string, string> = {
   violet: "border-violet-200 bg-violet-50 text-violet-800",
@@ -59,7 +43,15 @@ const badgeColor: Record<string, string> = {
   rose: "border-rose-200 bg-rose-50 text-rose-800",
 };
 
-function MiniRing({ value, label, color }: { value: number; label: string; color: string }) {
+function MiniRing({
+  value,
+  label,
+  color,
+}: {
+  value: number;
+  label: string;
+  color: string;
+}) {
   const r = 28;
   const c = 2 * Math.PI * r;
   const off = c - (value / 100) * c;
@@ -98,6 +90,18 @@ function MiniRing({ value, label, color }: { value: number; label: string; color
 }
 
 export function WebPulse() {
+  const t = useTranslations("marketingSite.pulse");
+
+  const events = useMemo(
+    () =>
+      EVENT_DEFS.map((e) => ({
+        ...e,
+        text: t(`events.${e.id}`),
+        badgeLabel: t(`badges.${e.badge}`),
+      })),
+    [t],
+  );
+
   return (
     <section
       id="pulse"
@@ -110,27 +114,23 @@ export function WebPulse() {
           <div>
             <p className="chip mb-3">
               <Activity className="h-3 w-3 text-emerald-600" />
-              LIVE · PULSE
+              {t("chip")}
             </p>
             <h2 className="font-display text-3xl font-bold sm:text-4xl lg:text-[2.6rem]">
-              <span className="text-gradient-anim">实时脉动</span>
+              <span className="text-gradient-anim">{t("title")}</span>
             </h2>
-            <p className="mt-3 max-w-lg text-zinc-600">
-              品牌站用纯前端动画模拟「增长仪表盘」；
-              真实指标与订单流可在 App 演示内查询。
-            </p>
+            <p className="mt-3 max-w-lg text-zinc-600">{t("desc")}</p>
           </div>
           <div className="flex items-center gap-3 text-[11px] font-mono uppercase tracking-wider text-zinc-500">
             <span className="flex items-center gap-1.5 text-emerald-600">
               <span className="pulse-dot text-emerald-400" />
-              streaming
+              {t("streaming")}
             </span>
-            <span>MOCK · NOT_FINANCIAL_ADVICE</span>
+            <span>{t("mockDisclaimer")}</span>
           </div>
         </div>
 
         <div className="mt-12 grid gap-5 lg:grid-cols-3">
-          {/* 主图 — 协作热度 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -141,26 +141,25 @@ export function WebPulse() {
             <div className="flex flex-wrap items-end justify-between gap-6 border-b border-zinc-200/80 pb-6">
               <div>
                 <p className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">
-                  协作热度（演示）
+                  {t("heatLabel")}
                 </p>
                 <p className="mt-1 font-display text-[2.8rem] font-bold leading-none text-gradient num-tab">
                   +128%
                 </p>
                 <p className="mt-2 inline-flex items-center gap-1 text-xs text-emerald-600">
                   <ArrowUpRight className="h-3.5 w-3.5" />
-                  较上 24h · 移动平均
+                  {t("heatDelta")}
                 </p>
               </div>
               <div className="text-right text-sm text-zinc-600">
                 <p className="flex items-center justify-end gap-1.5">
                   <Clock className="h-3.5 w-3.5" />
-                  过去 24h · 会话级模拟
+                  {t("windowLabel")}
                 </p>
                 <p className="mt-1 font-mono text-xs text-zinc-500">UTC+8</p>
               </div>
             </div>
 
-            {/* 柱状图 + 折线图叠加 */}
             <div className="relative mt-8 h-48 sm:h-56">
               <div className="absolute inset-0 flex items-end justify-between gap-1 sm:gap-1.5">
                 {bars.map((h, i) => (
@@ -214,16 +213,18 @@ export function WebPulse() {
               </svg>
             </div>
 
-            {/* 底部圆环 */}
             <div className="mt-6 grid grid-cols-4 gap-3 border-t border-zinc-200/80 pt-6">
-              <MiniRing value={86} label="匹配成功率" color="#a78bfa" />
-              <MiniRing value={72} label="次日留存" color="#f472b6" />
-              <MiniRing value={94} label="工具好评" color="#22d3ee" />
-              <MiniRing value={68} label="GMV 增速" color="#bef264" />
+              {RING_DEFS.map((ring) => (
+                <MiniRing
+                  key={ring.key}
+                  value={ring.value}
+                  label={t(`rings.${ring.key}`)}
+                  color={ring.color}
+                />
+              ))}
             </div>
           </motion.div>
 
-          {/* 事件流 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -234,16 +235,16 @@ export function WebPulse() {
             <div className="flex items-center justify-between border-b border-zinc-200/80 pb-4">
               <div className="flex items-center gap-2">
                 <Flame className="h-4 w-4 text-rose-600" />
-                <p className="text-sm font-bold text-zinc-900">事件流</p>
+                <p className="text-sm font-bold text-zinc-900">{t("eventStream")}</p>
               </div>
               <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
-                t · 60s 窗口
+                {t("eventWindow")}
               </span>
             </div>
             <ul className="mt-4 space-y-3">
               {events.map((e, i) => (
                 <motion.li
-                  key={e.text}
+                  key={e.id}
                   initial={{ opacity: 0, x: 12 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
@@ -258,7 +259,7 @@ export function WebPulse() {
                       badgeColor[e.color]
                     }`}
                   >
-                    {e.badge}
+                    {e.badgeLabel}
                   </span>
                   <span className="min-w-0 flex-1">{e.text}</span>
                 </motion.li>
@@ -267,7 +268,7 @@ export function WebPulse() {
             <div className="mt-5 flex items-center justify-between rounded-2xl border border-zinc-200/80 bg-zinc-50 px-3 py-2.5">
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-zinc-500">
-                  当前在线
+                  {t("onlineLabel")}
                 </p>
                 <p className="font-display text-lg font-bold text-zinc-900 num-tab">
                   2,418

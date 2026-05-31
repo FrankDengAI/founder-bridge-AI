@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
 import type { Role } from "@/lib/domain/role";
 import { ROLES, isRole } from "@/lib/domain/role";
-import { ROLE_LABEL } from "@/lib/labels";
+import { getRoleLabel } from "@/lib/labels";
 import {
   getDirectionPresets,
   getKeywordSuggestions,
@@ -20,7 +20,9 @@ import {
 } from "@/lib/retention";
 
 export function ProfileEditor() {
-  const t = useTranslations("pages.profileEdit");
+  const t = useTranslations("profileEditor");
+  const tCommon = useTranslations("common");
+  const tRoles = useTranslations("roles");
   const router = useRouter();
   const userId = useClientUserId();
   const [role, setRole] = useState<Role>("ADC");
@@ -63,7 +65,7 @@ export function ProfileEditor() {
 
   const save = async () => {
     if (!userId) {
-      setMsg("请先登录后再保存");
+      setMsg(t("loginRequiredSave"));
       return;
     }
     setBusy(true);
@@ -82,7 +84,7 @@ export function ProfileEditor() {
           githubUrl,
         }),
       });
-      if (!res.ok) throw new Error("保存失败");
+      if (!res.ok) throw new Error(t("saveFail"));
       const score = profileCompletenessScore({
         role,
         intro,
@@ -91,10 +93,14 @@ export function ProfileEditor() {
       });
       if (score >= 60) completeActivationStep("profile_60");
       if (score >= 80) completeMission("profile_ok");
-      setMsg(score >= 80 ? `已保存 · 资料完善度 ${score}%` : `已保存 · 完善度 ${score}%`);
+      setMsg(
+        score >= 80
+          ? t("savedWithScore", { score })
+          : t("savedShort", { score }),
+      );
       router.refresh();
     } catch (e) {
-      setMsg(e instanceof Error ? e.message : "保存失败");
+      setMsg(e instanceof Error ? e.message : t("saveFail"));
     } finally {
       setBusy(false);
     }
@@ -108,21 +114,19 @@ export function ProfileEditor() {
       <PageHeader title={t("title")} backHref="/me" />
       {!userId ? (
         <p className="rounded-2xl bg-white/80 p-4 text-sm text-zinc-600 ring-1 ring-zinc-200">
-          请先{" "}
+          {t("loginPromptPrefix")}{" "}
           <Link href="/welcome/login" className="font-semibold text-violet-700 hover:underline">
-            登录
+            {tCommon("login")}
           </Link>{" "}
-          后再编辑资料。
+          {t("loginPromptSuffix")}
         </p>
       ) : (
         <>
-          <p className="text-xs text-zinc-600">
-            独立于匹配页的资料编辑。完善主页可提升匹配质量与他人信任感。
-          </p>
+          <p className="text-xs text-zinc-600">{t("subtitle")}</p>
 
           <div className="glass-panel space-y-4 rounded-3xl p-4 shadow-sm ring-1 ring-white/70">
         <section className="space-y-2">
-          <p className="text-xs font-semibold text-zinc-900">角色</p>
+          <p className="text-xs font-semibold text-zinc-900">{t("role")}</p>
           <div className="flex flex-wrap gap-2">
             {ROLES.map((r) => (
               <button
@@ -135,14 +139,14 @@ export function ProfileEditor() {
                     : "border-zinc-200 text-zinc-600"
                 }`}
               >
-                {ROLE_LABEL[r]}
+                {getRoleLabel(tRoles, r)}
               </button>
             ))}
           </div>
         </section>
 
         <section className="space-y-2">
-          <p className="text-xs font-semibold text-zinc-900">创业方向</p>
+          <p className="text-xs font-semibold text-zinc-900">{t("direction")}</p>
           <div className="flex flex-wrap gap-1.5">
             {directions.map((d) => (
               <button
@@ -163,7 +167,7 @@ export function ProfileEditor() {
         </section>
 
         <section className="space-y-2">
-          <p className="text-xs font-semibold text-zinc-900">技能关键词</p>
+          <p className="text-xs font-semibold text-zinc-900">{t("skillKeywords")}</p>
           <div className="flex flex-wrap gap-1.5">
             {suggestions.slice(0, 10).map((s) => (
               <button
@@ -206,7 +210,7 @@ export function ProfileEditor() {
         </section>
 
         <section className="space-y-2">
-          <p className="text-xs font-semibold text-zinc-900">简介</p>
+          <p className="text-xs font-semibold text-zinc-900">{t("intro")}</p>
           <textarea
             className="min-h-[88px] w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm"
             value={intro}
@@ -215,12 +219,12 @@ export function ProfileEditor() {
         </section>
 
         <section className="space-y-2">
-          <p className="text-xs font-semibold text-zinc-900">GitHub / 作品链接</p>
+          <p className="text-xs font-semibold text-zinc-900">{t("githubLink")}</p>
           <input
             className="w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm"
             value={githubUrl}
             onChange={(e) => setGithubUrl(e.target.value)}
-            placeholder="https://github.com/..."
+            placeholder={t("githubPlaceholder")}
           />
           <label className="flex items-center gap-2 text-xs text-zinc-700">
             <input
@@ -228,7 +232,7 @@ export function ProfileEditor() {
               checked={remoteOk}
               onChange={(e) => setRemoteOk(e.target.checked)}
             />
-            接受远程协作
+            {t("remoteOk")}
           </label>
         </section>
 
@@ -238,14 +242,14 @@ export function ProfileEditor() {
           onClick={() => void save()}
           className="w-full rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 py-3 text-sm font-semibold text-white disabled:opacity-60"
         >
-          {busy ? "保存中…" : "保存主页"}
+          {busy ? t("saving") : t("saveProfile")}
         </button>
         {msg ? <p className="text-xs text-emerald-700">{msg}</p> : null}
         <Link
           href="/match"
           className="block text-center text-xs font-semibold text-violet-800 hover:underline"
         >
-          前往匹配页调整期望伙伴类型 →
+          {t("goMatchAdjust")}
         </Link>
           </div>
         </>

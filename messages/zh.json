@@ -70,6 +70,105 @@
     "noSavedLoggedIn": "暂无收藏。在发现卡片右上角点「书签」即可加入，收藏会同步到账号。",
     "noSavedGuest": "暂无本地收藏。登录后收藏会同步到账号。"
   },
+  "homeUi": {
+    "hero": {
+      "badgeWeb": "内容 · 工具 · 匹配 · 一体化社区",
+      "badgeApp": "实时动态",
+      "titleSuffix": "灵感宇宙",
+      "descWeb": "没匹配到伙伴也没关系：先看笔记、给大模型打分、参与讨论——你的每一次表达，都在帮系统读懂「你要什么、能做什么」。",
+      "descApp": "没匹配到伙伴也没关系：先看笔记、给大模型打分、参与讨论，把社区热度做起来。",
+      "chips": {
+        "posts": "笔记",
+        "users": "用户",
+        "models": "模型",
+        "reviews": "短评"
+      },
+      "modelRank": "模型榜",
+      "unlockedBadges": "已解锁成就"
+    },
+    "communityHub": {
+      "label": "社区共建",
+      "title": "还没找到伙伴？先在这里留下来",
+      "stats": "<strong>{modelCount}</strong> 个模型 · <strong>{reviewCount}</strong> 条真实短评",
+      "cards": {
+        "modelRanking": {
+          "title": "大模型口碑榜",
+          "desc": "看真实短评，按编程/写作/性价比场景选型，不用只看参数表。",
+          "cta": "去评分社区"
+        },
+        "findPartner": {
+          "title": "找互补创业伙伴",
+          "desc": "技术 × 产品 × 增长，角色互补匹配，新人也能先聊起来。",
+          "cta": "开始匹配"
+        },
+        "discussion": {
+          "title": "发起模型讨论",
+          "desc": "Claude 写前端稳不稳？DeepSeek 值不值？把你的踩坑经验留下来。",
+          "cta": "写讨论帖"
+        }
+      }
+    },
+    "discovery": {
+      "modeLabel": "发现模式",
+      "forYou": "为你推荐",
+      "contentDiscovery": "内容发现",
+      "stats": {
+        "models": "模型",
+        "reviews": "短评"
+      }
+    },
+    "hotRanking": {
+      "label": "本周热榜",
+      "title": "大家都在看什么",
+      "fullModelRank": "完整模型榜 →",
+      "modelReputation": "大模型口碑榜",
+      "reviewCta": "去评分 / 写短评 →",
+      "reviewCount": "{count}评"
+    },
+    "continueReading": {
+      "newcomerTitle": "新手推荐",
+      "newcomerHint": "浏览几篇热门内容后，这里会出现「接着看」快速入口。",
+      "viewHotPosts": "看热门笔记",
+      "goMatch": "去匹配",
+      "title": "接着看"
+    },
+    "checkIn": {
+      "streak": "连续签到 {streak} 天",
+      "hint": "7 日日历 · 断签后 streak 重新计数",
+      "checkInToday": "今日签到",
+      "checkedIn": "已签到",
+      "brokenWarning": "你已断签，今日签到将重新开始连续天数",
+      "useFreeze": "使用补签卡（本周 1 次）",
+      "freezeSuccess": "已使用本周补签卡，连续天数已保住",
+      "checkInSuccess": "签到成功！连续 {streak} 天",
+      "sevenDayUnlocked": "七日燃成就已解锁",
+      "sevenDayProgress": "再坚持 {days} 天解锁「七日燃」徽章"
+    },
+    "missions": {
+      "title": "今日任务 · {pct}%",
+      "defaultHint": "完成 3 个小目标，养成每日回访习惯",
+      "allDone": "今日通关"
+    },
+    "replyBanner": {
+      "title": "有人回复你了",
+      "viewConversation": "点击查看会话",
+      "viewReply": "查看回复"
+    },
+    "dailyMatch": {
+      "contextTitle": "今日一人"
+    },
+    "meHub": {
+      "title": "我的成长",
+      "streak": "连续签到",
+      "missions": "今日任务",
+      "badges": "成就徽章",
+      "threads": "私聊会话",
+      "unread": "{count} 条未读",
+      "goCheckIn": "去签到",
+      "messages": "消息",
+      "achievements": "成就墙"
+    }
+  },
   "welcome": {
     "loginTitle": "登录",
     "loginDesc": "使用注册的账号与密码登录。",
@@ -83,6 +182,12 @@
     "personaStudent": "应届生 · 做作品集",
     "personaPm": "产品经理 · 找开发者",
     "personaFounder": "创业者 · 快速组队",
+    "profileSaveFail": "资料保存失败",
+    "personaDirections": {
+      "student": "AI 编程教育",
+      "pm": "内容合作 / 访谈",
+      "founder": "出海 SaaS"
+    },
     "boardTitle": "欢迎登舰",
     "boardSubtitle": "登录 / 注册 / 先选兴趣，解锁底部 Tab、命令面板与极光工作台体验。",
     "modeTitle": "选择体验模式",
@@ -94,7 +199,11 @@
     "forgotPasswordTitle": "找回密码",
     "forgotPasswordDesc": "当前版本使用账号密码登录，暂未开放邮箱自助找回。若忘记密码，请重新注册新账号，或联系站点管理员重置。",
     "forgotPasswordRegister": "注册新账号",
-    "forgotPasswordBackLogin": "返回登录"
+    "forgotPasswordBackLogin": "返回登录",
+    "modeLoading": "正在准备模式选择…",
+    "meta": {
+      "title": "欢迎 · VibeCoding"
+    }
   },
   "viewMode": {
     "app": "App 模式",
@@ -177,6 +286,202 @@
     "tierHigh": "高匹配",
     "tierMid": "中匹配",
     "tierExplore": "探索向"
+  },
+  "matchProgress": {
+    "title": "智能匹配进行中",
+    "modeFast": "快速模式",
+    "modeNormal": "标准",
+    "modeRitual": "仪式感",
+    "statusLine": "{mode} · 约 {duration} 秒 · 剩余 {remaining} 秒",
+    "cancel": "取消",
+    "skipAnim": "跳过动画",
+    "nextRitual": "下次用仪式感（30s）",
+    "phases": {
+      "parse": { "label": "解析画像", "detail": "读取你的角色、关键词、方向与资金档位" },
+      "scan": { "label": "扫描候选池", "detail": "在全站用户中筛选与你互补的创业伙伴" },
+      "rank": { "label": "多维评分", "detail": "角色互补、关键词、方向、资金与新鲜度加权" },
+      "reveal": { "label": "生成推荐", "detail": "整理可解释理由与排序结果" }
+    },
+    "tips": {
+      "tip0": "服务端计算在毫秒级完成；动效用于模拟「深度扫描」的产品体验。",
+      "tip1": "推荐列表中的每一条理由，都对应算法里的一个维度，便于你复盘筛选逻辑。",
+      "tip2": "若结果不理想，可回到上方调整关键词或期望伙伴类型后再跑一次。",
+      "tip3": "创业匹配没有标准答案——分数是冷启动线索，真实契合度仍来自沟通。",
+      "tip4": "资金档位差异大时，算法会降权但仍可能保留「强角色互补」的候选。"
+    }
+  },
+  "matchExtra": {
+    "profileLoadFail": "资料加载失败",
+    "loadFail": "加载失败",
+    "matchRequestFail": "匹配请求失败",
+    "matchFail": "匹配失败",
+    "whatTitle": "匹配在做什么？",
+    "whatBullet1": "用三类创业角色（增长 / 产品运营 / 技术交付）衡量分工互补程度。",
+    "whatBullet2": "结合能力关键词、创业方向、资金档位与资料完整度，输出可解释的分数与理由。",
+    "whatBullet3": "点击下方按钮会先保存当前表单，再进入匹配动效（可跳过）；系统会实时计算推荐结果。",
+    "myRole": "我的创业角色",
+    "myRoleHint": "三选一即可，后续仍可在「我的」或本页随时修改；角色会进入匹配的互补规则。",
+    "budgetTier": "资金意愿档位",
+    "budgetTierHint": "用于估算「投入节奏」是否接近；差一档仍可能匹配，差太多算法会适度降权。",
+    "budgetTier0": "暂不出资（先找伙伴）",
+    "budgetTier1": "小额试水",
+    "budgetTier2": "可投入中等预算",
+    "budgetTier3": "较高预算",
+    "budgetTier4": "资金充足",
+    "skillKeywords": "能力关键词",
+    "skillKeywordsHint": "写你「能交付什么」：与首页、笔记里的技能标签越一致，匹配推荐越精准。",
+    "kwPlaceholder": "自定义，例如：Rust / 投放策略",
+    "add": "添加",
+    "direction": "创业方向",
+    "directionHint": "一句话描述赛道或场景，可点选下方快捷短语再微调。",
+    "directionPlaceholder": "例如：AI 编程教育 / 出海 SaaS / 垂直行业 Copilot",
+    "desiredPartner": "希望匹配的伙伴类型",
+    "desiredPartnerHint": "可多选。会进入「意向加成」：若对方角色在你勾选列表中，匹配分更高。",
+    "intro": "自我介绍",
+    "introHint": "会展示在你的主页与对方看到的资料中；建议写清当前阶段、可投入资源与时间。",
+    "introPlaceholder": "例：独立开发者，有全栈经验，寻找增长与运营合伙人一起做出海工具…",
+    "animModeLabel": "动效模式：",
+    "animFast": "快速 3 秒",
+    "animNormal": "标准 8 秒",
+    "animRitual": "仪式感 30 秒",
+    "collapseReasons": "收起理由",
+    "expandReasons": "展开全部 {count} 条",
+    "reachOut": "发起沟通",
+    "viewProfile": "看主页",
+    "shareTools": "分享工具",
+    "matchContextTitle": "创业伙伴匹配",
+    "matchIntent": "你好 {name}，我在 VibeHub 匹配里看到你的资料（{role}），想聊聊合作可能性。"
+  },
+  "publishWizard": {
+    "loadDraftFail": "加载草稿失败",
+    "saveDraftFail": "保存草稿失败",
+    "publishFail": "发布失败",
+    "opFail": "操作失败",
+    "tagDraft": "草稿",
+    "tagPublish": "发布",
+    "chooseType": "选择内容类型",
+    "fillContent": "填写正文",
+    "recruitRole": "需求角色",
+    "recruitTime": "时间投入",
+    "recruitComp": "报酬方式",
+    "recruitRoleAdc": "射手 · 技术",
+    "recruitRoleSupport": "辅助 · 产品/运营",
+    "recruitRoleJungle": "打野 · 增长",
+    "defaultRecruitTime": "每周 10h+",
+    "defaultRecruitComp": "股权 / 项目分成",
+    "titleLabel": "标题",
+    "excerptLabel": "摘要",
+    "bodyLabel": "正文（支持 Markdown：`#` 标题、`**粗体**`、代码块）",
+    "titlePlaceholder": "让人一眼想点进来的标题",
+    "excerptPlaceholder": "一句话概括亮点",
+    "bodyPlaceholder": "## 背景\n描述项目阶段与目标…\n\n## 进展\n本周完成了…",
+    "hidePreview": "隐藏预览",
+    "mdPreview": "Markdown 预览",
+    "coverOptional": "封面图（可选）",
+    "coverUrlLabel": "图片 URL",
+    "coverPlaceholder": "留空则自动生成封面",
+    "coverHintTitle": "发布后笔记将出现在「发现」信息流，并展示在你的个人主页。",
+    "coverHintDesc": "你也可以粘贴一张 `picsum.photos` 链接，或使用默认封面。",
+    "confirmTitle": "确认发布"
+  },
+  "profileEditor": {
+    "title": "编辑主页",
+    "loginRequiredSave": "请先登录后再保存",
+    "saveFail": "保存失败",
+    "savedWithScore": "已保存 · 资料完善度 {score}%",
+    "savedShort": "已保存 · 完善度 {score}%",
+    "loginPromptPrefix": "请先",
+    "loginPromptSuffix": "后再编辑资料。",
+    "subtitle": "独立于匹配页的资料编辑。完善主页可提升匹配质量与他人信任感。",
+    "role": "角色",
+    "direction": "创业方向",
+    "skillKeywords": "技能关键词",
+    "intro": "简介",
+    "githubLink": "GitHub / 作品链接",
+    "githubPlaceholder": "https://github.com/...",
+    "remoteOk": "接受远程协作",
+    "saving": "保存中…",
+    "saveProfile": "保存主页",
+    "goMatchAdjust": "前往匹配页调整期望伙伴类型 →"
+  },
+  "achievements": {
+    "title": "成就墙",
+    "growthCard": "VibeHub 成长卡",
+    "unlockedLabel": "已解锁成就",
+    "streakLine": "连续签到 {streak} 天 · {date}",
+    "shareBtn": "分享成就",
+    "shareTitle": "VibeHub 成就",
+    "shareText": "我在 VibeHub 已解锁 {count} 枚成就，连续签到 {streak} 天。一起来找创业伙伴吧！",
+    "shareOpened": "已唤起分享",
+    "copied": "成就文案已复制到剪贴板",
+    "cancelled": "分享已取消",
+    "allBadges": "全部徽章",
+    "locked": "未解锁",
+    "nextUnlock": "下一枚待解锁：{emoji} {label} — {desc}",
+    "allUnlocked": "已解锁全部成就徽章"
+  },
+  "authForm": {
+    "serviceErrorTitle": "暂时无法完成登录",
+    "serviceErrorDesc": "服务端尚未就绪，不是你的账号或密码问题。若刚更新过代码，请先在 Render 点击 Manual Deploy 重新部署；部署后仍失败再检查下方配置项。",
+    "adminSummary": "管理员排查",
+    "adminStartCommand": "Render → Settings → Start Command 应为",
+    "adminSessionSecret": "Environment → 添加",
+    "adminSessionSecretHint": "（≥16 位随机字符串，推荐 32 位）",
+    "adminDatabase": "确认已配置 DATABASE_URL，且部署日志中 prisma migrate deploy 成功",
+    "adminHealth": "保存后 Manual Deploy；完成后访问 /api/health 确认 auth 为 ready",
+    "forgotPassword": "忘记密码",
+    "demoToggleOpen": "快速体验（免注册登录）",
+    "demoToggleClose": "收起快速体验",
+    "demoDesc": "选择体验账号即可进入，无需注册。体验数据与正式账号相互独立。",
+    "demoPasswordPlaceholder": "体验口令（可选）",
+    "demoEnter": "进入体验",
+    "demoLoginFail": "体验登录失败",
+    "invalidLoginResponse": "登录响应无效",
+    "dbNotConnected": "数据库未连接，请联系管理员配置 DATABASE_URL"
+  },
+  "authRegister": {
+    "usernamePlaceholder": "例如：xiaolin",
+    "displayNamePlaceholder": "例如：小林",
+    "autoLoginFail": "自动登录失败",
+    "accountCreatedGoLogin": "（账号已创建，请去登录）",
+    "registerInvalidResponse": "注册响应无效",
+    "registerFail": "注册失败",
+    "dbNotConnected": "数据库未连接，请联系管理员配置 DATABASE_URL"
+  },
+  "authGuest": {
+    "creating": "创建中…",
+    "enterApp": "进入应用",
+    "createFail": "创建失败"
+  },
+  "loginBridge": {
+    "backHome": "返回首页",
+    "title": "登录演示应用",
+    "descExternal": "在下方窗口完成登录（会话写入外站 App 域名）。完成后可进入 App 首页。",
+    "descSameOrigin": "在下方窗口完成登录（会话写入本站服务端）。完成后可进入 App 首页。",
+    "loginSuccess": "检测到已登录成功。",
+    "openAppHome": "打开 App 首页",
+    "dbHint": "若页面未登录，请确认数据库已迁移并已执行演示种子（见仓库 .env.example）。",
+    "iframeTitle": "VibeCoding 演示登录",
+    "troubleshootSummary": "内嵌仍为空白或 404？",
+    "troubleshootDb": "确认已配置 DATABASE_URL 并成功 prisma migrate deploy。",
+    "troubleshootSeed": "首次空库请在可连库环境执行一次 `npm run db:seed`。",
+    "troubleshootCrossDomain": "分域时请检查 NEXT_PUBLIC_MINIAPP_URL 与 App 实际地址一致。",
+    "troubleshootSameOrigin": "同源合并部署无需配置 NEXT_PUBLIC_MINIAPP_URL；若曾设置且仍异常，请删除该变量后重新部署。",
+    "footerNote": "合并部署时登录与品牌站同源；数据库为 PostgreSQL（见 prisma 与 .env.example）。",
+    "loading": "加载登录页…"
+  },
+  "welcomeQuick": {
+    "enterExperience": "进入体验",
+    "loggedInHint": "已登录 · 选择 App 或网页模式后进入首页"
+  },
+  "learnHub": {
+    "progressTitle": "学习路线进度",
+    "progressDesc": "8 步走完「想法 → 需求 → 提示词 → 代码 → 设计 → GitHub → 部署 → 反馈」的 Vibe Coding 闭环。点击圆圈标记完成，或点步骤名进入详情按清单实操。",
+    "syncedLoggedIn": "已登录：进度写入数据库，并与工作台成就（路线生 / 通关者）同步。",
+    "syncedAnonymous": "未登录：进度仅保存在本机；登录后写入数据库并解锁成就。",
+    "stepsCount": "{done}/{total} 步",
+    "markDone": "标记为已完成",
+    "markUndone": "标记为未完成"
   },
   "publish": {
     "title": "发布流程",
@@ -656,7 +961,12 @@
     "columnTodo": "待办",
     "columnInProgress": "进行中",
     "columnDone": "已完成",
-    "syncInMessages": "在消息里同步进度"
+    "syncInMessages": "在消息里同步进度",
+    "demoTasks": {
+      "t1": "对齐 MVP 范围与里程碑",
+      "t2": "完成匹配画像并联系 2 位候选",
+      "t3": "发布招募帖并收集反馈"
+    }
   },
   "post": {
     "draftPreview": "草稿预览",
@@ -745,6 +1055,465 @@
       "complete": "任务完成：{label}"
     }
   },
+  "feed": {
+    "readMin": "{minutes} 分钟"
+  },
+  "engage": {
+    "loginLink": "登录",
+    "loginHint": "后可点赞与收藏",
+    "liked": "已点赞",
+    "unliked": "已取消点赞",
+    "saved": "已收藏",
+    "unsaved": "已取消收藏",
+    "operationFailed": "操作失败，请稍后重试"
+  },
+  "comments": {
+    "title": "评论",
+    "loading": "加载中…",
+    "loadingMore": "加载中…",
+    "earlierComments": "更早评论",
+    "empty": "还没有评论，做第一个发言的人吧。",
+    "writeLabel": "写评论",
+    "placeholder": "友善交流，纯文本即可。",
+    "submitBusy": "发送中…",
+    "submit": "发布评论",
+    "loginHint": "登录后可发表评论。",
+    "loadError": "评论加载失败",
+    "submitFailed": "评论发送失败，请重试",
+    "notifTitle": "你的评论已发布",
+    "notifBody": "可在通知中心查看；作者与其他读者会在详情页看到。",
+    "justNow": "刚刚"
+  },
+  "follow": {
+    "loginHint": "登录后可关注该用户。",
+    "following": "已关注",
+    "follow": "关注"
+  },
+  "notifications": {
+    "hubLabel": "通知中心",
+    "closeOverlay": "关闭通知层",
+    "title": "通知中心",
+    "markAllRead": "全部已读"
+  },
+  "github": {
+    "disconnected": "当前未绑定 GitHub",
+    "connecting": "正在连接，请稍候…",
+    "connected": "已成功绑定 GitHub",
+    "error": "连接失败，请稍后重试",
+    "disconnect": "解除绑定",
+    "reconnect": "重新绑定",
+    "connect": "绑定 GitHub",
+    "backDiscover": "返回发现页"
+  },
+  "checkout": {
+    "stepConfirmProduct": "确认商品",
+    "stepConfirmOrder": "确认订单",
+    "stepPayment": "支付",
+    "stepComplete": "完成",
+    "typeLabel": "类型：{type}",
+    "demoHint": "当前为模拟购买流程，不含真实扣款。完成购买后可在「订单与心愿单」查看记录。",
+    "serviceTitle": "服务保障",
+    "serviceDesc": "7 天无理由退换、交付物清单与版本更新说明。",
+    "paymentTitle": "支付方式",
+    "paymentDesc": "确认后将完成模拟支付，并生成订单记录。",
+    "completeTitle": "购买完成",
+    "completeDesc": "你可以在「订单与心愿单」查看记录，或在「我的」继续探索更多功能。",
+    "continue": "继续",
+    "viewOrders": "查看我的订单",
+    "paymentSuccess": "支付成功，订单已生成。"
+  },
+  "modelReview": {
+    "loginHint": "登录后可提交短评，并解锁「模型观察员」徽章",
+    "goLogin": "去登录",
+    "title": "真实体验短评",
+    "sortNew": "最新",
+    "sortRating": "评分优先",
+    "avg": "均值 {avg}",
+    "writeTitle": "写一条短评（按使用场景）",
+    "nickname": "昵称",
+    "defaultName": "我",
+    "starLabel": "星级",
+    "starAria": "{stars} 星",
+    "prosPlaceholder": "优点（如：代码补全稳）",
+    "consPlaceholder": "槽点（如：贵 / 慢）",
+    "commentPlaceholder": "真实体验：你在什么场景下用过？和竞品比如何？",
+    "submitBusy": "提交中…",
+    "submit": "提交评价",
+    "validationError": "请至少填写优点、槽点或真实体验评论。",
+    "loginRequired": "请先登录后再提交评价",
+    "submitFailed": "提交失败，请稍后再试。",
+    "submitSuccess": "评价已入库，榜单综合分将刷新。",
+    "emptyTitle": "还没有短评",
+    "emptyHint": "写下你在编程、写作或原型场景下的真实体验，帮后来者避坑。",
+    "scenarios": {
+      "coding": "编程",
+      "prototype": "产品原型",
+      "writing": "写作",
+      "reasoning": "推理",
+      "value": "性价比",
+      "context": "长上下文"
+    }
+  },
+  "modelRank": {
+    "hot": "热议",
+    "reviewCount": "{count} 评",
+    "overall": "综合 {score}",
+    "scenarios": {
+      "coding": "编程",
+      "prototype": "产品原型",
+      "writing": "写作",
+      "reasoning": "推理",
+      "value": "性价比",
+      "context": "长上下文"
+    }
+  },
+  "toolReview": {
+    "title": "用户评价",
+    "sortNew": "最新",
+    "sortRating": "评分优先",
+    "avg": "均值 {avg}",
+    "writeTitle": "写一条评价",
+    "nickname": "昵称",
+    "defaultName": "我",
+    "anonymous": "匿名用户",
+    "starOption": "{n} 星",
+    "submitBusy": "提交中…",
+    "submit": "提交",
+    "placeholder": "说说真实使用场景、上手成本、适合人群…",
+    "submitSuccess": "评价已入库，并刷新平均分。",
+    "submitFailed": "提交失败，请稍后再试。",
+    "noText": "（无文字）",
+    "devReply": "开发者回复：",
+    "replyPlaceholder": "回复这条评价…",
+    "reply": "回复"
+  },
+  "userTabs": {
+    "posts": "动态",
+    "projects": "项目",
+    "about": "关于",
+    "emptyPosts": "暂无笔记。",
+    "emptyProjects": "暂无项目。",
+    "recruit": "招募：{needs}",
+    "viewProject": "查看项目主页",
+    "noIntro": "这位创作者还没有写简介。",
+    "direction": "方向：",
+    "role": "角色：",
+    "remoteOk": "接受远程协作",
+    "verified": "已验证链接",
+    "githubLink": "GitHub / 作品链接",
+    "skills": "技能标签",
+    "partnerRoles": "合作意向",
+    "seekingRole": "寻找 {role}"
+  },
+  "templateCopy": {
+    "copied": "已复制",
+    "copyCmd": "复制命令"
+  },
+  "toolCategory": {
+    "all": "全部",
+    "写代码": "写代码",
+    "做网页": "做网页",
+    "管理 GitHub": "GitHub",
+    "自动部署": "部署",
+    "生成图片或视频": "多媒体",
+    "做数据分析": "数据",
+    "做产品原型": "原型"
+  },
+  "marketingSite": {
+    "bento": {
+      "chip": "CAPABILITY · MATRIX",
+      "title": "能力矩阵",
+      "desc": "五个核心子系统协同工作。每一块都不是 PPT 截图 —— 都是真实跑在 Prisma 上的业务模块。",
+      "statusShipped": "● 5 已上线",
+      "statusBeta": "◐ 2 公测",
+      "matrixStrong": "强互补",
+      "matrixMedium": "中互补",
+      "matrixSame": "同位",
+      "graphDemo": "关注图 · 演示",
+      "marketMini": {
+        "prompt": { "name": "Prompt 包", "price": "¥19" },
+        "scaffold": { "name": "脚手架", "price": "¥99" },
+        "components": { "name": "组件库", "price": "¥49" },
+        "agent": { "name": "Agent", "price": "¥199" }
+      },
+      "feed": {
+        "note": { "type": "图文", "title": "Cursor 多文件 Agent", "tag": "Cursor" },
+        "video": { "type": "短视频", "title": "Claude Code 实战", "tag": "02:48" },
+        "code": { "type": "代码", "title": "RAG Agent 模板", "tag": ".ts" },
+        "longform": { "type": "长文", "title": "独立开发工具栈", "tag": "8 min" },
+        "review": { "type": "工具评测", "title": "Cursor 深度评测", "tag": "★ 4.8" },
+        "showcase": { "type": "项目展示", "title": "SaaS 首周复盘", "tag": "出海" }
+      },
+      "cards": {
+        "match": {
+          "title": "智能匹配 · 多轨可解释",
+          "desc": "角色互补 × 关键词向量 × 方向语义 × 资金档 × 活跃度 × 双向意向，每一维独立可视化、可调权。",
+          "badge": "核心"
+        },
+        "feed": {
+          "title": "内容发现 · For You 流",
+          "desc": "图文 / 视频 / 代码 / 长文 / 工具评测多形态混排，规则推荐 + 兴趣标签向量。",
+          "badge": "已上线"
+        },
+        "graph": {
+          "title": "关系链 · 全本地联动",
+          "desc": "关注 / 评论 / 点赞 / 收藏 / 通知幂等写入，主页与消息互联。",
+          "badge": "稳定"
+        },
+        "market": {
+          "title": "工具商城 · 创作者变现",
+          "desc": "心愿单、演示订单、学习进度三端同源；模板、Agent、定制服务一站式上架。",
+          "badge": "可交付"
+        },
+        "stack": {
+          "title": "工程化 · Edge 友好",
+          "desc": "Next App Router、Prisma 双库、Playwright 烟测、Windows 轮询兜底。",
+          "badge": "Production"
+        }
+      }
+    },
+    "market": {
+      "chip": "MARKET · CREATOR",
+      "title": "工具商城",
+      "titleAccent": "让代码变现",
+      "desc": "从 ¥19 的 Prompt 包，到 ¥999 的冷启动陪跑——个人和小团队都能用同一套上架流程标准化售卖。",
+      "gmvLabel": "本月 GMV",
+      "tags": {
+        "all": "全部",
+        "prompt": "Prompt 包",
+        "scaffold": "脚手架",
+        "components": "组件库",
+        "agent": "Agent",
+        "miniapp": "小程序模板",
+        "course": "课程",
+        "service": "定制服务"
+      },
+      "wishlist": "加入心愿单",
+      "sold": "已售 {sales}",
+      "stats": {
+        "creators": "创作者数",
+        "listings": "上架作品",
+        "avgIncome": "平均月入"
+      },
+      "products": {
+        "prompt": {
+          "title": "Prompt 工业化大全",
+          "sub": "覆盖 12 个垂类的 380+ Prompt 模板包",
+          "tag": "热销"
+        },
+        "scaffold": {
+          "title": "Next.js 出海 SaaS 脚手架",
+          "sub": "Stripe + i18n + Edge 部署预集成",
+          "tag": "Pro"
+        },
+        "components": {
+          "title": "Glass UI · 玻璃拟态组件库",
+          "sub": "Tailwind + Framer Motion · 64 组件",
+          "tag": "新品"
+        },
+        "agent": {
+          "title": "Agent 工作流模板套装",
+          "sub": "客服 / 内容 / 销售三种生产级配方",
+          "tag": "高端"
+        },
+        "miniapp": {
+          "title": "AI 小程序模板 · 卷王版",
+          "sub": "5 种主题 · 一键部署 · 支付接入",
+          "tag": "推荐"
+        },
+        "coaching": {
+          "title": "冷启动陪跑（30 天）",
+          "sub": "MVP · 用户增长 · 复盘三件套",
+          "tag": "定制"
+        }
+      }
+    },
+    "matchPreview": {
+      "chip": "MATCH · ENGINE",
+      "title": "7 维加权 · 全程可解释",
+      "desc": "不止「角色互补」一招——我们把 7 个独立信号编织成一张雷达图，每条边都可以告诉你「为什么是 TA」。",
+      "totalScore": "综合得分",
+      "highMatch": "高匹配",
+      "dimensions": {
+        "role": { "label": "角色互补", "hint": "ADC × JUNGLE 经典互补组合" },
+        "keywords": { "label": "能力关键词", "hint": "Jaccard 0.64 + 双向意向命中" },
+        "direction": { "label": "方向语义", "hint": "出海 SaaS × 开发者工具 · bigram 重叠 0.7" },
+        "interest": { "label": "兴趣向量", "hint": "笔记标签 cosine 相似度" },
+        "budget": { "label": "资金档位", "hint": "差 1 档，节奏相近" },
+        "location": { "label": "地域可达", "hint": "同城 + 远程混合可行" },
+        "activity": { "label": "近期活跃", "hint": "近 7 日 12 次发布" }
+      }
+    },
+    "pulse": {
+      "chip": "LIVE · PULSE",
+      "title": "实时脉动",
+      "desc": "品牌站用纯前端动画模拟「增长仪表盘」；真实指标与订单流可在 App 演示内查询。",
+      "streaming": "streaming",
+      "mockDisclaimer": "MOCK · NOT_FINANCIAL_ADVICE",
+      "heatLabel": "协作热度（演示）",
+      "heatDelta": "较上 24h · 移动平均",
+      "windowLabel": "过去 24h · 会话级模拟",
+      "eventStream": "事件流",
+      "eventWindow": "t · 60s 窗口",
+      "onlineLabel": "当前在线",
+      "rings": {
+        "matchRate": "匹配成功率",
+        "retention": "次日留存",
+        "rating": "工具好评",
+        "gmv": "GMV 增速"
+      },
+      "events": {
+        "e1": "@林深 完成 ADC × JUNGLE 匹配 · 96 分",
+        "e2": "@阿语 发布长文「Cursor 与 Claude Code 工作流对比」",
+        "e3": "@TZ 上架《出海 SaaS 落地模板》¥99",
+        "e4": "@Yo 收藏 12 篇 LLM 应用笔记 · 触发兴趣升级",
+        "e5": "@小七 双向意向命中：增长 × 产品"
+      },
+      "badges": {
+        "match": "match",
+        "post": "post",
+        "tool": "tool",
+        "save": "save"
+      }
+    },
+    "roadmap": {
+      "chip": "ROADMAP · 2026",
+      "title": "从 P0 到 P5",
+      "titleSuffix": "· 6 个里程碑",
+      "desc": "我们不画大饼。下面 4 个里程碑都在 main 分支上跑着；P4 进行中，P5 是 2026 H2 的方向。",
+      "updated": "updated · 2026 · Q2",
+      "status": {
+        "shipped": "已上线",
+        "inProgress": "进行中",
+        "planned": "已规划"
+      },
+      "milestones": {
+        "p0": {
+          "title": "信息流 · 命令面板 · 收藏闭环",
+          "items": {
+            "0": "/home /search /tools 骨架屏",
+            "1": "(tabs)/error.tsx 错误边界",
+            "2": "命令面板、通知中心、底部导航",
+            "3": "Feed 收藏可达性增强 + 发布 Toast"
+          }
+        },
+        "p1": {
+          "title": "关系链与互动幂等",
+          "items": {
+            "0": "Prisma Follow / Comment / PostLike / PostSave",
+            "1": "/api/follow /api/comment 幂等接口",
+            "2": "用户主页关注计数",
+            "3": "消息「来自匹配」标签联动"
+          }
+        },
+        "p2": {
+          "title": "For You 推荐 · 创作者中心",
+          "items": {
+            "0": "/home?view=for-you 规则推荐",
+            "1": "搜索历史 + 热词骨架",
+            "2": "/creator 创作者中心入口",
+            "3": "view=saved 本地收藏视图"
+          }
+        },
+        "p3": {
+          "title": "工具商城 · 心愿单 · 学习进度",
+          "items": {
+            "0": "WishlistItem / DemoOrder",
+            "1": "UserLessonProgress 学习进度",
+            "2": "商品详情模拟支付写库",
+            "3": "成就字段本地对齐"
+          }
+        },
+        "p4": {
+          "title": "匹配引擎 v2 · 7 维加权 · 雷达可视化",
+          "items": {
+            "0": "加入兴趣向量 / 地域 / 活跃度三维",
+            "1": "雷达图前端可视化",
+            "2": "匹配卡片可解释 reason chips",
+            "3": "匹配 → 直接进入私聊一跳"
+          }
+        },
+        "p5": {
+          "title": "AI 内容协同 · 多人协作工作区",
+          "items": {
+            "0": "@AI 在评论中召唤草稿助手",
+            "1": "项目工作区共享白板",
+            "2": "GitHub Co-author 自动同步",
+            "3": "团队空间与权限"
+          }
+        }
+      }
+    },
+    "showcase": {
+      "ariaLabel": "产品体验快捷导航",
+      "label": "产品体验",
+      "hint": "以下四块可在 App 演示中真实操作，页内分区展示",
+      "sections": {
+        "match": "匹配引擎",
+        "pulse": "实时脉动",
+        "market": "工具商城",
+        "stories": "用户故事"
+      }
+    },
+    "stories": {
+      "chip": "REAL · STORIES",
+      "titleAccent": "他们",
+      "titleRest": "在这里",
+      "titleLine2": "把想法变成业务",
+      "desc": "四种典型用户的 30 天切片——从匹配伙伴到上架变现，链路在同一个平台闭环。",
+      "items": {
+        "deepforest": {
+          "name": "林深",
+          "handle": "@deepforest",
+          "role": "独立开发者 · 出海 SaaS",
+          "quote": "在「能力 × 方向」雷达里第一眼锁定了我的运营合伙人——3 天就拼出 MVP 上线，第二周拿到第一笔订阅。",
+          "metric": "上线 14 天 · MRR ¥18,200"
+        },
+        "yu": {
+          "name": "阿语",
+          "handle": "@yu_studio",
+          "role": "AI 内容创作者",
+          "quote": "把 Cursor / Claude Code 实战教程发到 For You 流，自然涨粉 3.4k，比抖音视频效率高 5×。",
+          "metric": "涨粉 +3,400 · 收藏 1.2w"
+        },
+        "tz": {
+          "name": "TZ",
+          "handle": "@tz.dev",
+          "role": "全栈 · 设计交付",
+          "quote": "我把 Glass UI 组件库上架到工具商城。第一个月卖了 312 份，是我前两年开源积累的 6 倍。",
+          "metric": "工具商城 312 单"
+        },
+        "yo": {
+          "name": "Yo",
+          "handle": "@yo.codes",
+          "role": "在校 · Vibe Coding 新手",
+          "quote": "学习路线把零散知识收了起来，按节奏跟着做了一个班级管理小程序，期末项目直接拿了 A+。",
+          "metric": "完成 24 个 Step"
+        }
+      }
+    },
+    "heroDemo": {
+      "engineLabel": "match.engine · v2",
+      "online": "online",
+      "score": "score",
+      "liveTicker": "live ticker",
+      "candidates": {
+        "0": { "title": "ADC × JUNGLE", "sub": "Next.js · 增长黑客" },
+        "1": { "title": "创作者 × 增长", "sub": "小红书运营 · 出海" },
+        "2": { "title": "独立交付 × 设计", "sub": "LLM 应用 · 设计系统" }
+      },
+      "techStack": {
+        "0": "Next.js 14",
+        "1": "Prisma · PostgreSQL",
+        "2": "TailwindCSS",
+        "3": "Framer Motion",
+        "4": "Edge Runtime",
+        "5": "Playwright E2E",
+        "6": "GitHub OAuth",
+        "7": "Vercel 部署"
+      }
+    }
+  },
   "marketing": {
     "meta": {
       "title": "VibeCoding — 创业社交 · 网页端",
@@ -769,6 +1538,7 @@
       "badge1": "极速匹配",
       "badge1Sub": "约 30 秒仪式动效",
       "badge2": "多维加权",
+      "badge2Value": "7轨",
       "badge2Sub": "角色 × 关键词 × 方向 × 资金 × …",
       "badge3": "兴趣图谱",
       "badge3Sub": "可生长的内容兴趣向量",

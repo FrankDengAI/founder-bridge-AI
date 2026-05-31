@@ -70,6 +70,105 @@
     "noSavedLoggedIn": "No saves yet. Tap the bookmark on any card to add one.",
     "noSavedGuest": "No local saves. Log in to sync saves to your account."
   },
+  "homeUi": {
+    "hero": {
+      "badgeWeb": "Content · tools · matching · unified community",
+      "badgeApp": "Live feed",
+      "titleSuffix": "Inspiration universe",
+      "descWeb": "No match yet? Browse notes, rate models, join discussions — every expression helps the system learn what you want and what you can do.",
+      "descApp": "No match yet? Browse notes, rate models, and join discussions to grow community momentum.",
+      "chips": {
+        "posts": "Notes",
+        "users": "Users",
+        "models": "Models",
+        "reviews": "Reviews"
+      },
+      "modelRank": "Model rankings",
+      "unlockedBadges": "Unlocked achievements"
+    },
+    "communityHub": {
+      "label": "Community hub",
+      "title": "No partner yet? Start here",
+      "stats": "<strong>{modelCount}</strong> models · <strong>{reviewCount}</strong> real reviews",
+      "cards": {
+        "modelRanking": {
+          "title": "Model reputation board",
+          "desc": "Read real short reviews and pick by coding, writing, or value — not just spec sheets.",
+          "cta": "Go to ratings"
+        },
+        "findPartner": {
+          "title": "Find complementary partners",
+          "desc": "Tech × product × growth — role-complement matching so newcomers can start chatting.",
+          "cta": "Start matching"
+        },
+        "discussion": {
+          "title": "Start a model discussion",
+          "desc": "Is Claude good for frontend? Is DeepSeek worth it? Share what you learned the hard way.",
+          "cta": "Write a post"
+        }
+      }
+    },
+    "discovery": {
+      "modeLabel": "Discovery mode",
+      "forYou": "For you",
+      "contentDiscovery": "Content discovery",
+      "stats": {
+        "models": "Models",
+        "reviews": "Reviews"
+      }
+    },
+    "hotRanking": {
+      "label": "This week",
+      "title": "What everyone's reading",
+      "fullModelRank": "Full model board →",
+      "modelReputation": "Model reputation board",
+      "reviewCta": "Rate / write a review →",
+      "reviewCount": "{count} reviews"
+    },
+    "continueReading": {
+      "newcomerTitle": "New here",
+      "newcomerHint": "After you browse a few hot posts, a Continue reading shortcut will appear here.",
+      "viewHotPosts": "Browse hot notes",
+      "goMatch": "Go to Match",
+      "title": "Continue reading"
+    },
+    "checkIn": {
+      "streak": "{streak}-day streak",
+      "hint": "7-day calendar · streak resets after a missed day",
+      "checkInToday": "Check in today",
+      "checkedIn": "Checked in",
+      "brokenWarning": "Streak broken — today's check-in starts a new run",
+      "useFreeze": "Use streak freeze (once this week)",
+      "freezeSuccess": "Streak freeze used — your streak is saved",
+      "checkInSuccess": "Checked in! {streak}-day streak",
+      "sevenDayUnlocked": "Seven-day flame badge unlocked",
+      "sevenDayProgress": "{days} more days to unlock the Seven-day flame badge"
+    },
+    "missions": {
+      "title": "Today's missions · {pct}%",
+      "defaultHint": "Complete 3 small goals and build a daily return habit",
+      "allDone": "All done today"
+    },
+    "replyBanner": {
+      "title": "Someone replied",
+      "viewConversation": "Tap to view conversation",
+      "viewReply": "View reply"
+    },
+    "dailyMatch": {
+      "contextTitle": "Daily pick"
+    },
+    "meHub": {
+      "title": "My growth",
+      "streak": "Check-in streak",
+      "missions": "Today's missions",
+      "badges": "Badges",
+      "threads": "DM threads",
+      "unread": "{count} unread",
+      "goCheckIn": "Check in",
+      "messages": "Messages",
+      "achievements": "Achievements"
+    }
+  },
   "welcome": {
     "loginTitle": "Log in",
     "loginDesc": "Use your registered username and password.",
@@ -83,6 +182,12 @@
     "personaStudent": "Grad · Portfolio builder",
     "personaPm": "PM · Find a builder",
     "personaFounder": "Founder · Team up fast",
+    "profileSaveFail": "Could not save profile",
+    "personaDirections": {
+      "student": "AI programming education",
+      "pm": "Content collab / interviews",
+      "founder": "Global SaaS"
+    },
     "boardTitle": "Welcome aboard",
     "boardSubtitle": "Log in, sign up, or pick interests to unlock tabs, command palette, and the aurora workspace.",
     "modeTitle": "Choose experience mode",
@@ -94,7 +199,11 @@
     "forgotPasswordTitle": "Reset password",
     "forgotPasswordDesc": "This version uses username/password login. Email self-service reset is not available yet. Register a new account or contact the site admin.",
     "forgotPasswordRegister": "Create new account",
-    "forgotPasswordBackLogin": "Back to log in"
+    "forgotPasswordBackLogin": "Back to log in",
+    "modeLoading": "Preparing mode picker…",
+    "meta": {
+      "title": "Welcome · VibeCoding"
+    }
   },
   "viewMode": {
     "app": "App mode",
@@ -177,6 +286,202 @@
     "tierHigh": "Strong fit",
     "tierMid": "Good fit",
     "tierExplore": "Explore"
+  },
+  "matchProgress": {
+    "title": "Matching in progress",
+    "modeFast": "Fast mode",
+    "modeNormal": "Standard",
+    "modeRitual": "Ritual",
+    "statusLine": "{mode} · ~{duration}s · {remaining}s left",
+    "cancel": "Cancel",
+    "skipAnim": "Skip animation",
+    "nextRitual": "Use ritual mode next time (30s)",
+    "phases": {
+      "parse": { "label": "Parse profile", "detail": "Reading your role, keywords, direction, and budget tier" },
+      "scan": { "label": "Scan pool", "detail": "Filtering complementary co-founders across the community" },
+      "rank": { "label": "Multi-signal scoring", "detail": "Weighting role fit, keywords, direction, budget, and freshness" },
+      "reveal": { "label": "Build recommendations", "detail": "Assembling explainable reasons and ranked results" }
+    },
+    "tips": {
+      "tip0": "Server-side scoring finishes in milliseconds; animation simulates a deeper scan experience.",
+      "tip1": "Each reason in the list maps to a scoring dimension so you can review the logic.",
+      "tip2": "If results miss the mark, tweak keywords or desired partner types above and run again.",
+      "tip3": "There is no perfect match score — it is a cold-start signal; real fit comes from conversation.",
+      "tip4": "Large budget gaps are down-weighted, but strong role complementarity may still surface."
+    }
+  },
+  "matchExtra": {
+    "profileLoadFail": "Could not load profile",
+    "loadFail": "Load failed",
+    "matchRequestFail": "Match request failed",
+    "matchFail": "Matching failed",
+    "whatTitle": "What does matching do?",
+    "whatBullet1": "Three startup roles (growth / product-ops / tech delivery) measure complementary division of labor.",
+    "whatBullet2": "Skill keywords, direction, budget tier, and profile completeness produce explainable scores and reasons.",
+    "whatBullet3": "The button below saves this form first, then runs match animation (skippable); recommendations compute in real time.",
+    "myRole": "My startup role",
+    "myRoleHint": "Pick one — you can change it anytime on Me or this page; role feeds complementarity rules.",
+    "budgetTier": "Budget willingness tier",
+    "budgetTierHint": "Estimates whether investment pace aligns; one tier apart may still match; large gaps are down-weighted.",
+    "budgetTier0": "No funding yet (find partners first)",
+    "budgetTier1": "Small experiments",
+    "budgetTier2": "Moderate budget available",
+    "budgetTier3": "Higher budget",
+    "budgetTier4": "Well funded",
+    "skillKeywords": "Skill keywords",
+    "skillKeywordsHint": "Describe what you can deliver — consistency with home and note tags improves recommendations.",
+    "kwPlaceholder": "Custom, e.g. Rust / growth strategy",
+    "add": "Add",
+    "direction": "Startup direction",
+    "directionHint": "One-line niche or scenario — tap a preset below, then fine-tune.",
+    "directionPlaceholder": "e.g. AI coding education / global SaaS / vertical Copilot",
+    "desiredPartner": "Desired partner types",
+    "desiredPartnerHint": "Multi-select. Intent bonus applies when their role is in your list.",
+    "intro": "About you",
+    "introHint": "Shown on your profile and to matches — include stage, resources, and time commitment.",
+    "introPlaceholder": "e.g. Indie full-stack dev looking for growth & ops partners for a global tool…",
+    "animModeLabel": "Animation mode:",
+    "animFast": "Fast 3s",
+    "animNormal": "Standard 8s",
+    "animRitual": "Ritual 30s",
+    "collapseReasons": "Collapse reasons",
+    "expandReasons": "Show all {count} reasons",
+    "reachOut": "Reach out",
+    "viewProfile": "View profile",
+    "shareTools": "Share tools",
+    "matchContextTitle": "Co-founder matching",
+    "matchIntent": "Hi {name}, I saw your profile on VibeHub Match ({role}) and would love to explore collaboration."
+  },
+  "publishWizard": {
+    "loadDraftFail": "Could not load draft",
+    "saveDraftFail": "Could not save draft",
+    "publishFail": "Publish failed",
+    "opFail": "Operation failed",
+    "tagDraft": "Draft",
+    "tagPublish": "Published",
+    "chooseType": "Choose content type",
+    "fillContent": "Write content",
+    "recruitRole": "Role needed",
+    "recruitTime": "Time commitment",
+    "recruitComp": "Compensation",
+    "recruitRoleAdc": "Tech · Delivery",
+    "recruitRoleSupport": "Product · Ops",
+    "recruitRoleJungle": "Growth · BD",
+    "defaultRecruitTime": "10+ hrs/week",
+    "defaultRecruitComp": "Equity / revenue share",
+    "titleLabel": "Title",
+    "excerptLabel": "Summary",
+    "bodyLabel": "Body (Markdown: `#` headings, `**bold**`, code blocks)",
+    "titlePlaceholder": "A title people want to click",
+    "excerptPlaceholder": "One-line highlight",
+    "bodyPlaceholder": "## Background\nProject stage and goals…\n\n## Progress\nThis week we…",
+    "hidePreview": "Hide preview",
+    "mdPreview": "Markdown preview",
+    "coverOptional": "Cover image (optional)",
+    "coverUrlLabel": "Image URL",
+    "coverPlaceholder": "Leave blank for auto-generated cover",
+    "coverHintTitle": "After publishing, the note appears in Discover and on your profile.",
+    "coverHintDesc": "You can paste a `picsum.photos` link or use the default cover.",
+    "confirmTitle": "Confirm publish"
+  },
+  "profileEditor": {
+    "title": "Edit profile",
+    "loginRequiredSave": "Please log in before saving",
+    "saveFail": "Could not save",
+    "savedWithScore": "Saved · Profile completeness {score}%",
+    "savedShort": "Saved · Completeness {score}%",
+    "loginPromptPrefix": "Please",
+    "loginPromptSuffix": "to edit your profile.",
+    "subtitle": "Profile editing separate from Match. A complete profile improves match quality and trust.",
+    "role": "Role",
+    "direction": "Startup direction",
+    "skillKeywords": "Skill keywords",
+    "intro": "Bio",
+    "githubLink": "GitHub / portfolio link",
+    "githubPlaceholder": "https://github.com/...",
+    "remoteOk": "Open to remote collaboration",
+    "saving": "Saving…",
+    "saveProfile": "Save profile",
+    "goMatchAdjust": "Adjust desired partner types on Match →"
+  },
+  "achievements": {
+    "title": "Achievements",
+    "growthCard": "VibeHub growth card",
+    "unlockedLabel": "Achievements unlocked",
+    "streakLine": "{streak}-day streak · {date}",
+    "shareBtn": "Share achievements",
+    "shareTitle": "VibeHub achievements",
+    "shareText": "I've unlocked {count} achievements on VibeHub with a {streak}-day streak. Come find co-founders!",
+    "shareOpened": "Share opened",
+    "copied": "Achievement text copied",
+    "cancelled": "Share cancelled",
+    "allBadges": "All badges",
+    "locked": "Locked",
+    "nextUnlock": "Next to unlock: {emoji} {label} — {desc}",
+    "allUnlocked": "All achievement badges unlocked"
+  },
+  "authForm": {
+    "serviceErrorTitle": "Sign-in temporarily unavailable",
+    "serviceErrorDesc": "The server is not ready — this is not your username or password. If you just deployed new code, trigger Manual Deploy on Render first; if it still fails, check the items below.",
+    "adminSummary": "Admin troubleshooting",
+    "adminStartCommand": "Render → Settings → Start Command should be",
+    "adminSessionSecret": "Environment → add",
+    "adminSessionSecretHint": "(≥16 random chars, 32 recommended)",
+    "adminDatabase": "Confirm DATABASE_URL is set and prisma migrate deploy succeeded in deploy logs",
+    "adminHealth": "Save and Manual Deploy; then visit /api/health and confirm auth is ready",
+    "forgotPassword": "Forgot password",
+    "demoToggleOpen": "Quick demo (no sign-up)",
+    "demoToggleClose": "Hide quick demo",
+    "demoDesc": "Pick a demo account to enter — no registration. Demo data is separate from real accounts.",
+    "demoPasswordPlaceholder": "Demo passphrase (optional)",
+    "demoEnter": "Enter demo",
+    "demoLoginFail": "Demo sign-in failed",
+    "invalidLoginResponse": "Invalid sign-in response",
+    "dbNotConnected": "Database not connected — ask admin to configure DATABASE_URL"
+  },
+  "authRegister": {
+    "usernamePlaceholder": "e.g. xiaolin",
+    "displayNamePlaceholder": "e.g. Lin",
+    "autoLoginFail": "Auto sign-in failed",
+    "accountCreatedGoLogin": "(Account created — please log in)",
+    "registerInvalidResponse": "Invalid sign-up response",
+    "registerFail": "Sign-up failed",
+    "dbNotConnected": "Database not connected — ask admin to configure DATABASE_URL"
+  },
+  "authGuest": {
+    "creating": "Creating…",
+    "enterApp": "Enter app",
+    "createFail": "Could not create guest account"
+  },
+  "loginBridge": {
+    "backHome": "Back to home",
+    "title": "Demo app sign-in",
+    "descExternal": "Sign in in the window below (session on external App domain). Then open the App home.",
+    "descSameOrigin": "Sign in in the window below (session on this site). Then open the App home.",
+    "loginSuccess": "Signed in successfully.",
+    "openAppHome": "Open App home",
+    "dbHint": "If the page is not signed in, confirm migrations ran and demo seed was executed (see .env.example).",
+    "iframeTitle": "VibeCoding demo sign-in",
+    "troubleshootSummary": "Embed still blank or 404?",
+    "troubleshootDb": "Confirm DATABASE_URL is set and prisma migrate deploy succeeded.",
+    "troubleshootSeed": "On an empty DB, run `npm run db:seed` once where the DB is reachable.",
+    "troubleshootCrossDomain": "For split domains, verify NEXT_PUBLIC_MINIAPP_URL matches the App URL.",
+    "troubleshootSameOrigin": "Same-origin deploy needs no NEXT_PUBLIC_MINIAPP_URL; if set and broken, remove it and redeploy.",
+    "footerNote": "Merged deploy shares origin with the brand site; database is PostgreSQL (see prisma and .env.example).",
+    "loading": "Loading sign-in…"
+  },
+  "welcomeQuick": {
+    "enterExperience": "Enter experience",
+    "loggedInHint": "Signed in · pick App or Web mode, then open home"
+  },
+  "learnHub": {
+    "progressTitle": "Learning path progress",
+    "progressDesc": "8 steps from idea → requirements → prompts → code → design → GitHub → deploy → feedback. Tap circles to mark done, or step names for checklists.",
+    "syncedLoggedIn": "Signed in: progress syncs to the database and unlocks workspace achievements.",
+    "syncedAnonymous": "Guest: progress is local only; sign in to sync and unlock achievements.",
+    "stepsCount": "{done}/{total} steps",
+    "markDone": "Mark as done",
+    "markUndone": "Mark as not done"
   },
   "publish": {
     "title": "Publish flow",
@@ -656,7 +961,12 @@
     "columnTodo": "To do",
     "columnInProgress": "In progress",
     "columnDone": "Done",
-    "syncInMessages": "Sync progress in Messages"
+    "syncInMessages": "Sync progress in Messages",
+    "demoTasks": {
+      "t1": "Align MVP scope and milestones",
+      "t2": "Complete match profile and contact 2 candidates",
+      "t3": "Publish recruit post and collect feedback"
+    }
   },
   "post": {
     "draftPreview": "Draft preview",
@@ -745,6 +1055,465 @@
       "complete": "Mission complete: {label}"
     }
   },
+  "feed": {
+    "readMin": "{minutes} min"
+  },
+  "engage": {
+    "loginLink": "Log in",
+    "loginHint": " to like and save",
+    "liked": "Liked",
+    "unliked": "Like removed",
+    "saved": "Saved",
+    "unsaved": "Removed from saves",
+    "operationFailed": "Action failed — try again later"
+  },
+  "comments": {
+    "title": "Comments",
+    "loading": "Loading…",
+    "loadingMore": "Loading…",
+    "earlierComments": "Earlier comments",
+    "empty": "No comments yet — be the first to speak up.",
+    "writeLabel": "Write a comment",
+    "placeholder": "Be kind — plain text is fine.",
+    "submitBusy": "Sending…",
+    "submit": "Post comment",
+    "loginHint": "Log in to comment.",
+    "loadError": "Could not load comments",
+    "submitFailed": "Could not post comment — try again",
+    "notifTitle": "Your comment was posted",
+    "notifBody": "Check the notification center; the author and others will see it on the post.",
+    "justNow": "Just now"
+  },
+  "follow": {
+    "loginHint": "Log in to follow this user.",
+    "following": "Following",
+    "follow": "Follow"
+  },
+  "notifications": {
+    "hubLabel": "Notifications",
+    "closeOverlay": "Close notifications",
+    "title": "Notifications",
+    "markAllRead": "Mark all read"
+  },
+  "github": {
+    "disconnected": "GitHub not connected",
+    "connecting": "Connecting…",
+    "connected": "GitHub connected",
+    "error": "Connection failed — try again later",
+    "disconnect": "Disconnect",
+    "reconnect": "Reconnect",
+    "connect": "Connect GitHub",
+    "backDiscover": "Back to Discover"
+  },
+  "checkout": {
+    "stepConfirmProduct": "Confirm item",
+    "stepConfirmOrder": "Confirm order",
+    "stepPayment": "Payment",
+    "stepComplete": "Done",
+    "typeLabel": "Type: {type}",
+    "demoHint": "Simulated checkout — no real charge. View records under Orders & Wishlist after purchase.",
+    "serviceTitle": "Service guarantee",
+    "serviceDesc": "7-day returns, deliverables list, and version update notes.",
+    "paymentTitle": "Payment method",
+    "paymentDesc": "Confirming completes simulated payment and creates an order record.",
+    "completeTitle": "Purchase complete",
+    "completeDesc": "View records under Orders & Wishlist, or explore more from Me.",
+    "continue": "Continue",
+    "viewOrders": "View my orders",
+    "paymentSuccess": "Payment successful — order created."
+  },
+  "modelReview": {
+    "loginHint": "Log in to submit reviews and unlock the Model Observer badge",
+    "goLogin": "Log in",
+    "title": "Real experience reviews",
+    "sortNew": "Newest",
+    "sortRating": "Rating first",
+    "avg": "Avg {avg}",
+    "writeTitle": "Write a review (by scenario)",
+    "nickname": "Nickname",
+    "defaultName": "Me",
+    "starLabel": "Rating",
+    "starAria": "{stars} stars",
+    "prosPlaceholder": "Pros (e.g. stable code completion)",
+    "consPlaceholder": "Cons (e.g. expensive / slow)",
+    "commentPlaceholder": "Real experience: when did you use it? How vs competitors?",
+    "submitBusy": "Submitting…",
+    "submit": "Submit review",
+    "validationError": "Fill in at least pros, cons, or a real experience comment.",
+    "loginRequired": "Please log in before submitting a review",
+    "submitFailed": "Submit failed — try again later.",
+    "submitSuccess": "Review saved — leaderboard score will refresh.",
+    "emptyTitle": "No reviews yet",
+    "emptyHint": "Share your real experience in coding, writing, or prototyping to help others.",
+    "scenarios": {
+      "coding": "Coding",
+      "prototype": "Prototyping",
+      "writing": "Writing",
+      "reasoning": "Reasoning",
+      "value": "Value",
+      "context": "Long context"
+    }
+  },
+  "modelRank": {
+    "hot": "Hot",
+    "reviewCount": "{count} reviews",
+    "overall": "Overall {score}",
+    "scenarios": {
+      "coding": "Coding",
+      "prototype": "Prototyping",
+      "writing": "Writing",
+      "reasoning": "Reasoning",
+      "value": "Value",
+      "context": "Long context"
+    }
+  },
+  "toolReview": {
+    "title": "User reviews",
+    "sortNew": "Newest",
+    "sortRating": "Rating first",
+    "avg": "Avg {avg}",
+    "writeTitle": "Write a review",
+    "nickname": "Nickname",
+    "defaultName": "Me",
+    "anonymous": "Anonymous",
+    "starOption": "{n} stars",
+    "submitBusy": "Submitting…",
+    "submit": "Submit",
+    "placeholder": "Real use case, onboarding cost, who it's for…",
+    "submitSuccess": "Review saved — average rating updated.",
+    "submitFailed": "Submit failed — try again later.",
+    "noText": "(no text)",
+    "devReply": "Developer reply:",
+    "replyPlaceholder": "Reply to this review…",
+    "reply": "Reply"
+  },
+  "userTabs": {
+    "posts": "Posts",
+    "projects": "Projects",
+    "about": "About",
+    "emptyPosts": "No notes yet.",
+    "emptyProjects": "No projects yet.",
+    "recruit": "Hiring: {needs}",
+    "viewProject": "View project",
+    "noIntro": "This creator hasn't written a bio yet.",
+    "direction": "Direction:",
+    "role": "Role:",
+    "remoteOk": "Open to remote",
+    "verified": "Verified link",
+    "githubLink": "GitHub / portfolio link",
+    "skills": "Skills",
+    "partnerRoles": "Looking for",
+    "seekingRole": "Seeking {role}"
+  },
+  "templateCopy": {
+    "copied": "Copied",
+    "copyCmd": "Copy command"
+  },
+  "toolCategory": {
+    "all": "All",
+    "写代码": "Coding",
+    "做网页": "Web dev",
+    "管理 GitHub": "GitHub",
+    "自动部署": "Deploy",
+    "生成图片或视频": "Media",
+    "做数据分析": "Data",
+    "做产品原型": "Prototype"
+  },
+  "marketingSite": {
+    "bento": {
+      "chip": "CAPABILITY · MATRIX",
+      "title": "Capability matrix",
+      "desc": "Five core subsystems working together. Each block is a real Prisma-backed module—not a slide screenshot.",
+      "statusShipped": "● 5 live",
+      "statusBeta": "◐ 2 beta",
+      "matrixStrong": "Strong fit",
+      "matrixMedium": "Moderate fit",
+      "matrixSame": "Same role",
+      "graphDemo": "Follow graph · demo",
+      "marketMini": {
+        "prompt": { "name": "Prompt pack", "price": "$3" },
+        "scaffold": { "name": "Scaffold", "price": "$14" },
+        "components": { "name": "Component lib", "price": "$7" },
+        "agent": { "name": "Agent", "price": "$28" }
+      },
+      "feed": {
+        "note": { "type": "Note", "title": "Cursor multi-file Agent", "tag": "Cursor" },
+        "video": { "type": "Short video", "title": "Claude Code in practice", "tag": "02:48" },
+        "code": { "type": "Code", "title": "RAG Agent template", "tag": ".ts" },
+        "longform": { "type": "Long read", "title": "Indie dev tool stack", "tag": "8 min" },
+        "review": { "type": "Tool review", "title": "Cursor deep dive", "tag": "★ 4.8" },
+        "showcase": { "type": "Showcase", "title": "SaaS week-one recap", "tag": "Global" }
+      },
+      "cards": {
+        "match": {
+          "title": "Smart matching · explainable tracks",
+          "desc": "Role fit × keyword vectors × direction semantics × funding band × activity × mutual intent—each dimension visualized and tunable.",
+          "badge": "Core"
+        },
+        "feed": {
+          "title": "Discovery · For You feed",
+          "desc": "Notes, video, code, long reads, and tool reviews in one stream—rules plus interest-tag vectors.",
+          "badge": "Live"
+        },
+        "graph": {
+          "title": "Social graph · local-first sync",
+          "desc": "Follow, comment, like, save, and notifications with idempotent writes—profile and messages stay in sync.",
+          "badge": "Stable"
+        },
+        "market": {
+          "title": "Tool market · creator monetization",
+          "desc": "Wishlist, demo orders, and learning progress in one place—templates, agents, and custom services.",
+          "badge": "Shippable"
+        },
+        "stack": {
+          "title": "Engineering · Edge-friendly",
+          "desc": "Next App Router, dual Prisma DBs, Playwright smoke tests, Windows polling fallback.",
+          "badge": "Production"
+        }
+      }
+    },
+    "market": {
+      "chip": "MARKET · CREATOR",
+      "title": "Tool market",
+      "titleAccent": "monetize your code",
+      "desc": "From $3 prompt packs to $140 cold-start coaching—solo builders and small teams sell on one listing flow.",
+      "gmvLabel": "GMV this month",
+      "tags": {
+        "all": "All",
+        "prompt": "Prompt packs",
+        "scaffold": "Scaffolds",
+        "components": "Component libs",
+        "agent": "Agents",
+        "miniapp": "Mini-app templates",
+        "course": "Courses",
+        "service": "Custom services"
+      },
+      "wishlist": "Add to wishlist",
+      "sold": "{sales} sold",
+      "stats": {
+        "creators": "Creators",
+        "listings": "Listings",
+        "avgIncome": "Avg monthly income"
+      },
+      "products": {
+        "prompt": {
+          "title": "Industrial prompt library",
+          "sub": "380+ prompts across 12 verticals",
+          "tag": "Hot"
+        },
+        "scaffold": {
+          "title": "Next.js global SaaS scaffold",
+          "sub": "Stripe + i18n + Edge deploy pre-wired",
+          "tag": "Pro"
+        },
+        "components": {
+          "title": "Glass UI component library",
+          "sub": "Tailwind + Framer Motion · 64 components",
+          "tag": "New"
+        },
+        "agent": {
+          "title": "Agent workflow template bundle",
+          "sub": "Support, content, and sales recipes",
+          "tag": "Premium"
+        },
+        "miniapp": {
+          "title": "AI mini-app templates",
+          "sub": "5 themes · one-click deploy · payments",
+          "tag": "Featured"
+        },
+        "coaching": {
+          "title": "Cold-start coaching (30 days)",
+          "sub": "MVP · growth · retrospective trio",
+          "tag": "Custom"
+        }
+      }
+    },
+    "matchPreview": {
+      "chip": "MATCH · ENGINE",
+      "title": "7 weighted dimensions · fully explainable",
+      "desc": "More than role fit alone—seven signals form a radar chart; every edge answers “why them.”",
+      "totalScore": "Overall score",
+      "highMatch": "Strong match",
+      "dimensions": {
+        "role": { "label": "Role complement", "hint": "ADC × JUNGLE classic pairing" },
+        "keywords": { "label": "Skill keywords", "hint": "Jaccard 0.64 + mutual intent hit" },
+        "direction": { "label": "Direction semantics", "hint": "Global SaaS × dev tools · bigram overlap 0.7" },
+        "interest": { "label": "Interest vector", "hint": "Note-tag cosine similarity" },
+        "budget": { "label": "Funding band", "hint": "One band apart, similar pace" },
+        "location": { "label": "Location reach", "hint": "Same city + remote mix works" },
+        "activity": { "label": "Recent activity", "hint": "12 posts in the last 7 days" }
+      }
+    },
+    "pulse": {
+      "chip": "LIVE · PULSE",
+      "title": "Live pulse",
+      "desc": "The brand site uses front-end motion as a growth dashboard demo; real metrics live in the app.",
+      "streaming": "streaming",
+      "mockDisclaimer": "MOCK · NOT_FINANCIAL_ADVICE",
+      "heatLabel": "Collab heat (demo)",
+      "heatDelta": "vs prior 24h · moving average",
+      "windowLabel": "Last 24h · session simulation",
+      "eventStream": "Event stream",
+      "eventWindow": "t · 60s window",
+      "onlineLabel": "Online now",
+      "rings": {
+        "matchRate": "Match success",
+        "retention": "Day-2 retention",
+        "rating": "Tool rating",
+        "gmv": "GMV growth"
+      },
+      "events": {
+        "e1": "@Lin completed ADC × JUNGLE match · score 96",
+        "e2": "@Yu published long read “Cursor vs Claude Code workflows”",
+        "e3": "@TZ listed “Global SaaS landing template” · $14",
+        "e4": "@Yo saved 12 LLM app notes · interest graph upgraded",
+        "e5": "@Xiao mutual intent hit: growth × product"
+      },
+      "badges": {
+        "match": "match",
+        "post": "post",
+        "tool": "tool",
+        "save": "save"
+      }
+    },
+    "roadmap": {
+      "chip": "ROADMAP · 2026",
+      "title": "P0 through P5",
+      "titleSuffix": "· 6 milestones",
+      "desc": "No vaporware—four milestones ship on main today; P4 in progress, P5 targets H2 2026.",
+      "updated": "updated · 2026 · Q2",
+      "status": {
+        "shipped": "Shipped",
+        "inProgress": "In progress",
+        "planned": "Planned"
+      },
+      "milestones": {
+        "p0": {
+          "title": "Feed · command palette · saves loop",
+          "items": {
+            "0": "/home /search /tools skeletons",
+            "1": "(tabs)/error.tsx boundary",
+            "2": "Command palette, notifications, bottom nav",
+            "3": "Feed save a11y + publish toast"
+          }
+        },
+        "p1": {
+          "title": "Social graph & idempotent engagement",
+          "items": {
+            "0": "Prisma Follow / Comment / PostLike / PostSave",
+            "1": "Idempotent /api/follow /api/comment",
+            "2": "Profile follow counts",
+            "3": "Messages “from match” tag"
+          }
+        },
+        "p2": {
+          "title": "For You · creator hub",
+          "items": {
+            "0": "/home?view=for-you rule-based recs",
+            "1": "Search history + hot terms skeleton",
+            "2": "/creator hub entry",
+            "3": "view=saved local saves view"
+          }
+        },
+        "p3": {
+          "title": "Tool market · wishlist · learning progress",
+          "items": {
+            "0": "WishlistItem / DemoOrder",
+            "1": "UserLessonProgress tracking",
+            "2": "Product detail demo checkout writes DB",
+            "3": "Achievement fields aligned locally"
+          }
+        },
+        "p4": {
+          "title": "Match engine v2 · 7D weighting · radar UI",
+          "items": {
+            "0": "Interest vector / location / activity dimensions",
+            "1": "Radar chart visualization",
+            "2": "Explainable reason chips on match cards",
+            "3": "Match → DM in one tap"
+          }
+        },
+        "p5": {
+          "title": "AI content collab · multi-user workspace",
+          "items": {
+            "0": "@AI draft assistant in comments",
+            "1": "Shared project whiteboard",
+            "2": "GitHub co-author auto sync",
+            "3": "Team spaces & permissions"
+          }
+        }
+      }
+    },
+    "showcase": {
+      "ariaLabel": "Product experience quick nav",
+      "label": "Product experience",
+      "hint": "Four sections you can try in the app demo—shown in-page below",
+      "sections": {
+        "match": "Match engine",
+        "pulse": "Live pulse",
+        "market": "Tool market",
+        "stories": "User stories"
+      }
+    },
+    "stories": {
+      "chip": "REAL · STORIES",
+      "titleAccent": "They",
+      "titleRest": "built here",
+      "titleLine2": "turned ideas into business",
+      "desc": "Four archetypes in 30 days—from matching partners to listing tools, closed loop on one platform.",
+      "items": {
+        "deepforest": {
+          "name": "Lin",
+          "handle": "@deepforest",
+          "role": "Indie dev · global SaaS",
+          "quote": "The skills × direction radar surfaced my ops partner on day one—we shipped an MVP in 3 days and first subscription in week two.",
+          "metric": "Live 14 days · MRR $2,500"
+        },
+        "yu": {
+          "name": "Yu",
+          "handle": "@yu_studio",
+          "role": "AI content creator",
+          "quote": "Cursor / Claude Code tutorials on the For You feed gained 3.4k followers—5× faster than short-video platforms for me.",
+          "metric": "+3,400 followers · 12k saves"
+        },
+        "tz": {
+          "name": "TZ",
+          "handle": "@tz.dev",
+          "role": "Full-stack · design delivery",
+          "quote": "Listed my Glass UI kit on the tool market—312 sales in month one, 6× my prior open-source tips.",
+          "metric": "312 tool market orders"
+        },
+        "yo": {
+          "name": "Yo",
+          "handle": "@yo.codes",
+          "role": "Student · Vibe Coding newcomer",
+          "quote": "Learning paths organized scattered tutorials—I shipped a class admin mini-app and earned an A+ on the final project.",
+          "metric": "24 steps completed"
+        }
+      }
+    },
+    "heroDemo": {
+      "engineLabel": "match.engine · v2",
+      "online": "online",
+      "score": "score",
+      "liveTicker": "live ticker",
+      "candidates": {
+        "0": { "title": "ADC × JUNGLE", "sub": "Next.js · growth" },
+        "1": { "title": "Creator × growth", "sub": "Social ops · global" },
+        "2": { "title": "Solo ship × design", "sub": "LLM apps · design system" }
+      },
+      "techStack": {
+        "0": "Next.js 14",
+        "1": "Prisma · PostgreSQL",
+        "2": "TailwindCSS",
+        "3": "Framer Motion",
+        "4": "Edge Runtime",
+        "5": "Playwright E2E",
+        "6": "GitHub OAuth",
+        "7": "Vercel deploy"
+      }
+    }
+  },
   "marketing": {
     "meta": {
       "title": "VibeCoding — Startup social · Web",
@@ -769,6 +1538,7 @@
       "badge1": "Fast matching",
       "badge1Sub": "~30s ritual animation",
       "badge2": "Multi-dimensional",
+      "badge2Value": "7-track",
       "badge2Sub": "Role × keywords × direction × funding × …",
       "badge3": "Interest graph",
       "badge3Sub": "Growing content interest vectors",

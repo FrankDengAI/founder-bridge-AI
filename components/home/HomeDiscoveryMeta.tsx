@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { Flame, Sparkles } from "lucide-react";
 import clsx from "clsx";
+import { getTranslations } from "next-intl/server";
 import { HomeTypeFilters } from "./HomeTypeFilters";
 
 function homeHref(params: { type?: string; sort?: string; view?: string }) {
@@ -28,17 +29,25 @@ type Props = {
   currentView?: "default" | "for-you" | "saved";
 };
 
-export function HomeDiscoveryMeta({
+export async function HomeDiscoveryMeta({
   currentType,
   sort,
   counts,
   currentView = "default",
 }: Props) {
+  const t = await getTranslations("homeUi.discovery");
+  const tSearch = await getTranslations("pages.search");
+  const tCommand = await getTranslations("command");
+  const tCommon = await getTranslations("common");
+  const tWorkspace = await getTranslations("pages.workspace");
+
   const viewParam = currentView === "default" ? undefined : currentView;
   return (
     <div className="space-y-3">
       <div className="glass-panel rounded-shell p-3 shadow-panel ring-1 ring-white/60">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">发现模式</p>
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
+          {t("modeLabel")}
+        </p>
         <div className="mt-2 flex flex-wrap gap-2">
           <Link
             href={homeHref({ type: currentType, sort, view: undefined })}
@@ -49,7 +58,7 @@ export function HomeDiscoveryMeta({
                 : "border-zinc-200 bg-white/70 text-zinc-600 hover:border-zinc-300",
             )}
           >
-            全部
+            {tSearch("all")}
           </Link>
           <Link
             href={homeHref({ type: currentType, sort, view: "for-you" })}
@@ -60,7 +69,7 @@ export function HomeDiscoveryMeta({
                 : "border-zinc-200 bg-white/70 text-zinc-600 hover:border-zinc-300",
             )}
           >
-            为你推荐
+            {t("forYou")}
           </Link>
           <Link
             href={homeHref({ type: currentType, sort, view: "saved" })}
@@ -71,13 +80,13 @@ export function HomeDiscoveryMeta({
                 : "border-zinc-200 bg-white/70 text-zinc-600 hover:border-zinc-300",
             )}
           >
-            我的收藏
+            {tCommand("saved.label")}
           </Link>
         </div>
       </div>
       <div className="glass-panel rounded-shell p-3 shadow-panel ring-1 ring-white/60">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-[11px] font-semibold text-zinc-700">内容发现</p>
+          <p className="text-[11px] font-semibold text-zinc-700">{t("contentDiscovery")}</p>
           <div className="flex gap-1 rounded-xl bg-zinc-100/80 p-0.5 ring-1 ring-zinc-200/60">
             <Link
               href={homeHref({ type: currentType, sort: "new", view: viewParam })}
@@ -89,7 +98,7 @@ export function HomeDiscoveryMeta({
               )}
             >
               <Sparkles className="h-3 w-3" />
-              最新
+              {tSearch("newest")}
             </Link>
             <Link
               href={homeHref({ type: currentType, sort: "hot", view: viewParam })}
@@ -101,7 +110,7 @@ export function HomeDiscoveryMeta({
               )}
             >
               <Flame className="h-3 w-3 text-amber-600" />
-              热门
+              {tCommon("hot")}
             </Link>
           </div>
         </div>
@@ -116,12 +125,12 @@ export function HomeDiscoveryMeta({
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
         {[
-          { k: "笔记", v: counts.posts, tone: "text-zinc-900" },
-          { k: "用户", v: counts.users, tone: "text-zinc-900" },
-          { k: "工具", v: counts.tools, tone: "text-zinc-900" },
-          { k: "项目", v: counts.projects, tone: "text-zinc-900" },
-          { k: "模型", v: counts.models ?? 0, tone: "text-violet-800" },
-          { k: "短评", v: counts.reviews ?? 0, tone: "text-amber-800" },
+          { k: tWorkspace("statPosts"), v: counts.posts, tone: "text-zinc-900" },
+          { k: tWorkspace("statUsers"), v: counts.users, tone: "text-zinc-900" },
+          { k: tWorkspace("statTools"), v: counts.tools, tone: "text-zinc-900" },
+          { k: tWorkspace("statProjects"), v: counts.projects, tone: "text-zinc-900" },
+          { k: t("stats.models"), v: counts.models ?? 0, tone: "text-violet-800" },
+          { k: t("stats.reviews"), v: counts.reviews ?? 0, tone: "text-amber-800" },
         ].map((x) => (
           <div
             key={x.k}

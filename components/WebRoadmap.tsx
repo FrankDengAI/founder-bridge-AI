@@ -2,95 +2,58 @@
 
 import { motion } from "framer-motion";
 import { CheckCircle2, Clock, Rocket, Sparkles } from "lucide-react";
+import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 
-const milestones = [
-  {
-    phase: "P0",
-    status: "shipped" as const,
-    title: "信息流 · 命令面板 · 收藏闭环",
-    items: [
-      "/home /search /tools 骨架屏",
-      "(tabs)/error.tsx 错误边界",
-      "命令面板、通知中心、底部导航",
-      "Feed 收藏可达性增强 + 发布 Toast",
-    ],
-  },
-  {
-    phase: "P1",
-    status: "shipped" as const,
-    title: "关系链与互动幂等",
-    items: [
-      "Prisma Follow / Comment / PostLike / PostSave",
-      "/api/follow /api/comment 幂等接口",
-      "用户主页关注计数",
-      "消息「来自匹配」标签联动",
-    ],
-  },
-  {
-    phase: "P2",
-    status: "shipped" as const,
-    title: "For You 推荐 · 创作者中心",
-    items: [
-      "/home?view=for-you 规则推荐",
-      "搜索历史 + 热词骨架",
-      "/creator 创作者中心入口",
-      "view=saved 本地收藏视图",
-    ],
-  },
-  {
-    phase: "P3",
-    status: "shipped" as const,
-    title: "工具商城 · 心愿单 · 学习进度",
-    items: [
-      "WishlistItem / DemoOrder",
-      "UserLessonProgress 学习进度",
-      "商品详情模拟支付写库",
-      "成就字段本地对齐",
-    ],
-  },
-  {
-    phase: "P4",
-    status: "in_progress" as const,
-    title: "匹配引擎 v2 · 7 维加权 · 雷达可视化",
-    items: [
-      "加入兴趣向量 / 地域 / 活跃度三维",
-      "雷达图前端可视化",
-      "匹配卡片可解释 reason chips",
-      "匹配 → 直接进入私聊一跳",
-    ],
-  },
-  {
-    phase: "P5",
-    status: "planned" as const,
-    title: "AI 内容协同 · 多人协作工作区",
-    items: [
-      "@AI 在评论中召唤草稿助手",
-      "项目工作区共享白板",
-      "GitHub Co-author 自动同步",
-      "团队空间与权限",
-    ],
-  },
-];
+const MILESTONE_KEYS = ["p0", "p1", "p2", "p3", "p4", "p5"] as const;
+const ITEM_INDICES = ["0", "1", "2", "3"] as const;
 
-const statusBadge = {
-  shipped: {
-    icon: CheckCircle2,
-    cls: "border-emerald-200 bg-emerald-50 text-emerald-800",
-    label: "已上线",
-  },
-  in_progress: {
-    icon: Clock,
-    cls: "border-amber-200 bg-amber-50 text-amber-800",
-    label: "进行中",
-  },
-  planned: {
-    icon: Rocket,
-    cls: "border-zinc-200 bg-zinc-50 text-zinc-600",
-    label: "已规划",
-  },
+type MilestoneStatus = "shipped" | "in_progress" | "planned";
+
+const MILESTONE_STATUS: Record<(typeof MILESTONE_KEYS)[number], MilestoneStatus> = {
+  p0: "shipped",
+  p1: "shipped",
+  p2: "shipped",
+  p3: "shipped",
+  p4: "in_progress",
+  p5: "planned",
 };
 
 export function WebRoadmap() {
+  const t = useTranslations("marketingSite.roadmap");
+
+  const statusBadge = useMemo(
+    () => ({
+      shipped: {
+        icon: CheckCircle2,
+        cls: "border-emerald-200 bg-emerald-50 text-emerald-800",
+        label: t("status.shipped"),
+      },
+      in_progress: {
+        icon: Clock,
+        cls: "border-amber-200 bg-amber-50 text-amber-800",
+        label: t("status.inProgress"),
+      },
+      planned: {
+        icon: Rocket,
+        cls: "border-zinc-200 bg-zinc-50 text-zinc-600",
+        label: t("status.planned"),
+      },
+    }),
+    [t],
+  );
+
+  const milestones = useMemo(
+    () =>
+      MILESTONE_KEYS.map((phase) => ({
+        phase: phase.toUpperCase(),
+        status: MILESTONE_STATUS[phase],
+        title: t(`milestones.${phase}.title`),
+        items: ITEM_INDICES.map((i) => t(`milestones.${phase}.items.${i}`)),
+      })),
+    [t],
+  );
+
   return (
     <section
       id="roadmap"
@@ -101,24 +64,20 @@ export function WebRoadmap() {
           <div className="max-w-2xl">
             <p className="chip mb-3">
               <Sparkles className="h-3 w-3 text-cyan-600" />
-              ROADMAP · 2026
+              {t("chip")}
             </p>
             <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-[2.6rem]">
-              <span className="text-gradient-cool">从 P0 到 P5</span>
-              <br className="sm:hidden" /> · 6 个里程碑
+              <span className="text-gradient-cool">{t("title")}</span>
+              <br className="sm:hidden" /> {t("titleSuffix")}
             </h2>
-            <p className="mt-3 max-w-xl text-zinc-600">
-              我们不画大饼。下面 4 个里程碑都在 main 分支上跑着；
-              P4 进行中，P5 是 2026 H2 的方向。
-            </p>
+            <p className="mt-3 max-w-xl text-zinc-600">{t("desc")}</p>
           </div>
           <div className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">
-            updated · 2026 · Q2
+            {t("updated")}
           </div>
         </div>
 
         <div className="relative mt-14">
-          {/* 时间线 */}
           <div
             aria-hidden
             className="absolute left-4 top-2 bottom-2 w-px bg-gradient-to-b from-violet-400/40 via-fuchsia-400/30 to-transparent sm:left-1/2"
@@ -138,7 +97,6 @@ export function WebRoadmap() {
                   transition={{ delay: i * 0.06 }}
                   className="relative pl-12 sm:pl-0"
                 >
-                  {/* 时间节点 */}
                   <div className="absolute left-0 top-2 flex h-8 w-8 items-center justify-center sm:left-1/2 sm:-translate-x-1/2">
                     <div className="relative">
                       <div className="relative h-8 w-8 rounded-full border border-violet-300 bg-white shadow-sm backdrop-blur" />
@@ -155,7 +113,6 @@ export function WebRoadmap() {
                     </div>
                   </div>
 
-                  {/* 卡片 */}
                   <div
                     className={`sm:flex sm:gap-0 ${
                       leftSide ? "" : "sm:flex-row-reverse"

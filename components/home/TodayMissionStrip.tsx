@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import clsx from "clsx";
 import { CheckCircle2, Circle, Target } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   getMergedDoneMissions,
   getPersonaMissions,
@@ -14,6 +15,7 @@ import {
 } from "@/lib/retention";
 
 export function TodayMissionStrip() {
+  const t = useTranslations("homeUi.missions");
   const [done, setDone] = useState<DailyMissionId[]>([]);
   const [flashId, setFlashId] = useState<DailyMissionId | null>(null);
   const prevDoneRef = useRef<DailyMissionId[]>([]);
@@ -51,17 +53,17 @@ export function TodayMissionStrip() {
         <div>
           <p className="flex items-center gap-1.5 text-xs font-semibold">
             <Target className="h-3.5 w-3.5 text-amber-300" />
-            今日任务 · {pct}%
+            {t("title", { pct })}
           </p>
           {copy ? (
             <p className="mt-1 text-[10px] text-zinc-400">{copy.title}</p>
           ) : (
-            <p className="mt-1 text-[10px] text-zinc-400">完成 3 个小目标，养成每日回访习惯</p>
+            <p className="mt-1 text-[10px] text-zinc-400">{t("defaultHint")}</p>
           )}
         </div>
         {pct >= 100 ? (
           <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
-            今日通关
+            {t("allDone")}
           </span>
         ) : null}
       </div>

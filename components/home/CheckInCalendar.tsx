@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AlertTriangle, Flame } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import {
   canCheckInToday,
   canUseStreakFreeze,
@@ -15,7 +16,15 @@ import {
 } from "@/lib/retention";
 import { recordGamifyEvent } from "@/lib/gamification";
 
+function formatWeekday(date: string, locale: string) {
+  return new Intl.DateTimeFormat(locale === "zh" ? "zh-CN" : "en-US", {
+    weekday: "short",
+  }).format(new Date(`${date}T12:00:00`));
+}
+
 export function CheckInCalendar() {
+  const t = useTranslations("homeUi.checkIn");
+  const locale = useLocale();
   const [streak, setStreak] = useState(0);
   const [can, setCan] = useState(false);
   const [days, setDays] = useState<CalendarDay[]>([]);
@@ -46,7 +55,7 @@ export function CheckInCalendar() {
     recordGamifyEvent("daily_login");
     completeMission("checkin");
     if (next.streak >= 7) recordGamifyEvent("daily_7");
-    setToast(`签到成功！连续 ${next.streak} 天`);
+    setToast(t("checkInSuccess", { streak: next.streak }));
     window.setTimeout(() => setToast(null), 2000);
   };
 
@@ -57,11 +66,9 @@ export function CheckInCalendar() {
           <Flame className="h-5 w-5 text-orange-600" />
           <div>
             <p className="text-xs font-semibold text-amber-950">
-              连续签到 {streak} 天
+              {t("streak", { streak })}
             </p>
-            <p className="text-[10px] text-amber-800/80">
-              7 日日历 · 断签后 streak 重新计数
-            </p>
+            <p className="text-[10px] text-amber-800/80">{t("hint")}</p>
           </div>
         </div>
         <button
@@ -70,7 +77,7 @@ export function CheckInCalendar() {
           onClick={checkIn}
           className="rounded-xl bg-orange-600 px-3 py-1.5 text-[11px] font-bold text-white shadow-sm disabled:opacity-50"
         >
-          {can ? "今日签到" : "已签到"}
+          {can ? t("checkInToday") : t("checkedIn")}
         </button>
       </div>
 
@@ -78,7 +85,7 @@ export function CheckInCalendar() {
         <div className="mt-2 space-y-1.5">
           <p className="flex items-center gap-1.5 rounded-xl bg-rose-100/80 px-2.5 py-1.5 text-[10px] font-medium text-rose-900 ring-1 ring-rose-200/60">
             <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-            你已断签，今日签到将重新开始连续天数
+            {t("brokenWarning")}
           </p>
           {canUseStreakFreeze() ? (
             <button
@@ -87,13 +94,13 @@ export function CheckInCalendar() {
                 if (applyStreakFreeze()) {
                   recordGamifyEvent("streak_freeze_used");
                   refresh();
-                  setToast("已使用本周补签卡，连续天数已保住");
+                  setToast(t("freezeSuccess"));
                   window.setTimeout(() => setToast(null), 2200);
                 }
               }}
               className="w-full rounded-xl bg-violet-600 px-2.5 py-1.5 text-[10px] font-bold text-white"
             >
-              使用补签卡（本周 1 次）
+              {t("useFreeze")}
             </button>
           ) : null}
         </div>
@@ -111,7 +118,9 @@ export function CheckInCalendar() {
                 : "bg-white/70 text-zinc-500",
             ].join(" ")}
           >
-            <span className="text-[9px] font-medium opacity-80">周{d.weekday}</span>
+            <span className="text-[9px] font-medium opacity-80">
+              {formatWeekday(d.date, locale)}
+            </span>
             <span className="mt-0.5 text-[11px] font-bold tabular-nums">
               {d.date.slice(8)}
             </span>
@@ -126,11 +135,11 @@ export function CheckInCalendar() {
 
       {streak >= 7 ? (
         <p className="mt-2 text-center text-[10px] font-semibold text-emerald-800">
-          七日燃成就已解锁
+          {t("sevenDayUnlocked")}
         </p>
       ) : (
         <p className="mt-2 text-center text-[10px] text-amber-800/90">
-          再坚持 {Math.max(0, 7 - streak)} 天解锁「七日燃」徽章
+          {t("sevenDayProgress", { days: Math.max(0, 7 - streak) })}
         </p>
       )}
 

@@ -2,6 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Loader2, PlugZap, Unplug } from "lucide-react";
 import clsx from "clsx";
 
@@ -19,6 +20,7 @@ function readLs(): ConnState {
 }
 
 export function GitHubDemoActions() {
+  const t = useTranslations("github");
   const [state, setState] = useState<ConnState>("disconnected");
 
   useEffect(() => {
@@ -60,10 +62,10 @@ export function GitHubDemoActions() {
         aria-live="polite"
       >
         <span>
-          {state === "disconnected" && "当前未绑定 GitHub"}
-          {state === "connecting" && "正在连接，请稍候…"}
-          {state === "connected" && "已成功绑定 GitHub"}
-          {state === "error" && "连接失败，请稍后重试"}
+          {state === "disconnected" && t("disconnected")}
+          {state === "connecting" && t("connecting")}
+          {state === "connected" && t("connected")}
+          {state === "error" && t("error")}
         </span>
         {state === "connecting" ? (
           <Loader2 className="h-4 w-4 shrink-0 motion-safe:animate-spin" />
@@ -78,7 +80,7 @@ export function GitHubDemoActions() {
             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-zinc-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           >
             <Unplug className="h-4 w-4" />
-            解除绑定
+            {t("disconnect")}
           </button>
         ) : (
           <button
@@ -88,14 +90,14 @@ export function GitHubDemoActions() {
             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-brand-600 to-fuchsia-600 px-4 py-3 text-sm font-semibold text-white shadow-glow disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
           >
             <PlugZap className="h-4 w-4" />
-            {state === "error" ? "重新绑定" : "绑定 GitHub"}
+            {state === "error" ? t("reconnect") : t("connect")}
           </button>
         )}
         <Link
           href="/home"
           className="inline-flex items-center justify-center rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-zinc-50"
         >
-          返回发现页
+          {t("backDiscover")}
         </Link>
       </div>
     </div>

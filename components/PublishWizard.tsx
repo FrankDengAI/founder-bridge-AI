@@ -24,6 +24,7 @@ const STEP_KEYS = ["stepType", "stepContent", "stepCover", "stepConfirm"] as con
 
 export function PublishWizard() {
   const t = useTranslations("publish");
+  const tw = useTranslations("publishWizard");
   const tCommon = useTranslations("common");
   const tPost = useTranslations("postType");
   const router = useRouter();
@@ -39,8 +40,8 @@ export function PublishWizard() {
   const [body, setBody] = useState("");
   const [coverUrl, setCoverUrl] = useState("");
   const [recruitRole, setRecruitRole] = useState("ADC");
-  const [recruitTime, setRecruitTime] = useState("每周 10h+");
-  const [recruitComp, setRecruitComp] = useState("股权 / 项目分成");
+  const [recruitTime, setRecruitTime] = useState(() => tw("defaultRecruitTime"));
+  const [recruitComp, setRecruitComp] = useState(() => tw("defaultRecruitComp"));
   const [previewMd, setPreviewMd] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -91,7 +92,7 @@ export function PublishWizard() {
           }
           setStep(1);
         })
-        .catch(() => setErr("加载草稿失败"));
+        .catch(() => setErr(tw("loadDraftFail")));
     }
   }, [searchParams]);
 
@@ -136,7 +137,7 @@ export function PublishWizard() {
         status: asDraft ? "draft" : "published",
         meta: payloadMeta,
         coverUrl: coverUrl.trim() || undefined,
-        tags: ["VibeCoding", typeTag, asDraft ? "草稿" : "发布"],
+        tags: ["VibeCoding", typeTag, asDraft ? tw("tagDraft") : tw("tagPublish")],
         linkedModelId: linkedModelId.trim() || undefined,
       };
       const res = await fetch(draftId ? `/api/posts/${draftId}` : "/api/posts", {
@@ -145,7 +146,7 @@ export function PublishWizard() {
         credentials: "include",
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error(asDraft ? "保存草稿失败" : "发布失败");
+      if (!res.ok) throw new Error(asDraft ? tw("saveDraftFail") : tw("publishFail"));
       recordGamifyEvent("publish_1");
       if (tKey === "MODEL_DISCUSSION") recordGamifyEvent("model_discussion_first");
       const data = (await res.json()) as { post: { id: string } };
@@ -163,7 +164,7 @@ export function PublishWizard() {
         router.refresh();
       }, 450);
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "操作失败");
+      setErr(e instanceof Error ? e.message : tw("opFail"));
     } finally {
       setBusy(false);
     }
@@ -212,7 +213,7 @@ export function PublishWizard() {
       <div className="glass-panel rounded-3xl p-4 shadow-soft ring-1 ring-white/70">
         {step === 0 ? (
           <div className="space-y-3">
-            <p className="text-sm font-semibold text-zinc-900">选择内容类型</p>
+            <p className="text-sm font-semibold text-zinc-900">{tw("chooseType")}</p>
             <div className="grid grid-cols-2 gap-2">
               {POST_TYPES.map((t) => (
                 <button
@@ -235,23 +236,23 @@ export function PublishWizard() {
 
         {step === 1 ? (
           <div className="space-y-3">
-            <p className="text-sm font-semibold text-zinc-900">填写正文</p>
+            <p className="text-sm font-semibold text-zinc-900">{tw("fillContent")}</p>
             {isRecruit ? (
               <div className="grid gap-2 rounded-2xl bg-violet-50/80 p-3 ring-1 ring-violet-200/60">
                 <label className="text-[11px] font-medium text-zinc-700">
-                  需求角色
+                  {tw("recruitRole")}
                   <select
                     className="mt-1 w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm"
                     value={recruitRole}
                     onChange={(e) => setRecruitRole(e.target.value)}
                   >
-                    <option value="ADC">射手 · 技术</option>
-                    <option value="SUPPORT">辅助 · 产品/运营</option>
-                    <option value="JUNGLE">打野 · 增长</option>
+                    <option value="ADC">{tw("recruitRoleAdc")}</option>
+                    <option value="SUPPORT">{tw("recruitRoleSupport")}</option>
+                    <option value="JUNGLE">{tw("recruitRoleJungle")}</option>
                   </select>
                 </label>
                 <label className="text-[11px] font-medium text-zinc-700">
-                  时间投入
+                  {tw("recruitTime")}
                   <input
                     className="mt-1 w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm"
                     value={recruitTime}
@@ -259,7 +260,7 @@ export function PublishWizard() {
                   />
                 </label>
                 <label className="text-[11px] font-medium text-zinc-700">
-                  报酬方式
+                  {tw("recruitComp")}
                   <input
                     className="mt-1 w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm"
                     value={recruitComp}
@@ -269,30 +270,30 @@ export function PublishWizard() {
               </div>
             ) : null}
             <label className="block text-[11px] font-medium text-zinc-600">
-              标题
+              {tw("titleLabel")}
               <input
                 className="mt-1 w-full rounded-2xl border border-zinc-200/90 bg-white/80 px-3 py-2 text-sm"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="让人一眼想点进来的标题"
+                placeholder={tw("titlePlaceholder")}
               />
             </label>
             <label className="block text-[11px] font-medium text-zinc-600">
-              摘要
+              {tw("excerptLabel")}
               <input
                 className="mt-1 w-full rounded-2xl border border-zinc-200/90 bg-white/80 px-3 py-2 text-sm"
                 value={excerpt}
                 onChange={(e) => setExcerpt(e.target.value)}
-                placeholder="一句话概括亮点"
+                placeholder={tw("excerptPlaceholder")}
               />
             </label>
             <label className="block text-[11px] font-medium text-zinc-600">
-              正文（支持 Markdown：`#` 标题、`**粗体**`、代码块）
+              {tw("bodyLabel")}
               <textarea
                 className="mt-1 min-h-[140px] w-full rounded-2xl border border-zinc-200/90 bg-white/80 px-3 py-2 font-mono text-sm leading-relaxed"
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
-                placeholder="## 背景&#10;描述项目阶段与目标…&#10;&#10;## 进展&#10;本周完成了…"
+                placeholder={tw("bodyPlaceholder")}
               />
             </label>
             <button
@@ -300,7 +301,7 @@ export function PublishWizard() {
               onClick={() => setPreviewMd((v) => !v)}
               className="text-[11px] font-semibold text-violet-800 hover:underline"
             >
-              {previewMd ? "隐藏预览" : "Markdown 预览"}
+              {previewMd ? tw("hidePreview") : tw("mdPreview")}
             </button>
             {previewMd && body.trim() ? (
               <div className="rounded-2xl border border-zinc-200/80 bg-white/90 p-3">
@@ -312,24 +313,22 @@ export function PublishWizard() {
 
         {step === 2 ? (
           <div className="space-y-3">
-            <p className="text-sm font-semibold text-zinc-900">封面图（可选）</p>
+            <p className="text-sm font-semibold text-zinc-900">{tw("coverOptional")}</p>
             <label className="block text-[11px] font-medium text-zinc-600">
-              图片 URL
+              {tw("coverUrlLabel")}
               <input
                 className="mt-1 w-full rounded-2xl border border-zinc-200/90 bg-white/80 px-3 py-2 text-sm"
                 value={coverUrl}
                 onChange={(e) => setCoverUrl(e.target.value)}
-                placeholder="留空则自动生成封面"
+                placeholder={tw("coverPlaceholder")}
               />
             </label>
             <div className="rounded-2xl border border-dashed border-zinc-300/80 bg-gradient-to-br from-brand-50 to-fuchsia-50 p-4 text-xs text-zinc-700">
               <div className="flex items-center gap-2 font-semibold text-zinc-900">
                 <ImagePlus className="h-4 w-4" />
-                发布后笔记将出现在「发现」信息流，并展示在你的个人主页。
+                {tw("coverHintTitle")}
               </div>
-              <p className="mt-2 leading-relaxed text-zinc-600">
-                你也可以粘贴一张 `picsum.photos` 链接，或使用默认封面。
-              </p>
+              <p className="mt-2 leading-relaxed text-zinc-600">{tw("coverHintDesc")}</p>
             </div>
           </div>
         ) : null}
@@ -339,7 +338,7 @@ export function PublishWizard() {
             <div className="flex items-start gap-3 rounded-2xl bg-zinc-50 p-3 ring-1 ring-zinc-200/70">
               <NotebookPen className="mt-0.5 h-5 w-5 text-brand-700" />
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-zinc-900">确认发布</p>
+                <p className="text-sm font-semibold text-zinc-900">{tw("confirmTitle")}</p>
                 <p className="mt-1 text-xs leading-relaxed text-zinc-600">
                   {!userReady ? (
                     t("confirmLogin")

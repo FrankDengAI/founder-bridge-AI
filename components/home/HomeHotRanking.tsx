@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { Cpu, Crown, Flame } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 
 const rankTone = [
@@ -9,6 +10,9 @@ const rankTone = [
 ] as const;
 
 export async function HomeHotRanking() {
+  const t = await getTranslations("homeUi.hotRanking");
+  const tw = await getTranslations("webShell");
+
   const [hotPosts, hotTools, hotModels] = await Promise.all([
     prisma.post.findMany({
       where: { status: "published" },
@@ -44,15 +48,15 @@ export async function HomeHotRanking() {
       <div className="flex flex-wrap items-end justify-between gap-2 px-0.5">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-wider text-orange-700">
-            本周热榜
+            {t("label")}
           </p>
-          <h2 className="text-sm font-bold text-zinc-950">大家都在看什么</h2>
+          <h2 className="text-sm font-bold text-zinc-950">{t("title")}</h2>
         </div>
         <Link
           href="/models"
           className="text-[10px] font-semibold text-violet-700 hover:underline"
         >
-          完整模型榜 →
+          {t("fullModelRank")}
         </Link>
       </div>
 
@@ -60,7 +64,7 @@ export async function HomeHotRanking() {
         <div className="rounded-2xl bg-gradient-to-br from-orange-50/80 to-white p-3 ring-1 ring-orange-200/60">
           <p className="flex items-center gap-1.5 text-xs font-semibold text-zinc-900">
             <Flame className="h-3.5 w-3.5 text-orange-500" />
-            热门笔记
+            {tw("hotPosts")}
           </p>
           <ul className="mt-2 space-y-1.5">
             {hotPosts.map((p, i) => (
@@ -85,23 +89,23 @@ export async function HomeHotRanking() {
         <div className="rounded-2xl bg-gradient-to-br from-rose-50/80 to-white p-3 ring-1 ring-rose-200/60">
           <p className="flex items-center gap-1.5 text-xs font-semibold text-zinc-900">
             <Flame className="h-3.5 w-3.5 text-rose-500" />
-            热门工具
+            {tw("hotTools")}
           </p>
           <ul className="mt-2 space-y-1.5">
-            {hotTools.map((t, i) => (
-              <li key={t.id}>
+            {hotTools.map((tool, i) => (
+              <li key={tool.id}>
                 <Link
-                  href={`/tools/${t.id}`}
+                  href={`/tools/${tool.id}`}
                   className="flex items-center justify-between gap-2 rounded-lg px-1 py-0.5 text-[11px] text-zinc-700 transition hover:bg-white/80 hover:text-violet-800"
                 >
                   <span className="flex min-w-0 items-center gap-1.5 truncate">
                     <span className={`shrink-0 font-bold ${rankTone[i] ?? "text-zinc-400"}`}>
                       {i + 1}
                     </span>
-                    {t.name}
+                    {tool.name}
                   </span>
                   <span className="shrink-0 font-mono text-[10px] text-zinc-500">
-                    {t.avgRating.toFixed(1)}★
+                    {tool.avgRating.toFixed(1)}★
                   </span>
                 </Link>
               </li>
@@ -112,7 +116,7 @@ export async function HomeHotRanking() {
         <div className="rounded-2xl bg-gradient-to-br from-violet-50/90 via-fuchsia-50/50 to-white p-3 ring-1 ring-violet-200/60 sm:col-span-2 lg:col-span-1">
           <p className="flex items-center gap-1.5 text-xs font-semibold text-zinc-900">
             <Cpu className="h-3.5 w-3.5 text-violet-600" />
-            大模型口碑榜
+            {t("modelReputation")}
           </p>
           <ul className="mt-2 space-y-1.5">
             {hotModels.map((m, i) => (
@@ -136,7 +140,9 @@ export async function HomeHotRanking() {
                   </span>
                   <span className="shrink-0 text-right font-mono text-[10px] text-zinc-500">
                     {m.avgRating.toFixed(1)}★
-                    <span className="ml-1 text-violet-600">{m.reviewCount}评</span>
+                    <span className="ml-1 text-violet-600">
+                      {t("reviewCount", { count: m.reviewCount })}
+                    </span>
                   </span>
                 </Link>
               </li>
@@ -146,7 +152,7 @@ export async function HomeHotRanking() {
             href="/models"
             className="mt-2 inline-flex items-center gap-1 text-[10px] font-semibold text-violet-700 hover:underline"
           >
-            去评分 / 写短评 →
+            {t("reviewCta")}
           </Link>
         </div>
       </div>

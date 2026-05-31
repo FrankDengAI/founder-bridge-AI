@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Bell, BellRing, CheckCheck, Sparkles } from "lucide-react";
 import clsx from "clsx";
 import {
@@ -12,6 +13,7 @@ import {
 type Notif = LocalNotif;
 
 export function NotificationHub() {
+  const t = useTranslations("notifications");
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<Notif[]>([]);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -70,7 +72,7 @@ export function NotificationHub() {
         aria-expanded={open}
         aria-haspopup="dialog"
         aria-controls={open ? "vibe-notification-panel" : undefined}
-        aria-label="通知中心"
+        aria-label={t("hubLabel")}
       >
         {unread ? <BellRing className="h-5 w-5 motion-safe:animate-pulse" /> : <Bell className="h-5 w-5" />}
         {unread ? (
@@ -85,7 +87,7 @@ export function NotificationHub() {
           <button
             type="button"
             className="fixed inset-0 z-[60] bg-transparent"
-            aria-label="关闭通知层"
+            aria-label={t("closeOverlay")}
             onClick={() => setOpen(false)}
           />
           <div
@@ -100,7 +102,7 @@ export function NotificationHub() {
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-violet-600" aria-hidden />
                 <span id="vibe-notification-title" className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
-                  通知中心
+                  {t("title")}
                 </span>
               </div>
               <button
@@ -109,7 +111,7 @@ export function NotificationHub() {
                 className="inline-flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-semibold text-zinc-700 ring-1 ring-zinc-200/80 hover:bg-white dark:bg-zinc-900 dark:text-zinc-200 dark:ring-zinc-700"
               >
                 <CheckCheck className="h-3 w-3" />
-                全部已读
+                {t("markAllRead")}
               </button>
             </div>
             <ul className="max-h-[min(60vh,320px)] divide-y divide-zinc-100 overflow-y-auto dark:divide-zinc-800">

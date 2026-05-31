@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
+import { useLocale, useTranslations } from "next-intl";
 import { prependLocalNotif } from "@/lib/notificationsLocal";
 
 type Author = { id: string; displayName: string; avatarUrl: string | null };
@@ -20,6 +21,8 @@ type Props = {
 };
 
 export function PostComments({ postId, viewerId }: Props) {
+  const t = useTranslations("comments");
+  const locale = useLocale();
   const [items, setItems] = useState<CommentRow[]>([]);
   const [nextSkip, setNextSkip] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,7 +41,7 @@ export function PostComments({ postId, viewerId }: Props) {
         u.searchParams.set("take", "15");
         u.searchParams.set("skip", String(skip));
         const res = await fetch(u.toString(), { credentials: "include" });
-        if (!res.ok) throw new Error("加载失败");
+        if (!res.ok) throw new Error("load failed");
         const data = (await res.json()) as {
           comments: (Omit<CommentRow, "createdAt"> & { createdAt: Date | string })[];
           nextSkip: number | null;
@@ -51,13 +54,13 @@ export function PostComments({ postId, viewerId }: Props) {
         setItems((prev) => (append ? [...chronological, ...prev] : chronological));
         setNextSkip(data.nextSkip);
       } catch {
-        setErr("评论加载失败");
+        setErr(t("loadError"));
       } finally {
         setLoading(false);
         setMoreBusy(false);
       }
     },
-    [postId],
+    [postId, t],
   );
 
   useEffect(() => {
@@ -77,7 +80,7 @@ export function PostComments({ postId, viewerId }: Props) {
         credentials: "include",
         body: JSON.stringify({ body: text }),
       });
-      if (!res.ok) throw new Error("发送失败");
+      if (!res.ok) throw new Error("submit failed");
       const data = (await res.json()) as {
         comment: Omit<CommentRow, "createdAt"> & { createdAt: Date | string };
       };
@@ -92,12 +95,12 @@ export function PostComments({ postId, viewerId }: Props) {
       setDraft("");
       prependLocalNotif({
         id: `cmt_${c.id}`,
-        title: "你的评论已发布",
-        body: "可在通知中心查看；作者与其他读者会在详情页看到。",
-        at: "刚刚",
+        title: t("notifTitle"),
+        body: t("notifBody"),
+        at: t("justNow"),
       });
     } catch {
-      setErr("评论发送失败，请重试");
+      setErr(t("submitFailed"));
     } finally {
       setSubmitting(false);
     }
@@ -106,7 +109,7 @@ export function PostComments({ postId, viewerId }: Props) {
   return (
     <section className="space-y-3 rounded-3xl bg-white/90 p-4 ring-1 ring-zinc-200/70 dark:bg-zinc-950/80 dark:ring-zinc-800">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-zinc-950 dark:text-zinc-50">评论</h2>
+        <h2 className="text-sm font-semibold text-zinc-950 dark:text-zinc-50">{t("title")}</h2>
         {nextSkip !== null ? (
           <button
             type="button"
@@ -114,14 +117,14 @@ export function PostComments({ postId, viewerId }: Props) {
             onClick={() => void load(true, nextSkip)}
             className="text-[11px] font-semibold text-brand-800 hover:underline disabled:opacity-50"
           >
-            {moreBusy ? "加载中…" : "更早评论"}
+            {moreBusy ? t("loadingMore") : t("earlierComments")}
           </button>
         ) : null}
       </div>
       {loading ? (
-        <p className="text-xs text-zinc-500">加载中…</p>
+        <p className="text-xs text-zinc-500">{t("loading")}</p>
       ) : items.length === 0 ? (
-        <p className="text-xs text-zinc-500">还没有评论，做第一个发言的人吧。</p>
+        <p className="text-xs text-zinc-500">{t("empty")}</p>
       ) : (
         <ul className="space-y-3">
           {items.map((c) => (
@@ -143,7 +146,7 @@ export function PostComments({ postId, viewerId }: Props) {
                   {c.body}
                 </p>
                 <p className="mt-1 text-[10px] text-zinc-400">
-                  {new Date(c.createdAt).toLocaleString("zh-CN")}
+                  {new Date(c.createdAt).toLocaleString(locale)}
                 </p>
               </div>
             </li>
@@ -154,12 +157,12 @@ export function PostComments({ postId, viewerId }: Props) {
       {viewerId ? (
         <div className="space-y-2 border-t border-zinc-200/70 pt-3 dark:border-zinc-800">
           <label className="block text-[11px] font-medium text-zinc-600 dark:text-zinc-400">
-            写评论
+            {t("writeLabel")}
             <textarea
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               rows={3}
-              placeholder="友善交流，纯文本即可。"
+              placeholder={t("placeholder")}
               className="mt-1 w-full rounded-2xl border border-zinc-200/90 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-zinc-700 dark:bg-zinc-950"
             />
           </label>
@@ -170,11 +173,11 @@ export function PostComments({ postId, viewerId }: Props) {
             onClick={() => void submit()}
             className="w-full rounded-2xl bg-zinc-950 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-40 dark:bg-white dark:text-zinc-950"
           >
-            {submitting ? "发送中…" : "发布评论"}
+            {submitting ? t("submitBusy") : t("submit")}
           </button>
         </div>
       ) : (
-        <p className="text-[11px] text-zinc-500">登录后可发表评论。</p>
+        <p className="text-[11px] text-zinc-500">{t("loginHint")}</p>
       )}
     </section>
   );

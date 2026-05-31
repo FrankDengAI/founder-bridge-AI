@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import {
   Bookmark,
@@ -112,8 +112,7 @@ const TYPE_THEME: Record<
   },
 };
 
-/** 从标题中抽取技术 / 主题标签做为 mini chips（轻量正则） */
-const TAG_DICTIONARY = [
+const TAG_BASE = [
   "AI",
   "LLM",
   "Cursor",
@@ -124,36 +123,52 @@ const TAG_DICTIONARY = [
   "Tailwind",
   "Supabase",
   "Stripe",
-  "出海",
-  "增长",
-  "运营",
-  "投放",
-  "私域",
-  "小红书",
-  "抖音",
   "RAG",
   "Agent",
   "Prompt",
-];
-function extractTags(text: string): string[] {
-  const hits: string[] = [];
-  for (const t of TAG_DICTIONARY) {
-    if (text.toLowerCase().includes(t.toLowerCase())) hits.push(t);
-    if (hits.length >= 2) break;
-  }
-  return hits;
+] as const;
+
+const TAG_LOCALE_ZH = ["出海", "增长", "运营", "投放", "私域", "小红书", "抖音"] as const; // i18n-ok match tokens for zh titles
+const TAG_LOCALE_EN = [
+  "growth",
+  "ops",
+  "marketing",
+  "ads",
+  "community",
+  "RedNote",
+  "TikTok",
+] as const;
+
+function tagDictionary(locale: string) {
+  return locale === "zh"
+    ? [...TAG_BASE, ...TAG_LOCALE_ZH]
+    : [...TAG_BASE, ...TAG_LOCALE_EN];
 }
 
 export function FeedCard(p: FeedCardProps) {
+  const locale = useLocale();
   const tCommon = useTranslations("common");
+  const tFeed = useTranslations("feed");
   const tPost = useTranslations("postType");
+
+  const extractTags = useCallback(
+    (text: string): string[] => {
+      const hits: string[] = [];
+      for (const tag of tagDictionary(locale)) {
+        if (text.toLowerCase().includes(tag.toLowerCase())) hits.push(tag);
+        if (hits.length >= 2) break;
+      }
+      return hits;
+    },
+    [locale],
+  );
   const userId = useClientUserId();
   const t: PostType = isPostType(p.type) ? p.type : "NOTE";
   const theme = TYPE_THEME[t];
   const [saved, setSaved] = useState(Boolean(p.initiallySaved));
   const [saveBusy, setSaveBusy] = useState(false);
   const [ripple, setRipple] = useState(false);
-  const tags = useMemo(() => extractTags(`${p.title} ${p.excerpt}`), [p.title, p.excerpt]);
+  const tags = useMemo(() => extractTags(`${p.title} ${p.excerpt}`), [p.title, p.excerpt, extractTags]);
   const isHot = p.likes + p.saves >= 60;
   void theme.accent;
 
@@ -260,7 +275,8 @@ export function FeedCard(p: FeedCardProps) {
           ) : null}
           {theme.overlay === "longform" ? (
             <span className="pointer-events-none absolute right-2 top-9 inline-flex items-center gap-0.5 rounded bg-black/55 px-1.5 py-0.5 text-[9px] font-mono text-white backdrop-blur">
-              <BookOpen className="h-2.5 w-2.5" />8 min
+              <BookOpen className="h-2.5 w-2.5" />
+              {tFeed("readMin", { minutes: 8 })}
             </span>
           ) : null}
           {theme.overlay === "code" ? (

@@ -187,16 +187,11 @@ function BreakdownBars({ b }: { b: ScoreBreakdown }) {
   );
 }
 
-const BUDGET_OPTIONS = [
-  { tier: 0, label: "暂不出资（先找伙伴）" },
-  { tier: 1, label: "小额试水" },
-  { tier: 2, label: "可投入中等预算" },
-  { tier: 3, label: "较高预算" },
-  { tier: 4, label: "资金充足" },
-] as const;
+const BUDGET_TIERS = [0, 1, 2, 3, 4] as const;
 
 export function MatchExperience() {
   const t = useTranslations("match");
+  const te = useTranslations("matchExtra");
   const tNav = useTranslations("nav");
   const tRoles = useTranslations("roles");
   const isWeb = useIsWebMode();
@@ -246,7 +241,7 @@ export function MatchExperience() {
       const res = await fetch(`/api/profile?userId=${encodeURIComponent(userId)}`, {
         credentials: "include",
       });
-      if (!res.ok) throw new Error("资料加载失败");
+      if (!res.ok) throw new Error(te("profileLoadFail"));
       const data = (await res.json()) as {
         profile: {
           role: string;
@@ -267,11 +262,11 @@ export function MatchExperience() {
         desiredPartnerRoles: desired.length ? desired : ["JUNGLE"],
       });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "加载失败");
+      setError(e instanceof Error ? e.message : te("loadFail"));
     } finally {
       setLoadingProfile(false);
     }
-  }, [userId]);
+  }, [userId, te]);
 
   useEffect(() => {
     void refreshProfile();
@@ -325,17 +320,17 @@ export function MatchExperience() {
         body: JSON.stringify({ limit: 10 }),
       })
         .then(async (res) => {
-          if (!res.ok) throw new Error("匹配请求失败");
+          if (!res.ok) throw new Error(te("matchRequestFail"));
           return (await res.json()) as { candidates: MatchCandidate[] };
         })
         .then((data) => setPendingResult(data.candidates))
         .catch((e: unknown) => {
           setRunning(false);
-          setError(e instanceof Error ? e.message : "匹配失败");
+          setError(e instanceof Error ? e.message : te("matchFail"));
         });
     } catch (e) {
       setRunning(false);
-      setError(e instanceof Error ? e.message : "匹配失败");
+      setError(e instanceof Error ? e.message : te("matchFail"));
     }
   };
 
@@ -380,11 +375,11 @@ export function MatchExperience() {
             <Lightbulb className="h-5 w-5 text-violet-600" />
           </span>
           <div className="min-w-0 space-y-2 text-xs leading-relaxed text-zinc-700">
-            <p className="font-semibold text-zinc-900">匹配在做什么？</p>
+            <p className="font-semibold text-zinc-900">{te("whatTitle")}</p>
             <ul className="list-inside list-disc space-y-1 text-[11px] text-zinc-600">
-              <li>用三类创业角色（增长 / 产品运营 / 技术交付）衡量分工互补程度。</li>
-              <li>结合能力关键词、创业方向、资金档位与资料完整度，输出可解释的分数与理由。</li>
-              <li>点击下方按钮会先保存当前表单，再进入匹配动效（可跳过）；系统会实时计算推荐结果。</li>
+              <li>{te("whatBullet1")}</li>
+              <li>{te("whatBullet2")}</li>
+              <li>{te("whatBullet3")}</li>
             </ul>
           </div>
         </div>
@@ -397,10 +392,10 @@ export function MatchExperience() {
           <section className="space-y-3">
             <div className="flex items-center gap-2 text-xs font-semibold text-zinc-900">
               <Target className="h-3.5 w-3.5 text-violet-600" />
-              我的创业角色
+              {te("myRole")}
             </div>
             <p className="text-[11px] leading-relaxed text-zinc-500">
-              三选一即可，后续仍可在「我的」或本页随时修改；角色会进入匹配的互补规则。
+              {te("myRoleHint")}
             </p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               {ROLES.map((r) => (
@@ -424,10 +419,8 @@ export function MatchExperience() {
           </section>
 
           <section className="space-y-2">
-            <p className="text-xs font-semibold text-zinc-900">资金意愿档位</p>
-            <p className="text-[11px] text-zinc-500">
-              用于估算「投入节奏」是否接近；差一档仍可能匹配，差太多算法会适度降权。
-            </p>
+            <p className="text-xs font-semibold text-zinc-900">{te("budgetTier")}</p>
+            <p className="text-[11px] text-zinc-500">{te("budgetTierHint")}</p>
             <select
               className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-sm"
               value={form.budgetTier}
@@ -438,19 +431,17 @@ export function MatchExperience() {
                 }))
               }
             >
-              {BUDGET_OPTIONS.map((o) => (
-                <option key={o.tier} value={o.tier}>
-                  {o.label}
+              {BUDGET_TIERS.map((tier) => (
+                <option key={tier} value={tier}>
+                  {te(`budgetTier${tier}` as "budgetTier0")}
                 </option>
               ))}
             </select>
           </section>
 
           <section className="space-y-2">
-            <p className="text-xs font-semibold text-zinc-900">能力关键词</p>
-            <p className="text-[11px] text-zinc-500">
-              写你「能交付什么」：与首页、笔记里的技能标签越一致，匹配推荐越精准。
-            </p>
+            <p className="text-xs font-semibold text-zinc-900">{te("skillKeywords")}</p>
+            <p className="text-[11px] text-zinc-500">{te("skillKeywordsHint")}</p>
             <div className="flex flex-wrap gap-1.5">
               {keywordSuggestions.map((s) => (
                 <button
@@ -472,7 +463,7 @@ export function MatchExperience() {
             <div className="flex gap-2">
               <input
                 className="flex-1 rounded-xl border border-zinc-200 px-3 py-2 text-sm"
-                placeholder="自定义，例如：Rust / 投放策略"
+                placeholder={te("kwPlaceholder")}
                 value={kwInput}
                 onChange={(e) => setKwInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && addKeyword()}
@@ -482,7 +473,7 @@ export function MatchExperience() {
                 onClick={addKeyword}
                 className="rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 py-2 text-xs font-semibold text-white hover:opacity-95"
               >
-                添加
+                {te("add")}
               </button>
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -505,8 +496,8 @@ export function MatchExperience() {
           </section>
 
           <section className="space-y-2">
-            <p className="text-xs font-semibold text-zinc-900">创业方向</p>
-            <p className="text-[11px] text-zinc-500">一句话描述赛道或场景，可点选下方快捷短语再微调。</p>
+            <p className="text-xs font-semibold text-zinc-900">{te("direction")}</p>
+            <p className="text-[11px] text-zinc-500">{te("directionHint")}</p>
             <div className="flex flex-wrap gap-1.5">
               {directionPresets.map((d) => (
                 <button
@@ -529,18 +520,16 @@ export function MatchExperience() {
               onChange={(e) =>
                 setForm((f) => ({ ...f, direction: e.target.value }))
               }
-              placeholder="例如：AI 编程教育 / 出海 SaaS / 垂直行业 Copilot"
+              placeholder={te("directionPlaceholder")}
             />
           </section>
 
           <section className="space-y-2">
             <div className="flex items-center gap-2 text-xs font-semibold text-zinc-900">
               <Users className="h-3.5 w-3.5 text-violet-600" />
-              希望匹配的伙伴类型
+              {te("desiredPartner")}
             </div>
-            <p className="text-[11px] text-zinc-500">
-              可多选。会进入「意向加成」：若对方角色在你勾选列表中，匹配分更高。
-            </p>
+            <p className="text-[11px] text-zinc-500">{te("desiredPartnerHint")}</p>
             <div className="flex flex-wrap gap-2">
               {ROLES.map((r) => (
                 <button
@@ -560,25 +549,23 @@ export function MatchExperience() {
           </section>
 
           <section className="space-y-2">
-            <p className="text-xs font-semibold text-zinc-900">自我介绍</p>
-            <p className="text-[11px] text-zinc-500">
-              会展示在你的主页与对方看到的资料中；建议写清当前阶段、可投入资源与时间。
-            </p>
+            <p className="text-xs font-semibold text-zinc-900">{te("intro")}</p>
+            <p className="text-[11px] text-zinc-500">{te("introHint")}</p>
             <textarea
               className="min-h-[96px] w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm leading-relaxed"
               value={form.intro}
               onChange={(e) => setForm((f) => ({ ...f, intro: e.target.value }))}
-              placeholder="例：独立开发者，有全栈经验，寻找增长与运营合伙人一起做出海工具…"
+              placeholder={te("introPlaceholder")}
             />
           </section>
 
           <div className="flex flex-wrap items-center gap-2 text-[11px] text-zinc-600">
-            <span>动效模式：</span>
+            <span>{te("animModeLabel")}</span>
             {(
               [
-                ["fast", "快速 3 秒"],
-                ["normal", "标准 8 秒"],
-                ["ritual", "仪式感 30 秒"],
+                ["fast", te("animFast")],
+                ["normal", te("animNormal")],
+                ["ritual", te("animRitual")],
               ] as const
             ).map(([m, label]) => (
               <button
@@ -728,11 +715,12 @@ export function MatchExperience() {
                       >
                         {open ? (
                           <>
-                            收起理由 <ChevronUp className="h-3.5 w-3.5" />
+                            {te("collapseReasons")} <ChevronUp className="h-3.5 w-3.5" />
                           </>
                         ) : (
                           <>
-                            展开全部 {c.reasons.length} 条 <ChevronDown className="h-3.5 w-3.5" />
+                            {te("expandReasons", { count: c.reasons.length })}{" "}
+                            <ChevronDown className="h-3.5 w-3.5" />
                           </>
                         )}
                       </button>
@@ -745,10 +733,13 @@ export function MatchExperience() {
                         type="button"
                         className="rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 py-2.5 text-xs font-semibold text-white hover:opacity-95"
                         onClick={() => {
-                          const intent = `你好 ${c.displayName}，我在 VibeHub 匹配里看到你的资料（${isRole(c.role) ? getRoleLabel(tRoles, c.role) : c.role}），想聊聊合作可能性。`;
+                          const intent = te("matchIntent", {
+                            name: c.displayName,
+                            role: isRole(c.role) ? getRoleLabel(tRoles, c.role) : c.role,
+                          });
                           void startConversation(c.userId, {
                             source: "match",
-                            contextTitle: "创业伙伴匹配",
+                            contextTitle: te("matchContextTitle"),
                             draftMessage: intent,
                           }).then(() => {
                             router.push(
@@ -757,19 +748,19 @@ export function MatchExperience() {
                           });
                         }}
                       >
-                        发起沟通
+                        {te("reachOut")}
                       </button>
                       <Link
                         href={`/user/${encodeURIComponent(c.userId)}`}
                         className="inline-flex items-center justify-center rounded-2xl bg-white px-3 py-2.5 text-xs font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-zinc-50"
                       >
-                        看主页
+                        {te("viewProfile")}
                       </Link>
                       <Link
                         href="/tools"
                         className="inline-flex items-center justify-center rounded-2xl bg-brand-50 px-3 py-2.5 text-xs font-semibold text-brand-950 ring-1 ring-brand-200/70 hover:bg-white"
                       >
-                        分享工具
+                        {te("shareTools")}
                       </Link>
                     </div>
                   </div>

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import clsx from "clsx";
 import { completeActivationStep } from "@/lib/activation";
 import { recordGamifyEvent } from "@/lib/gamification";
@@ -15,6 +16,7 @@ type Props = {
 
 export function FollowButton({ targetUserId, viewerId, initialFollowing }: Props) {
   const router = useRouter();
+  const t = useTranslations("follow");
   const [following, setFollowing] = useState(initialFollowing);
   const [busy, setBusy] = useState(false);
 
@@ -50,9 +52,7 @@ export function FollowButton({ targetUserId, viewerId, initialFollowing }: Props
   }, [following, router, targetUserId, viewerId]);
 
   if (!viewerId) {
-    return (
-      <p className="text-[11px] text-zinc-500">登录后可关注该用户。</p>
-    );
+    return <p className="text-[11px] text-zinc-500">{t("loginHint")}</p>;
   }
   if (viewerId === targetUserId) {
     return null;
@@ -71,7 +71,7 @@ export function FollowButton({ targetUserId, viewerId, initialFollowing }: Props
           : "bg-gradient-to-r from-brand-600 to-fuchsia-600 text-white shadow-glow hover:brightness-105",
       )}
     >
-      {busy ? "…" : following ? "已关注" : "关注"}
+      {busy ? "…" : following ? t("following") : t("follow")}
     </button>
   );
 }

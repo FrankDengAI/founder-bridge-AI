@@ -26,6 +26,7 @@ type Candidate = {
 
 export function DailyMatchCard() {
   const t = useTranslations("home");
+  const tUi = useTranslations("homeUi.dailyMatch");
   const tRoles = useTranslations("roles");
   const router = useRouter();
   const userId = useClientUserId();
@@ -158,7 +159,7 @@ export function DailyMatchCard() {
             setContacted(true);
             void startConversation(c.userId, {
               source: "match",
-              contextTitle: "今日一人",
+              contextTitle: tUi("contextTitle"),
               draftMessage: intent,
             }).then(() => {
               router.push(`/messages?peer=${encodeURIComponent(c.userId)}&intent=match`);

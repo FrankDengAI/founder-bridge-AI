@@ -12,82 +12,37 @@ import {
   Wand2,
   Zap,
 } from "lucide-react";
+import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 
-const products = [
-  {
-    icon: Wand2,
-    title: "Prompt 工业化大全",
-    sub: "覆盖 12 个垂类的 380+ Prompt 模板包",
-    price: 19,
-    sales: 1824,
-    rating: 4.8,
-    tag: "热销",
-    color: "from-violet-500/30 to-fuchsia-500/15",
-  },
-  {
-    icon: Code,
-    title: "Next.js 出海 SaaS 脚手架",
-    sub: "Stripe + i18n + Edge 部署预集成",
-    price: 99,
-    sales: 612,
-    rating: 4.9,
-    tag: "Pro",
-    color: "from-cyan-500/30 to-violet-500/15",
-  },
-  {
-    icon: Palette,
-    title: "Glass UI · 玻璃拟态组件库",
-    sub: "Tailwind + Framer Motion · 64 组件",
-    price: 49,
-    sales: 921,
-    rating: 4.7,
-    tag: "新品",
-    color: "from-fuchsia-500/30 to-rose-500/15",
-  },
-  {
-    icon: Bot,
-    title: "Agent 工作流模板套装",
-    sub: "客服 / 内容 / 销售三种生产级配方",
-    price: 199,
-    sales: 234,
-    rating: 5.0,
-    tag: "高端",
-    color: "from-lime-400/30 to-cyan-400/15",
-  },
-  {
-    icon: Layers,
-    title: "AI 小程序模板 · 卷王版",
-    sub: "5 种主题 · 一键部署 · 支付接入",
-    price: 69,
-    sales: 1306,
-    rating: 4.6,
-    tag: "推荐",
-    color: "from-amber-400/30 to-fuchsia-500/15",
-  },
-  {
-    icon: Zap,
-    title: "冷启动陪跑（30 天）",
-    sub: "MVP · 用户增长 · 复盘三件套",
-    price: 999,
-    sales: 86,
-    rating: 4.9,
-    tag: "定制",
-    color: "from-rose-500/30 to-violet-500/15",
-  },
-];
+const PRODUCT_DEFS = [
+  { key: "prompt", icon: Wand2, price: 19, sales: 1824, rating: 4.8, color: "from-violet-500/30 to-fuchsia-500/15" },
+  { key: "scaffold", icon: Code, price: 99, sales: 612, rating: 4.9, color: "from-cyan-500/30 to-violet-500/15" },
+  { key: "components", icon: Palette, price: 49, sales: 921, rating: 4.7, color: "from-fuchsia-500/30 to-rose-500/15" },
+  { key: "agent", icon: Bot, price: 199, sales: 234, rating: 5.0, color: "from-lime-400/30 to-cyan-400/15" },
+  { key: "miniapp", icon: Layers, price: 69, sales: 1306, rating: 4.6, color: "from-amber-400/30 to-fuchsia-500/15" },
+  { key: "coaching", icon: Zap, price: 999, sales: 86, rating: 4.9, color: "from-rose-500/30 to-violet-500/15" },
+] as const;
 
-const tags = [
-  "全部",
-  "Prompt 包",
-  "脚手架",
-  "组件库",
-  "Agent",
-  "小程序模板",
-  "课程",
-  "定制服务",
-];
+const TAG_KEYS = ["all", "prompt", "scaffold", "components", "agent", "miniapp", "course", "service"] as const;
+
+const STAT_KEYS = ["creators", "listings", "avgIncome"] as const;
+const STAT_VALUES = ["1,284", "3,612", "¥4,860"] as const;
 
 export function WebMarket() {
+  const t = useTranslations("marketingSite.market");
+
+  const products = useMemo(
+    () =>
+      PRODUCT_DEFS.map((p) => ({
+        ...p,
+        title: t(`products.${p.key}.title`),
+        sub: t(`products.${p.key}.sub`),
+        tag: t(`products.${p.key}.tag`),
+      })),
+    [t],
+  );
+
   return (
     <section
       id="market"
@@ -98,19 +53,17 @@ export function WebMarket() {
           <div className="max-w-2xl">
             <p className="chip mb-3">
               <Sparkles className="h-3 w-3 text-lime-600" />
-              MARKET · CREATOR
+              {t("chip")}
             </p>
             <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-[2.6rem]">
-              工具商城 <span className="text-gradient-warm">让代码变现</span>
+              {t("title")}{" "}
+              <span className="text-gradient-warm">{t("titleAccent")}</span>
             </h2>
-            <p className="mt-3 max-w-xl text-zinc-600">
-              从 ¥19 的 Prompt 包，到 ¥999 的冷启动陪跑——
-              个人和小团队都能用同一套上架流程标准化售卖。
-            </p>
+            <p className="mt-3 max-w-xl text-zinc-600">{t("desc")}</p>
           </div>
           <div className="flex items-center gap-3 rounded-full border border-zinc-200/80 bg-white/90 px-4 py-2 text-[11px] text-zinc-700">
             <Download className="h-3.5 w-3.5 text-emerald-600" />
-            <span>本月 GMV</span>
+            <span>{t("gmvLabel")}</span>
             <span className="font-mono text-base font-bold text-zinc-900 num-tab">
               ¥182,400
             </span>
@@ -118,11 +71,10 @@ export function WebMarket() {
           </div>
         </div>
 
-        {/* 分类胶囊 */}
         <div className="mt-10 flex flex-wrap gap-2">
-          {tags.map((t, i) => (
+          {TAG_KEYS.map((key, i) => (
             <button
-              key={t}
+              key={key}
               type="button"
               className={`rounded-full border px-4 py-1.5 text-xs font-medium transition ${
                 i === 0
@@ -130,16 +82,15 @@ export function WebMarket() {
                   : "border-zinc-200/80 bg-zinc-50 text-zinc-600 hover:border-violet-300 hover:text-violet-900"
               }`}
             >
-              {t}
+              {t(`tags.${key}`)}
             </button>
           ))}
         </div>
 
-        {/* 商品网格 */}
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p, i) => (
             <motion.div
-              key={p.title}
+              key={p.key}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -172,33 +123,28 @@ export function WebMarket() {
                   </p>
                   <p className="mt-0.5 flex items-center gap-1 text-[10px] text-zinc-600">
                     <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                    {p.rating} · 已售 {p.sales}
+                    {p.rating} · {t("sold", { sales: p.sales })}
                   </p>
                 </div>
                 <button
                   type="button"
                   className="rounded-full bg-white px-4 py-1.5 text-xs font-bold text-ink-950 transition hover:bg-slate-100"
                 >
-                  加入心愿单
+                  {t("wishlist")}
                 </button>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* 收入告知带 */}
         <div className="mt-10 grid gap-3 rounded-3xl border border-zinc-200/80 bg-gradient-to-r from-violet-50 via-fuchsia-50/50 to-cyan-50 p-6 sm:grid-cols-3 sm:p-7">
-          {[
-            { k: "创作者数", v: "1,284" },
-            { k: "上架作品", v: "3,612" },
-            { k: "平均月入", v: "¥4,860" },
-          ].map((x) => (
-            <div key={x.k} className="text-center">
+          {STAT_KEYS.map((key, i) => (
+            <div key={key} className="text-center">
               <p className="text-[10px] font-medium uppercase tracking-wider text-zinc-600">
-                {x.k}
+                {t(`stats.${key}`)}
               </p>
               <p className="mt-1 font-display text-3xl font-bold text-gradient num-tab">
-                {x.v}
+                {STAT_VALUES[i]}
               </p>
             </div>
           ))}

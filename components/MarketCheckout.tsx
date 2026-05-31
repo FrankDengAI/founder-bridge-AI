@@ -2,6 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Check, ShieldCheck, Truck } from "lucide-react";
 import clsx from "clsx";
 
@@ -12,27 +13,33 @@ type Props = {
   marketId?: string;
 };
 
-const STEPS = ["确认商品", "确认订单", "支付", "完成"] as const;
+const STEP_KEYS = [
+  "stepConfirmProduct",
+  "stepConfirmOrder",
+  "stepPayment",
+  "stepComplete",
+] as const;
 
 export function MarketCheckout({ title, priceLabel, itemType, marketId }: Props) {
+  const t = useTranslations("checkout");
   const [step, setStep] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
   const orderSent = useRef(false);
 
-  const canNext = useMemo(() => step < STEPS.length - 1, [step]);
+  const canNext = useMemo(() => step < STEP_KEYS.length - 1, [step]);
 
   const next = () => {
     if (!canNext) return;
     const s = step + 1;
     setStep(s);
-    if (s === STEPS.length - 1) {
-      setToast("支付成功，订单已生成。");
+    if (s === STEP_KEYS.length - 1) {
+      setToast(t("paymentSuccess"));
       window.setTimeout(() => setToast(null), 2400);
     }
   };
 
   useEffect(() => {
-    if (step !== STEPS.length - 1 || !marketId || orderSent.current) return;
+    if (step !== STEP_KEYS.length - 1 || !marketId || orderSent.current) return;
     orderSent.current = true;
     void (async () => {
       try {
@@ -52,8 +59,8 @@ export function MarketCheckout({ title, priceLabel, itemType, marketId }: Props)
     <div className="space-y-3">
       <div className="glass-panel rounded-3xl p-4 shadow-sm ring-1 ring-white/70">
         <div className="flex items-center justify-between gap-2">
-          {STEPS.map((label, i) => (
-            <div key={label} className="flex flex-1 flex-col items-center gap-1">
+          {STEP_KEYS.map((key, i) => (
+            <div key={key} className="flex flex-1 flex-col items-center gap-1">
               <div
                 className={clsx(
                   "flex h-9 w-9 items-center justify-center rounded-2xl text-[11px] font-bold ring-1",
@@ -66,7 +73,7 @@ export function MarketCheckout({ title, priceLabel, itemType, marketId }: Props)
               >
                 {i < step ? <Check className="h-4 w-4" /> : i + 1}
               </div>
-              <span className="text-center text-[10px] font-semibold text-zinc-600">{label}</span>
+              <span className="text-center text-[10px] font-semibold text-zinc-600">{t(key)}</span>
             </div>
           ))}
         </div>
@@ -76,11 +83,9 @@ export function MarketCheckout({ title, priceLabel, itemType, marketId }: Props)
         {step === 0 ? (
           <div className="space-y-2">
             <p className="text-sm font-semibold text-zinc-950">{title}</p>
-            <p className="text-xs text-zinc-600">类型：{itemType}</p>
+            <p className="text-xs text-zinc-600">{t("typeLabel", { type: itemType })}</p>
             <p className="text-lg font-bold text-brand-900">{priceLabel}</p>
-            <p className="text-xs leading-relaxed text-zinc-600">
-              当前为模拟购买流程，不含真实扣款。完成购买后可在「订单与心愿单」查看记录。
-            </p>
+            <p className="text-xs leading-relaxed text-zinc-600">{t("demoHint")}</p>
           </div>
         ) : null}
 
@@ -89,10 +94,8 @@ export function MarketCheckout({ title, priceLabel, itemType, marketId }: Props)
             <div className="flex items-start gap-2 rounded-2xl bg-zinc-50 p-3 ring-1 ring-zinc-200/70">
               <ShieldCheck className="mt-0.5 h-5 w-5 text-emerald-700" />
               <div>
-                <p className="font-semibold text-zinc-950">服务保障</p>
-                <p className="mt-1 text-xs leading-relaxed text-zinc-600">
-                  7 天无理由退换、交付物清单与版本更新说明。
-                </p>
+                <p className="font-semibold text-zinc-950">{t("serviceTitle")}</p>
+                <p className="mt-1 text-xs leading-relaxed text-zinc-600">{t("serviceDesc")}</p>
               </div>
             </div>
           </div>
@@ -103,10 +106,8 @@ export function MarketCheckout({ title, priceLabel, itemType, marketId }: Props)
             <div className="flex items-start gap-2 rounded-2xl bg-zinc-50 p-3 ring-1 ring-zinc-200/70">
               <Truck className="mt-0.5 h-5 w-5 text-sky-700" />
               <div>
-                <p className="font-semibold text-zinc-950">支付方式</p>
-                <p className="mt-1 text-xs leading-relaxed text-zinc-600">
-                  确认后将完成模拟支付，并生成订单记录。
-                </p>
+                <p className="font-semibold text-zinc-950">{t("paymentTitle")}</p>
+                <p className="mt-1 text-xs leading-relaxed text-zinc-600">{t("paymentDesc")}</p>
               </div>
             </div>
           </div>
@@ -114,27 +115,25 @@ export function MarketCheckout({ title, priceLabel, itemType, marketId }: Props)
 
         {step === 3 ? (
           <div className="rounded-2xl bg-gradient-to-br from-emerald-50 to-brand-50 p-4 ring-1 ring-emerald-200/60">
-            <p className="text-sm font-semibold text-emerald-950">购买完成</p>
-            <p className="mt-2 text-xs leading-relaxed text-emerald-900">
-              你可以在「订单与心愿单」查看记录，或在「我的」继续探索更多功能。
-            </p>
+            <p className="text-sm font-semibold text-emerald-950">{t("completeTitle")}</p>
+            <p className="mt-2 text-xs leading-relaxed text-emerald-900">{t("completeDesc")}</p>
           </div>
         ) : null}
 
-        {step < STEPS.length - 1 ? (
+        {step < STEP_KEYS.length - 1 ? (
           <button
             type="button"
             onClick={next}
             className="mt-4 w-full rounded-2xl bg-gradient-to-r from-brand-600 to-fuchsia-600 py-3 text-sm font-semibold text-white shadow-glow"
           >
-            继续
+            {t("continue")}
           </button>
         ) : (
           <Link
             href="/orders"
             className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-zinc-950 py-3 text-sm font-semibold text-white hover:bg-zinc-800"
           >
-            查看我的订单
+            {t("viewOrders")}
           </Link>
         )}
       </div>

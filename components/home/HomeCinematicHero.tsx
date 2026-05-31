@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { Cpu, Flame, Sparkles, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import { getUnlockedBadges } from "@/lib/gamification";
 import { useViewModeOptional } from "@/components/view-mode/ViewModeProvider";
 
@@ -38,6 +39,8 @@ function useAnimatedInt(target: number, active: boolean) {
 }
 
 export function HomeCinematicHero({ stats }: { stats: Stats }) {
+  const t = useTranslations("homeUi.hero");
+  const tNav = useTranslations("nav");
   const isWeb = useViewModeOptional()?.isWeb ?? false;
   const [mounted, setMounted] = useState(false);
   const [badges, setBadges] = useState<ReturnType<typeof getUnlockedBadges>>([]);
@@ -57,10 +60,10 @@ export function HomeCinematicHero({ stats }: { stats: Stats }) {
 
   const chips = useMemo(
     () => [
-      { label: "笔记", value: p, accent: "from-violet-500 to-fuchsia-500" },
-      { label: "用户", value: u, accent: "from-fuchsia-500 to-rose-500" },
-      { label: "模型", value: m, accent: "from-indigo-500 to-violet-500" },
-      { label: "短评", value: rv, accent: "from-amber-500 to-orange-500" },
+      { key: "posts" as const, value: p, accent: "from-violet-500 to-fuchsia-500" },
+      { key: "users" as const, value: u, accent: "from-fuchsia-500 to-rose-500" },
+      { key: "models" as const, value: m, accent: "from-indigo-500 to-violet-500" },
+      { key: "reviews" as const, value: rv, accent: "from-amber-500 to-orange-500" },
     ],
     [p, u, m, rv],
   );
@@ -89,7 +92,7 @@ export function HomeCinematicHero({ stats }: { stats: Stats }) {
           <div className="min-w-0">
             <p className="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-700 ring-1 ring-violet-200/70">
               <Sparkles className="h-3 w-3 text-amber-500" />
-              {isWeb ? "内容 · 工具 · 匹配 · 一体化社区" : "实时动态"}
+              {isWeb ? t("badgeWeb") : t("badgeApp")}
             </p>
             <h2
               className={clsx(
@@ -98,7 +101,7 @@ export function HomeCinematicHero({ stats }: { stats: Stats }) {
               )}
             >
               <span className="text-holo">VibeCoding</span>
-              <span className="text-zinc-800"> 灵感宇宙</span>
+              <span className="text-zinc-800"> {t("titleSuffix")}</span>
             </h2>
             <p
               className={clsx(
@@ -106,9 +109,7 @@ export function HomeCinematicHero({ stats }: { stats: Stats }) {
                 isWeb ? "max-w-2xl text-sm sm:text-base" : "max-w-[20rem] text-xs",
               )}
             >
-              {isWeb
-                ? "没匹配到伙伴也没关系：先看笔记、给大模型打分、参与讨论——你的每一次表达，都在帮系统读懂「你要什么、能做什么」。"
-                : "没匹配到伙伴也没关系：先看笔记、给大模型打分、参与讨论，把社区热度做起来。"}
+              {isWeb ? t("descWeb") : t("descApp")}
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-2">
@@ -117,21 +118,21 @@ export function HomeCinematicHero({ stats }: { stats: Stats }) {
               className="inline-flex items-center gap-1 rounded-2xl bg-violet-50 px-3 py-2 text-[11px] font-bold text-violet-900 ring-1 ring-violet-200/70 transition hover:bg-violet-100"
             >
               <Cpu className="h-3.5 w-3.5 text-cyan-300" />
-              模型榜
+              {t("modelRank")}
             </Link>
             <Link
               href="/workspace"
               className="inline-flex items-center gap-1 rounded-2xl bg-violet-50 px-3 py-2 text-[11px] font-bold text-violet-900 ring-1 ring-violet-200/70 transition hover:bg-violet-100"
             >
               <Zap className="h-3.5 w-3.5 text-amber-300" />
-              工作台
+              {tNav("workspace")}
             </Link>
             <Link
               href="/match"
               className="inline-flex items-center gap-1 rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-600 px-3 py-2 text-[11px] font-bold text-white shadow-lg shadow-fuchsia-500/30 transition hover:brightness-110"
             >
               <Flame className="h-3.5 w-3.5" />
-              匹配
+              {tNav("match")}
             </Link>
           </div>
         </div>
@@ -144,7 +145,7 @@ export function HomeCinematicHero({ stats }: { stats: Stats }) {
         >
           {chips.map((c, i) => (
             <motion.div
-              key={c.label}
+              key={c.key}
               initial={{ opacity: 0, scale: 0.92 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, delay: 0.2 + i * 0.06, ease: [0.22, 1, 0.36, 1] }}
@@ -162,7 +163,7 @@ export function HomeCinematicHero({ stats }: { stats: Stats }) {
                 {c.value}
               </p>
               <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
-                {c.label}
+                {t(`chips.${c.key}`)}
               </p>
             </motion.div>
           ))}
@@ -171,7 +172,7 @@ export function HomeCinematicHero({ stats }: { stats: Stats }) {
         {badges.length ? (
           <div className="relative mt-4 flex flex-wrap gap-1.5 border-t border-violet-200/50 pt-4">
             <span className="w-full text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
-              已解锁成就
+              {t("unlockedBadges")}
             </span>
             {badges.map((b) => (
               <span

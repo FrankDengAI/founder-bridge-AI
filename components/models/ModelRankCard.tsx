@@ -1,7 +1,9 @@
+"use client";
+
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { Crown, Flame, MessageSquare, Star } from "lucide-react";
-import { SCENARIO_LABEL } from "@/lib/models/rank";
 
 export type ModelRankRow = {
   id: string;
@@ -37,7 +39,11 @@ function StarBar({ rating }: { rating: number }) {
 }
 
 export function ModelRankCard({ model, rank }: Props) {
+  const t = useTranslations("modelRank");
+  const tScenario = useTranslations("modelRank.scenarios");
   const isHot = model.reviewCount >= 3 || model.avgRating >= 4.5;
+
+  const scenarioLabel = (id: string) => tScenario.has(id as "coding") ? tScenario(id as "coding") : id;
 
   return (
     <Link
@@ -77,7 +83,7 @@ export function ModelRankCard({ model, rank }: Props) {
           {isHot ? (
             <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-rose-50 px-1.5 py-0.5 text-[9px] font-bold text-rose-700 ring-1 ring-rose-200/70">
               <Flame className="h-2.5 w-2.5" />
-              热议
+              {t("hot")}
             </span>
           ) : null}
         </div>
@@ -91,7 +97,7 @@ export function ModelRankCard({ model, rank }: Props) {
                 key={s}
                 className="rounded-full bg-violet-50 px-1.5 py-0.5 text-[9px] font-medium text-violet-800 ring-1 ring-violet-100"
               >
-                {SCENARIO_LABEL[s] ?? s}
+                {scenarioLabel(s)}
               </span>
             ))}
           </div>
@@ -102,8 +108,10 @@ export function ModelRankCard({ model, rank }: Props) {
             {model.avgRating.toFixed(1)}
           </span>
           <StarBar rating={model.avgRating} />
-          <span className="text-zinc-500">{model.reviewCount} 评</span>
-          <span className="font-mono text-violet-700">综合 {model.rankScore.toFixed(1)}</span>
+          <span className="text-zinc-500">{t("reviewCount", { count: model.reviewCount })}</span>
+          <span className="font-mono text-violet-700">
+            {t("overall", { score: model.rankScore.toFixed(1) })}
+          </span>
         </div>
       </div>
       <MessageSquare className="mt-1 h-4 w-4 shrink-0 text-zinc-400 transition group-hover:text-violet-600" />

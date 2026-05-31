@@ -17,8 +17,12 @@ import { useTranslations } from "next-intl";
 import { appDemoReady, isExternalMiniapp } from "@/lib/miniappOrigin";
 import { useAppEntryHref } from "@/lib/hooks/useAppEntryHref";
 
+const HERO_CANDIDATE_KEYS = ["0", "1", "2"] as const;
+const HERO_TECH_KEYS = ["0", "1", "2", "3", "4", "5", "6", "7"] as const;
+
 export function WebHero() {
   const t = useTranslations("marketing.hero");
+  const tDemo = useTranslations("marketingSite.heroDemo");
   const tNav = useTranslations("marketing.nav");
   const appEntry = useAppEntryHref();
   const homeHref = appEntry("/home");
@@ -27,7 +31,7 @@ export function WebHero() {
 
   const HERO_STATS = [
     { v: "30s", k: t("badge1"), sub: t("badge1Sub") },
-    { v: "7轨", k: t("badge2"), sub: t("badge2Sub") },
+    { v: t("badge2Value"), k: t("badge2"), sub: t("badge2Sub") },
     { v: "∞", k: t("badge3"), sub: t("badge3Sub") },
     { v: "100ms", k: t("badge4"), sub: t("badge4Sub") },
   ] as const;
@@ -170,11 +174,11 @@ export function WebHero() {
               <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-zinc-500">
                 <span className="flex items-center gap-2">
                   <Radar className="h-3.5 w-3.5 text-violet-500" />
-                  match.engine · v2
+                  {tDemo("engineLabel")}
                 </span>
                 <span className="flex items-center gap-1.5 text-emerald-600">
                   <span className="pulse-dot text-emerald-500" />
-                  online
+                  {tDemo("online")}
                 </span>
               </div>
 
@@ -190,28 +194,20 @@ export function WebHero() {
 
               {/* 候选行 */}
               <div className="mt-7 space-y-3">
-                {[
-                  {
-                    title: "ADC × JUNGLE",
-                    sub: "Next.js · 增长黑客",
-                    score: 0.92,
-                    color: "from-violet-500/40 to-fuchsia-500/30",
-                  },
-                  {
-                    title: "创作者 × 增长",
-                    sub: "小红书运营 · 出海",
-                    score: 0.83,
-                    color: "from-fuchsia-500/40 to-rose-400/30",
-                  },
-                  {
-                    title: "独立交付 × 设计",
-                    sub: "LLM 应用 · 设计系统",
-                    score: 0.78,
-                    color: "from-cyan-400/40 to-violet-500/25",
-                  },
-                ].map((row, i) => (
+                {HERO_CANDIDATE_KEYS.map((key, i) => {
+                  const row = {
+                    title: tDemo(`candidates.${key}.title`),
+                    sub: tDemo(`candidates.${key}.sub`),
+                    score: [0.92, 0.83, 0.78][i],
+                    color: [
+                      "from-violet-500/40 to-fuchsia-500/30",
+                      "from-fuchsia-500/40 to-rose-400/30",
+                      "from-cyan-400/40 to-violet-500/25",
+                    ][i],
+                  };
+                  return (
                   <motion.div
-                    key={row.title}
+                    key={key}
                     initial={{ x: -16, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.5 + i * 0.12, duration: 0.5 }}
@@ -231,7 +227,7 @@ export function WebHero() {
                           {Math.round(row.score * 100)}
                         </p>
                         <p className="text-[9px] uppercase tracking-wider text-zinc-500">
-                          score
+                          {tDemo("score")}
                         </p>
                       </div>
                     </div>
@@ -245,7 +241,8 @@ export function WebHero() {
                       />
                     </div>
                   </motion.div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* 底部 mini 指标 */}
@@ -288,7 +285,7 @@ export function WebHero() {
             <div className="glass-v2 rounded-2xl p-3 float-y">
               <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-emerald-600">
                 <TrendingUp className="h-3 w-3" />
-                live ticker
+                {tDemo("liveTicker")}
               </div>
               <div className="mt-2 space-y-1.5">
                 {FLOATING_TICKERS.map((t) => (
@@ -350,18 +347,9 @@ export function WebHero() {
           {t("techStack")}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[11px] font-mono text-zinc-500">
-          {[
-            "Next.js 14",
-            "Prisma · PostgreSQL",
-            "TailwindCSS",
-            "Framer Motion",
-            "Edge Runtime",
-            "Playwright E2E",
-            "GitHub OAuth",
-            "Vercel 部署",
-          ].map((t) => (
-            <span key={t} className="transition hover:text-zinc-700">
-              {t}
+          {HERO_TECH_KEYS.map((key) => (
+            <span key={key} className="transition hover:text-zinc-700">
+              {tDemo(`techStack.${key}`)}
             </span>
           ))}
         </div>

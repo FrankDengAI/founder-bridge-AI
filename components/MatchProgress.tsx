@@ -2,39 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Loader2, Sparkles, Zap } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { MatchAnimMode } from "@/lib/matchUiCopy";
 import { matchAnimDurationMs, writeMatchAnimMode } from "@/lib/matchUiCopy";
 
-const PHASES = [
-  {
-    key: "parse",
-    label: "解析画像",
-    detail: "读取你的角色、关键词、方向与资金档位",
-  },
-  {
-    key: "scan",
-    label: "扫描候选池",
-    detail: "在全站用户中筛选与你互补的创业伙伴",
-  },
-  {
-    key: "rank",
-    label: "多维评分",
-    detail: "角色互补、关键词、方向、资金与新鲜度加权",
-  },
-  {
-    key: "reveal",
-    label: "生成推荐",
-    detail: "整理可解释理由与排序结果",
-  },
-] as const;
-
-const ROTATING_TIPS = [
-  "服务端计算在毫秒级完成；动效用于模拟「深度扫描」的产品体验。",
-  "推荐列表中的每一条理由，都对应算法里的一个维度，便于你复盘筛选逻辑。",
-  "若结果不理想，可回到上方调整关键词或期望伙伴类型后再跑一次。",
-  "创业匹配没有标准答案——分数是冷启动线索，真实契合度仍来自沟通。",
-  "资金档位差异大时，算法会降权但仍可能保留「强角色互补」的候选。",
-] as const;
+const PHASE_KEYS = ["parse", "scan", "rank", "reveal"] as const;
+const TIP_KEYS = ["tip0", "tip1", "tip2", "tip3", "tip4"] as const;
 
 type Props = {
   active: boolean;
@@ -53,10 +26,23 @@ export function MatchProgress({
   onCancel,
   onSkip,
 }: Props) {
+  const t = useTranslations("matchProgress");
   const [tick, setTick] = useState(0);
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
   const effectiveMs = durationMs ?? matchAnimDurationMs(animMode);
+
+  const phases = useMemo(
+    () =>
+      PHASE_KEYS.map((key) => ({
+        key,
+        label: t(`phases.${key}.label`),
+        detail: t(`phases.${key}.detail`),
+      })),
+    [t],
+  );
+
+  const tips = useMemo(() => TIP_KEYS.map((key) => t(`tips.${key}`)), [t]);
 
   useEffect(() => {
     if (!active) {
@@ -65,9 +51,9 @@ export function MatchProgress({
     }
     const started = Date.now();
     const id = window.setInterval(() => {
-      const t = Math.min(1, (Date.now() - started) / effectiveMs);
-      setTick(t);
-      if (t >= 1) {
+      const tVal = Math.min(1, (Date.now() - started) / effectiveMs);
+      setTick(tVal);
+      if (tVal >= 1) {
         window.clearInterval(id);
         onCompleteRef.current();
       }
@@ -76,10 +62,10 @@ export function MatchProgress({
   }, [active, effectiveMs]);
 
   const phaseIndex = Math.min(
-    PHASES.length - 1,
-    Math.floor(tick * PHASES.length),
+    phases.length - 1,
+    Math.floor(tick * phases.length),
   );
-  const phase = PHASES[phaseIndex];
+  const phase = phases[phaseIndex];
 
   const secondsLeft = useMemo(
     () => Math.max(0, Math.ceil((1 - tick) * (effectiveMs / 1000))),
@@ -87,9 +73,16 @@ export function MatchProgress({
   );
 
   const tipIndex = Math.min(
-    ROTATING_TIPS.length - 1,
-    Math.floor(tick * ROTATING_TIPS.length * 1.2) % ROTATING_TIPS.length,
+    tips.length - 1,
+    Math.floor(tick * tips.length * 1.2) % tips.length,
   );
+
+  const modeLabel =
+    animMode === "fast"
+      ? t("modeFast")
+      : animMode === "ritual"
+        ? t("modeRitual")
+        : t("modeNormal");
 
   const handleSkip = () => {
     writeMatchAnimMode("fast");
@@ -111,18 +104,13 @@ export function MatchProgress({
                   <Loader2 className="h-4 w-4 animate-spin" />
                 </span>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-zinc-950">智能匹配进行中</p>
+                  <p className="text-sm font-semibold text-zinc-950">{t("title")}</p>
                   <p className="truncate text-[11px] text-zinc-600">
-                    {animMode === "fast"
-                      ? "快速模式"
-                      : animMode === "ritual"
-                        ? "仪式感"
-                        : "标准"}{" "}
-                    · 约 {Math.round(effectiveMs / 1000)} 秒 · 剩余{" "}
-                    <span className="tabular-nums font-semibold text-violet-700">
-                      {secondsLeft}
-                    </span>{" "}
-                    秒
+                    {t("statusLine", {
+                      mode: modeLabel,
+                      duration: Math.round(effectiveMs / 1000),
+                      remaining: secondsLeft,
+                    })}
                   </p>
                 </div>
               </div>
@@ -131,7 +119,7 @@ export function MatchProgress({
                 onClick={onCancel}
                 className="shrink-0 rounded-xl bg-white/70 px-3 py-1.5 text-xs font-semibold text-zinc-700 ring-1 ring-zinc-200/80 hover:bg-white"
               >
-                取消
+                {t("cancel")}
               </button>
             </div>
 
@@ -154,7 +142,7 @@ export function MatchProgress({
                 className="inline-flex items-center gap-1 rounded-xl bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-violet-700"
               >
                 <Zap className="h-3.5 w-3.5" />
-                跳过动画
+                {t("skipAnim")}
               </button>
               {animMode !== "ritual" ? (
                 <button
@@ -162,18 +150,18 @@ export function MatchProgress({
                   onClick={() => writeMatchAnimMode("ritual")}
                   className="rounded-xl bg-white/80 px-3 py-1.5 text-xs font-semibold text-zinc-700 ring-1 ring-zinc-200/80 hover:bg-white"
                 >
-                  下次用仪式感（30s）
+                  {t("nextRitual")}
                 </button>
               ) : null}
             </div>
 
             <div className="mt-3 flex items-start gap-2 rounded-2xl bg-violet-50/80 px-3 py-2.5 ring-1 ring-violet-200/60">
               <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-violet-600" />
-              <p className="text-[11px] leading-relaxed text-violet-950">{ROTATING_TIPS[tipIndex]}</p>
+              <p className="text-[11px] leading-relaxed text-violet-950">{tips[tipIndex]}</p>
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {PHASES.map((p, i) => (
+              {phases.map((p, i) => (
                 <div
                   key={p.key}
                   className={[

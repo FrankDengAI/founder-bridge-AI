@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { Bookmark, Heart } from "lucide-react";
 import clsx from "clsx";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
@@ -23,6 +24,7 @@ export function PostEngage({
   initiallySaved = false,
 }: Props) {
   const router = useRouter();
+  const t = useTranslations("engage");
   const userId = useClientUserId();
   const [likes, setLikes] = useState(initialLikes);
   const [saves, setSaves] = useState(initialSaves);
@@ -62,7 +64,7 @@ export function PostEngage({
         credentials: "include",
         body: JSON.stringify({ action }),
       });
-      if (!res.ok) throw new Error("操作失败");
+      if (!res.ok) throw new Error("failed");
       const data = (await res.json()) as {
         likes: number;
         saves: number;
@@ -75,11 +77,11 @@ export function PostEngage({
       setToast(
         action === "like"
           ? data.active
-            ? "已点赞"
-            : "已取消点赞"
+            ? t("liked")
+            : t("unliked")
           : data.active
-            ? "已收藏"
-            : "已取消收藏",
+            ? t("saved")
+            : t("unsaved"),
       );
     } catch {
       if (action === "like") {
@@ -89,7 +91,7 @@ export function PostEngage({
         setSaves(initialSaves);
         setSaved(initiallySaved);
       }
-      setToast("操作失败，请稍后重试");
+      setToast(t("operationFailed"));
     } finally {
       setBusy(null);
     }
@@ -100,9 +102,9 @@ export function PostEngage({
       {!userId ? (
         <p className="text-xs text-zinc-500">
           <Link href="/welcome/login" className="font-semibold text-violet-700 hover:underline">
-            登录
-          </Link>{" "}
-          后可点赞与收藏
+            {t("loginLink")}
+          </Link>
+          {t("loginHint")}
         </p>
       ) : null}
       <div className="flex flex-wrap items-center gap-2">

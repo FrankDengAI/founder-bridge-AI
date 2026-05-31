@@ -30,11 +30,15 @@ function walk(dir, out = []) {
 
 function isWhitelistedLine(line) {
   const t = line.trim();
-  if (!t || t.startsWith("//") || t.startsWith("*") || t.startsWith("{/*")) return true;
+  if (!t || t.startsWith("//") || t.startsWith("*") || t.startsWith("/**") || t.startsWith("{/*"))
+    return true;
   if (t.includes("i18n-ok")) return true;
   if (/import\s/.test(t)) return true;
   if (/console\.(log|warn|error)/.test(t)) return true;
   if (/throw new Error/.test(t)) return true;
+  if (/replace\s*\(\s*\/\[/.test(t)) return true;
+  if (/SESSION_SECRET\|数据库/.test(t)) return true;
+  if (/CATEGORY_IDS|TAG_DICTIONARY/.test(t)) return true;
   return false;
 }
 

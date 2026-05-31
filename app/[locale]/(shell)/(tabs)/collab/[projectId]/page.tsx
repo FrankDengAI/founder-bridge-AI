@@ -9,11 +9,7 @@ type Props = { params: { projectId: string } };
 
 export const dynamic = "force-dynamic";
 
-const DEMO_TASKS = [
-  { id: "t1", title: "对齐 MVP 范围与里程碑", done: true },
-  { id: "t2", title: "完成匹配画像并联系 2 位候选", done: true },
-  { id: "t3", title: "发布招募帖并收集反馈", done: false },
-] as const;
+const DEMO_TASK_IDS = ["t1", "t2", "t3"] as const;
 
 const COLUMN_KEYS = ["columnTodo", "columnInProgress", "columnDone"] as const;
 
@@ -25,6 +21,12 @@ export default async function CollabPage({ params }: Props) {
     include: { user: { select: { displayName: true } } },
   });
   if (!project) notFound();
+
+  const demoTasks = DEMO_TASK_IDS.map((id, i) => ({
+    id,
+    title: t(`demoTasks.${id}`),
+    done: i < 2,
+  }));
 
   return (
     <div className="space-y-4 pb-10">
@@ -46,7 +48,7 @@ export default async function CollabPage({ params }: Props) {
           >
             <p className="text-xs font-semibold text-zinc-900">{t(colKey)}</p>
             <ul className="mt-2 space-y-2">
-              {DEMO_TASKS.filter((task, i) => {
+              {demoTasks.filter((task, i) => {
                 if (ci === 0) return !task.done && i === 2;
                 if (ci === 1) return !task.done && i < 2;
                 return task.done;

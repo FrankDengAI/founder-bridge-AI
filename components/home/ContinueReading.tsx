@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { BookOpen } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { readRecentViews, type RecentView } from "@/lib/retention";
 
 export function ContinueReading() {
+  const t = useTranslations("homeUi.continueReading");
   const [items, setItems] = useState<RecentView[]>([]);
 
   useEffect(() => {
@@ -20,23 +22,21 @@ export function ContinueReading() {
       <section className="space-y-2">
         <p className="flex items-center gap-1.5 text-xs font-semibold text-zinc-900">
           <BookOpen className="h-3.5 w-3.5 text-violet-600" />
-          新手推荐
+          {t("newcomerTitle")}
         </p>
-        <p className="text-[11px] text-zinc-600">
-          浏览几篇热门内容后，这里会出现「接着看」快速入口。
-        </p>
+        <p className="text-[11px] text-zinc-600">{t("newcomerHint")}</p>
         <div className="flex flex-wrap gap-2">
           <Link
             href="/home?sort=hot"
             className="rounded-2xl bg-white/90 px-3 py-2 text-[11px] font-semibold text-zinc-800 ring-1 ring-zinc-200/80"
           >
-            看热门笔记
+            {t("viewHotPosts")}
           </Link>
           <Link
             href="/match"
             className="rounded-2xl bg-violet-100 px-3 py-2 text-[11px] font-semibold text-violet-900 ring-1 ring-violet-200/70"
           >
-            去匹配
+            {t("goMatch")}
           </Link>
         </div>
       </section>
@@ -47,7 +47,7 @@ export function ContinueReading() {
     <section className="space-y-2">
       <p className="flex items-center gap-1.5 text-xs font-semibold text-zinc-900">
         <BookOpen className="h-3.5 w-3.5 text-violet-600" />
-        接着看
+        {t("title")}
       </p>
       <div className="flex gap-2 overflow-x-auto pb-1">
         {items.map((it) => (
