@@ -31,6 +31,8 @@
   <a href="#界面一览">界面一览</a> ·
   <a href="#完整路由">完整路由</a> ·
   <a href="#账户与认证">账户</a> ·
+  <a href="#架构图解">架构图</a> ·
+  <a href="#界面与模块详解">设计说明</a> ·
   <a href="#部署指南">部署</a>
 </p>
 
@@ -38,26 +40,53 @@
 
 ## 目录
 
+**怎么读这份 README？**
+
+| 你是谁 | 建议阅读顺序 |
+|--------|----------------|
+| 完全不懂技术 | 先 [术语小词典](#术语小词典看不懂可先看这里) → [核心能力](#核心能力) → [界面与模块详解](#界面与模块详解) |
+| 产品 / 运营 | [产品设计哲学](#产品设计哲学) → [界面与模块详解](#界面与模块详解) → [产品路径](#产品路径) |
+| 开发者 | [快速开始](#快速开始) → [系统架构](#系统架构) → [技术架构文档](./docs/ARCHITECTURE.md) |
+| 投资人 / 路演 | [产品演示](#产品演示) → [品牌站亮点](#品牌站亮点) → [架构图解 §4](#4-五大产品子系统) |
+
+<details>
+<summary><strong>展开完整目录</strong></summary>
+
 - [产品演示](#产品演示)
 - [品牌站亮点](#品牌站亮点)
 - [界面一览](#界面一览)
 - [核心能力](#核心能力)
+- [产品设计哲学](#产品设计哲学)
+- [界面与模块详解](#界面与模块详解)
+  - [发现 / 匹配 / 消息 / 注册 / 我的 / 品牌 / 工具](#发现首页-home)
 - [产品路径](#产品路径)
 - [项目简介](#项目简介)
 - [快速开始](#快速开始)
 - [账户与认证](#账户与认证)
 - [技术栈](#技术栈)
-- [系统架构](#系统架构)
-- [完整路由](#完整路由)
-- [API 概览](#api-概览)
-- [更新截图](#更新截图)
-- [环境变量](#环境变量)
-- [常用命令](#常用命令)
-- [目录结构](#目录结构)
-- [国际化（i18n）](#国际化i18n)
-- [部署指南](#部署指南)
-- [开发规范](#开发规范)
-- [常见问题](#常见问题)
+- [系统架构](#系统架构) · [架构图解](#架构图解)
+- [技术架构与算法](./docs/ARCHITECTURE.md)
+- [完整路由](#完整路由) · [API 概览](#api-概览)
+- [环境变量](#环境变量) · [常用命令](#常用命令) · [部署指南](#部署指南)
+- [开发规范](#开发规范) · [常见问题](#常见问题)
+
+</details>
+
+### 术语小词典（看不懂可先看这里）
+
+| 词 | 通俗解释 |
+|----|----------|
+| **画像 / 资料** | 你在平台填的角色、技能、方向、简介等，用来帮你找队友 |
+| **匹配** | 根据资料给其他人打分排序，推荐更合适的创业伙伴 |
+| **七维雷达** | 用 7 个方面（角色、技能、方向等）画成的图，帮你看清「合不合适」 |
+| **理由文案** | 系统用大白话写的几句话，解释为什么推荐这个人 |
+| **今日一人** | 首页每天固定推荐 1 位候选人，同一天看到的都是同一个人 |
+| **私信 / 会话** | 两人一对一聊天，类似微信私聊 |
+| **冷启动** | 新用户资料还很少时，平台仍先给你能看的内容，不让你对着空白页 |
+| **API** | 网页和服务器之间传数据的「接口」，用户一般无感 |
+| **数据库** | 存用户、帖子、消息的地方，本项目用 PostgreSQL |
+
+> 带文件名、英文函数名的表格主要给开发者看；**普通读者只看「作用」和「为什么」两列即可。**
 
 ---
 
@@ -79,7 +108,9 @@
 
 ## 品牌站亮点
 
-营销落地页（`/`）与 App 共用同一套 Prisma 数据后端，对外展示产品愿景与五大子系统。
+官网首页（`/`）和手机 App **共用同一份真实数据**（不是两张皮），方便对外介绍时「说的和用的是一套」。
+
+> **注意：** 官网上看到的匹配雷达图是**事先画好的展示效果**，用来好看、好传播；**真正会随你资料变化的分数**，要在 App 里打开 [伙伴匹配](#伙伴匹配-match) 才会计算。
 
 <table align="center">
   <tr>
@@ -103,15 +134,15 @@
 <table align="center">
   <tr>
     <td align="center" width="33%">
-      <a href="#发现与内容"><img src="./docs/assets/readme/app-home-feed.png" alt="发现首页" width="100%" /></a><br/>
+      <a href="#发现首页-home"><img src="./docs/assets/readme/app-home-feed.png" alt="发现首页" width="100%" /></a><br/>
       <sub><strong>/home</strong> 发现 · 灵感流与今日推荐</sub>
     </td>
     <td align="center" width="33%">
-      <a href="#匹配与社交"><img src="./docs/assets/readme/app-match-results.png" alt="智能匹配" width="100%" /></a><br/>
+      <a href="#伙伴匹配-match"><img src="./docs/assets/readme/app-match-results.png" alt="智能匹配" width="100%" /></a><br/>
       <sub><strong>/match</strong> 匹配 · 七维雷达与候选评分</sub>
     </td>
     <td align="center" width="33%">
-      <a href="#工具与模型"><img src="./docs/assets/readme/app-tools-market.png" alt="工具商城" width="100%" /></a><br/>
+      <a href="#工具与模型-tools--models"><img src="./docs/assets/readme/app-tools-market.png" alt="工具商城" width="100%" /></a><br/>
       <sub><strong>/tools</strong> 工具 · 榜单与市场</sub>
     </td>
   </tr>
@@ -154,18 +185,29 @@
 
 ## 核心能力
 
+| 你能做什么 | 为什么值得这样做 |
+|------------|-------------------|
+| **找队友** | 不只给个名单，还告诉你「哪里合拍」，才敢点「联系」 |
+| **刷灵感、发帖** | 新人首页也不会空；老用户会看到更贴兴趣的内容 |
+| **逛工具、看模型榜** | 围绕「写代码、做产品」的场景，让人愿意多停留 |
+| **做任务、完善资料** | 把「填资料 → 去匹配 → 发消息」拆成小步，不那么容易第一天就走 |
+| **中英文、品牌页** | 方便给外人演示；英文路径 `/en/...` 给海外协作者 |
+
+> **一条主线：** 在匹配里点「联系」去聊天时，系统会记住「这是匹配来的」，方便以后统计「有多少人真的聊上了」，而不只是点进页面又离开。
+
+<details>
+<summary><strong>展开：各能力域截图与链接</strong></summary>
+
 <table>
   <tr>
     <td width="50%" valign="top">
       <img src="./docs/assets/readme/app-match-results.png" alt="匹配能力" width="100%" />
     </td>
     <td width="50%" valign="top">
-      <h3>匹配与社交</h3>
+      <h4>匹配与社交</h4>
+      <p><a href="#伙伴匹配-match">界面详解</a> · <a href="#5-伙伴匹配设计流水线">架构图</a> · <a href="./docs/ARCHITECTURE.md#23-七维打分公式">算法公式</a></p>
       <ul>
-        <li>基于画像的智能伙伴匹配（技能、方向、角色偏好）</li>
-        <li>「今日一人」每日高匹配推荐</li>
-        <li>七维雷达评分与匹配理由可视化</li>
-        <li>私信会话、关注关系与用户主页</li>
+        <li>画像匹配 · 今日一人 · 雷达与理由 · 私信与会话</li>
       </ul>
     </td>
   </tr>
@@ -174,11 +216,10 @@
       <img src="./docs/assets/readme/app-tools-market.png" alt="工具生态" width="100%" />
     </td>
     <td width="50%" valign="top">
-      <h3>工具与模型</h3>
+      <h4>工具与模型</h4>
+      <p><a href="#工具与模型-tools--models">界面详解</a></p>
       <ul>
-        <li>AI 工具商城浏览、详情与社区评价</li>
-        <li>大模型目录、Weekly Champion 排行</li>
-        <li>模板市场、心愿单与演示订单</li>
+        <li>工具商城 · 大模型排行 · 模板与演示订单</li>
       </ul>
     </td>
   </tr>
@@ -187,11 +228,10 @@
       <img src="./docs/assets/readme/marketing-pulse.png" alt="数据叙事" width="100%" />
     </td>
     <td width="50%" valign="top">
-      <h3>品牌叙事 · 数据可视化</h3>
+      <h4>品牌叙事</h4>
+      <p><a href="#品牌落地页">界面详解</a></p>
       <ul>
-        <li>Pulse 柱状 / 折线 / 环形 KPI 组合仪表盘</li>
-        <li>匹配雷达海报化展示，适合对外传播</li>
-        <li>Bento 非对称功能矩阵，一屏读懂产品边界</li>
+        <li>Pulse KPI · Bento 功能矩阵 · 雷达海报化传播</li>
       </ul>
     </td>
   </tr>
@@ -200,33 +240,240 @@
       <img src="./docs/assets/readme/demo-locale-switch.gif" alt="国际化" width="100%" />
     </td>
     <td width="50%" valign="top">
-      <h3>全球化 · 中英双语</h3>
+      <h4>全球化</h4>
       <ul>
-        <li><strong>1286</strong> 对齐翻译键，全站 UI 双语</li>
-        <li>中文 <code>/home</code> · 英文 <code>/en/home</code></li>
-        <li>Cookie + 中间件持久化，跨页切换不丢失</li>
-        <li><code>npm run check:i18n</code> 防硬编码回归</li>
+        <li>中英文界面 · 选过的语言会记住</li>
       </ul>
     </td>
   </tr>
 </table>
 
+</details>
+
+---
+
+## 产品设计哲学
+
+我们想解决的不是「信息不够」，而是：**找不到合适的人，或者找到了也不敢发第一条消息**。
+
+| 原则 | 大白话 | 产品里怎么做 |
+|------|--------|----------------|
+| **说得明白** | 推荐谁，要说清理由 | 雷达图 + 几句中文说明；不用「黑盒 AI」那种说不清为啥的结果 |
+| **新人不尴尬** | 刚注册也不能空白首页 | 先选兴趣就能逛；首页仍有热门内容；资料不够会提示你去补 |
+| **路径要短** | 别让人找半天 | 底部四个入口：发现、匹配、消息、我的；匹配完能直接聊 |
+| **快慢自选** | 有人要快，有人要仪式感 | 匹配时可选调「快 / 正常 / 慢一点」的等待动画，也能跳过 |
+| **演示能跑通** | 给别人看时要真有数据 | 官网和 App 同一套库；内置 25 个演示账号方便体验匹配 |
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}, 'flowchart': {'nodeSpacing': 40, 'rankSpacing': 50}}}%%
+flowchart LR
+  A["填好资料"] --> B["系统排序推荐"]
+  B --> C["看懂推荐理由"]
+  C --> D["一键发私信"]
+  D --> E["第二天再来"]
+  E --> A
+```
+
+---
+
+## 界面与模块详解
+
+> 按页面说明：**这块是干什么的 · 为什么这样设计**。  
+> 表格里若有英文文件名，是给程序员对代码用的，**可以整列忽略**。
+
+| 跳转 | 页面 |
+|------|------|
+| [全局导航](#全局底部导航与视图模式) | Tab · App/Web 模式（见下节标题） |
+| [发现首页](#发现首页-home) | `/home` |
+| [伙伴匹配](#伙伴匹配-match) | `/match`（字段与按钮最细） |
+| [私信](#私信-messages) | `/messages` |
+| [注册 Onboarding](#注册与-onboarding) | `/welcome/*` |
+| [我的](#我的-me) | `/me` |
+| [品牌站](#品牌落地页) | `/` |
+| [工具与模型](#工具与模型-tools--models) | `/tools` · `/models` |
+| [发布与搜索](#发布与搜索) | `/publish` · `/search` |
+
+### 全局底部导航与视图模式
+
+| 按钮 | 去哪个页面 | 为什么放这里 |
+|------|------------|--------------|
+| **发现** | 首页 `/home` | 大多数人习惯先「刷内容」，门槛最低 |
+| **匹配** | `/match` | 这是平台最核心的能力，单独给一个入口 |
+| **消息** | `/messages` | 有人找你聊天时，红点提醒；匹配完也常来这里 |
+| **我的** | `/me` | 改资料、看成就、进设置，不挤在首页里 |
+
+**手机版 / 电脑版**（注册后可选）：手机上像 App 一样底栏；电脑上左边导航、右边热榜，投屏演示更好看。选过一次会记住，不用每次问。
+
+---
+
+### 发现首页 /home
+
+| 你看到的 | 是干什么的 | 为什么这样设计 |
+|----------|------------|----------------|
+| **今日一人** | 每天推荐 1 个可能合适的伙伴 | 一天一个，像「每日签到」，促使人打开首页；同一天不会乱跳 |
+| **说你好** | 一键开聊 | 自动写好开场白，不用对着空白输入框发愁 |
+| **黄色提示条** | 提醒「今天还没联系」 | 温和提醒，不弹窗轰炸 |
+| **去完善资料** | 资料太少时跳转编辑页 | 写得越全，匹配越准 |
+| **推荐帖子流** | 按兴趣、热度给你看帖 | 新人也有东西看；老用户越看越贴兴趣 |
+| **类型筛选** | 只要笔记 / 项目等某一类 | 内容多时不眼花 |
+| **今日任务** | 小任务：去匹配、发帖等 | 一步一步带着用，减少「不知道干啥」 |
+| **⌘K / Ctrl+K** | 键盘快速搜页面 | 熟手提高效率（类似很多专业软件的命令面板） |
+
+---
+
+### 伙伴匹配 /match
+
+注册时要选的三种「角色」，借用了游戏里的叫法，方便理解（**分数里大约占 26% 权重**）：
+
+| 选项 | 适合谁 | 举例 |
+|------|--------|------|
+| **打野 JUNGLE** | 搞增长、商务、拉客户 | 运营、BD |
+| **辅助 SUPPORT** | 产品、设计、运营 | 产品经理、设计师 |
+| **射手 ADC** | 写代码、做交付 | 工程师、独立开发者 |
+
+**页面怎么排？** 电脑上左边填资料、右边看名单；手机上先填资料再往下滑。名单上 **#1、#2** 表示推荐优先级。右上角能进「消息」，匹配到一半也能回聊天。
+
+#### 填资料：每一项在算什么
+
+| 你填的 | 占分大概比例 | 为啥要问 |
+|--------|--------------|----------|
+| **我的角色** | 约 26% | 系统更推荐「能和你互补」的人，而不是克隆一个你 |
+| **技能关键词** | 约 18% | 看你们会不会同一套技术/能力；可点推荐词，少打字 |
+| **创业方向** | 约 14% | 做的东西像不像一路人；有常用方向可一键选 |
+| **期望伙伴角色** | 约 10% | 你说想找哪种人；双方都想要对方这类角色时，会排更前 |
+| **兴趣相关（简介等）** | 约 16% | 简介和方向补全「像不像一路人」 |
+| **资金档位** | 约 8% | 不问具体多少钱，只问阶段（0–4 档），差太多会提醒 |
+| **资料新不新** | 约 4% | 最近更新、写得认真的人略优先 |
+
+#### 按钮是干什么的
+
+| 按钮 | 你会感受到什么 | 为啥要有 |
+|------|----------------|----------|
+| **开始匹配** | 等一小段动画，然后出名单 | 不必先点保存也能试；动画让人觉得「确实在算」 |
+| **快 / 正常 / 慢一点** | 等待时间长短不同 | 赶时间就快；想要仪式感就慢，会记住你的选择 |
+| **重新匹配** | 改完资料再算一遍 | 立刻看新结果，不用刷新整页 |
+| **跳过 / 取消动画** | 不等了或这次不算了 | 不强迫你看完动画 |
+| **展开更多理由** | 先看两句，点开看七维图 | 列表别太挤；想深究再展开 |
+| **联系 TA** | 跳进聊天，带好一句开场白 | 最关键的一步：从「看」到「聊」 |
+| **查看主页** | 看对方更多帖子和介绍 | 聊之前先了解，减少尬聊 |
+| **分享工具** | 去工具页 | 聊工具比聊「要不要合伙」压力小，也能带你逛站内别的内容 |
+
+#### 分数怎么看
+
+- 显示成 **0–100 分**，大家直观。
+- 分成 **高匹配 / 中匹配 / 探索** 三档（大约 76 分以上、58 分以上、其余），不纠结差一两分。
+- **不是只有第一名才值得聊**——「探索」档也鼓励你先打个招呼试试。
+
+> **背后逻辑（可选读）：** 系统更推「不同角色搭档」（例如增长 + 技术），而不是两个完全一样的人。算法细节见 [技术文档](./docs/ARCHITECTURE.md#23-七维打分公式)。
+
+---
+
+### 私信 /messages
+
+| 设计 | 通俗说明 |
+|------|----------|
+| **定时刷新消息**（大约 5～20 秒一次） | 不用很复杂的「实时长连接」，部署简单；创业私信也不需要毫秒级即时 |
+| **只支持两人对话** | 就是一对一私聊，不搞群聊，先把「配对破冰」做好 |
+| **记住「从匹配来的」** | 列表里能区分来源，方便以后统计有多少人真的聊了 |
+| **进聊天页可带好一句话** | 减少「不知道第一句说什么」 |
+| **未读红点** | 对方发来新消息、你没读到，就亮红点 |
+
+---
+
+### 注册与 Onboarding
+
+| 步骤 | 为什么这样 |
+|------|------------|
+| **不用邮箱也能注册** | 少填一项，更快进来（以后需要可加邮箱验证） |
+| **中间要选角色** | 一注册就能用匹配 |
+| **要选至少 1 个兴趣** | 首页推荐才有依据 |
+| **访客模式** | 扫码先逛一圈，再决定是否注册 |
+| **演示账号** | 路演时用 `demo` 等账号，立刻能看到匹配效果 |
+| **选手机版或电脑版** | 同一套产品，两种界面 |
+
+---
+
+### 我的 /me
+
+| 模块 | 为什么 |
+|------|--------|
+| **资料完成度条** | 告诉你还差什么，补全后匹配更好 |
+| **新手任务步骤** | 「去匹配、发帖…」打勾，有成就感 |
+| **一堆快捷入口** | 常用功能集中，不用记路径 |
+| **学习进度** | 课学到哪了，在个人中心就能看到 |
+
+---
+
+### 品牌落地页
+
+| 模块 | 为什么 |
+|------|--------|
+| **大块功能拼图（Bento）** | 一屏看懂平台能干什么 |
+| **雷达图** | 主要是好看、适合截图传播；**真实打分在 App 里** |
+| **数据墙 Pulse** | 用图表讲平台故事（匹配、留存等） |
+| **和 App 同一套数据** | 不是假网页，点进去真能用到功能 |
+
+---
+
+### 工具与模型 /tools · /models
+
+| 设计 | 为什么 |
+|------|--------|
+| **评分 + 评价人数一起算榜** | 避免只有 1 条五星就霸榜 |
+| **每周之星之类栏目** | 让人有理由常回来看看 |
+| **匹配页里的「分享工具」** | 聊 AI 工具比聊合伙更轻松，也能带你逛这里 |
+
+---
+
+### 发布与搜索
+
+| 页面 | 干什么 | 为什么 |
+|------|--------|--------|
+| **发布** | 写笔记、发项目、招募 | 一个入口够用；你发的内容会出现在首页流里 |
+| **搜索** | 搜人、搜帖 | 东西多了以后好找；和 ⌘K 快捷键互补 |
+| **帖子详情** | 点赞、评论、收藏 | 越热闹的内容越容易被推荐 |
+| **他人主页** | 看对方公开信息 | 匹配前先了解；也方便分享链接 |
+
+---
+
+### 几个设计点对照（给想深究的人）
+
+| 你看到的 | 技术上 | 对用户的好处 |
+|----------|--------|--------------|
+| 七维雷达 | 七项打分再加权 | 知道哪里合拍 |
+| 今日一人 | 每天固定算法抽 1 人 | 养成每天打开的习惯 |
+| 匹配动画 | 只是前端等待效果 | 可选快慢，不增加服务器负担 |
+| 不保存也能试匹配 | 草稿和已保存资料合并计算 | 敢随便试 |
+| 匹配来源标记 | 聊天里记一笔来源 | 方便统计「匹配有没有促成聊天」 |
+
+公式和接口细节见 [技术文档](./docs/ARCHITECTURE.md)（偏程序员阅读）。
+
 ---
 
 ## 产品路径
 
+新用户从品牌站到主功能的典型路径（自上而下，避免交叉线）：
+
 ```mermaid
-flowchart LR
-  Landing["品牌站 /"] --> Welcome["/welcome 注册登录"]
-  Welcome --> Mode["/welcome/mode 选 App/Web"]
-  Mode --> Home["/home 发现流"]
-  Home --> Match["/match 伙伴匹配"]
-  Home --> Publish["/publish 发布内容"]
-  Home --> Tools["/tools 工具市场"]
-  Match --> Messages["/messages 私信"]
-  Home --> Learn["/learn 学习路径"]
-  Tools --> Models["/models 模型排行"]
-  Home --> Workspace["/workspace 工作台"]
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}, 'flowchart': {'nodeSpacing': 40, 'rankSpacing': 55}}}%%
+flowchart TB
+  Landing["① 品牌站 /"]
+  Welcome["② 注册登录 /welcome"]
+  Mode["③ 选择视图 /welcome/mode"]
+  Home["④ 发现首页 /home"]
+
+  Landing --> Welcome
+  Welcome --> Mode
+  Mode --> Home
+
+  Home --> Match["伙伴匹配 /match"]
+  Home --> Publish["发布内容 /publish"]
+  Home --> Tools["工具市场 /tools"]
+  Home --> Learn["学习路径 /learn"]
+  Home --> Workspace["工作台 /workspace"]
+
+  Match --> Messages["私信 /messages"]
+  Tools --> Models["模型排行 /models"]
 ```
 
 **体验模式：** App 手机壳 + 底部 Tab · Web 三栏桌面 + 右栏热榜（`sessionStorage: vbc_view_mode`）
@@ -244,36 +491,15 @@ flowchart LR
 | **REST API** | 帖子、用户、匹配、会话、工具/模型评价等后端接口 |
 | **数据层** | PostgreSQL + Prisma ORM，支持迁移与种子数据 |
 
-### 发现与内容
+> 想了解**每个页面、按钮为什么这样设计**？请阅读 [产品设计哲学](#产品设计哲学) 与 [界面与模块详解](#界面与模块详解)。技术实现见 [架构图解](#架构图解) 与 [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)。
 
-- 首页灵感流、话题标签、收藏与互动（点赞 / 评论 / 分享）
-- 帖子详情、项目展示、创作者中心
-- 全局搜索与命令面板（`⌘K` / `Ctrl+K`）
-
-### 匹配与社交
-
-- 基于画像的智能伙伴匹配（技能、方向、角色偏好）
-- 「今日一人」每日高匹配推荐
-- 私信会话、关注关系、用户主页
-
-### 工具与模型
-
-- AI 工具商城浏览、详情与社区评价
-- 大模型目录、评分与讨论
-- 模板市场、心愿单与演示订单
-
-### 学习与成长
-
-- 分步学习路径（含 GitHub 集成引导）
-- 成就系统与个人资料完善
-- 协作项目空间
-
-### 账户与安全
-
-- **账号密码注册**（无需邮箱即可注册，见 [账户与认证](#账户与认证)）
-- 会话 Cookie 鉴权（`vbc_session`，默认 30 天）
-- 可选：邮箱验证、密码重置（需配置 Resend）
-- 可选：演示快速登录、访客模式（环境变量控制，生产建议关闭）
+| 能力域 | 一句话 | 详细设计说明 |
+|--------|--------|----------------|
+| 发现与内容 | 灵感流 + For You + 发布/搜索 | [发现首页](#发现首页-home) · [发布与搜索](#发布与搜索) |
+| 匹配与社交 | 七维可解释匹配 → 私信闭环 | [伙伴匹配](#伙伴匹配-match) · [私信](#私信-messages) |
+| 工具与模型 | 工具链 + 模型榜 + 模板演示 | [工具与模型](#工具与模型-tools--models) |
+| 学习与成长 | 分步路径、成就、协作空间 | `/learn` · `/me/achievements` · `/collab/[id]` |
+| 账户与安全 | 低摩擦注册 + Cookie 会话 | [注册 Onboarding](#注册与-onboarding) · [账户与认证](#账户与认证) |
 
 ---
 
@@ -502,32 +728,33 @@ curl -X POST http://localhost:3000/api/auth/register \
 
 ## 系统架构
 
+**通俗说：** 网站、接口、匹配计算、存数据，都在**同一套程序**里完成，像一家店里前台、后厨、仓库在一起，而不是三家分开的公司。
+
+**技术说：** 本项目是 **Next.js 14 单仓单体**——浏览器只连一个 Node 服务；页面、接口、匹配、数据库都在一个代码仓库里，**不是**三套独立微服务。
+
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}, 'flowchart': {'nodeSpacing': 45, 'rankSpacing': 50}}}%%
 flowchart TB
-  subgraph Client["浏览器"]
-    MKT["营销站 /"]
-    APP["App Shell /home …"]
-    SW["LocaleSwitcher zh ↔ en"]
+  Browser["浏览器"]
+
+  subgraph NextApp ["Next.js 14 单进程"]
+    MW["middleware 国际化与页面鉴权"]
+    Pages["页面 app/locale"]
+    API["接口 app/api"]
+    Lib["业务库 lib"]
   end
 
-  subgraph Next["Next.js 14"]
-    MW["middleware.ts<br/>i18n + 鉴权"]
-    PAGES["app/[locale]/…<br/>页面 & 布局"]
-    API["app/api/…<br/>Route Handlers"]
-  end
+  DB[("PostgreSQL")]
 
-  subgraph Data["数据层"]
-    PRISMA["Prisma Client"]
-    PG[("PostgreSQL")]
-  end
-
-  Client --> MW
-  MW --> PAGES
+  Browser --> MW
+  MW --> Pages
   MW --> API
-  PAGES --> API
-  API --> PRISMA
-  PRISMA --> PG
+  Pages --> API
+  API --> Lib
+  Lib --> DB
 ```
+
+**补充：** 匹配打分在 [`lib/matching/`](./lib/matching/)；聊天是「定时刷新」拉新消息，没有做成微信那种秒级长连接。程序员看公式请打开 **[技术架构文档](./docs/ARCHITECTURE.md)** 或 **[架构图解](#架构图解)**。
 
 **路由分组概览：**
 
@@ -537,6 +764,325 @@ flowchart TB
 | `(shell)/welcome` | `/welcome/login` | 注册、登录、访客 onboarding |
 | `(shell)/(tabs)` | `/home`、`/match`、`/tools` | 登录后主应用 |
 | `app/api` | `/api/posts`、`/api/match` | 后端 REST 接口 |
+
+---
+
+## 架构图解
+
+> 给想看清「怎么串起来」的读者：每张图只讲一件事。  
+> 不需要懂编程也能看懂大意；公式和接口字段见 [技术文档](./docs/ARCHITECTURE.md)。
+
+### 1. 三大块：界面、服务器逻辑、算分规则
+
+（部署上仍是**一个程序在跑**，只是分工不同。）
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}, 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60}}}%%
+flowchart TB
+  subgraph Frontend ["前端 · 展示与交互"]
+    F1["页面 app/locale"]
+    F2["组件 components"]
+  end
+
+  subgraph Backend ["后端 · HTTP 与数据"]
+    B1["路由 app/api"]
+    B2["鉴权 lib/auth"]
+    B3["聊天 lib/chat"]
+    B4["ORM lib/prisma"]
+  end
+
+  subgraph Algorithm ["算法 · 纯函数计算"]
+    A1["伙伴匹配 lib/matching"]
+    A2["帖子推荐 lib/forYou"]
+    A3["模型榜 lib/models/rank"]
+  end
+
+  F1 --> B1
+  F2 --> B1
+  B1 --> A1
+  B1 --> A2
+  B1 --> B3
+  A1 --> B4
+  A2 --> B4
+  B3 --> B4
+  A3 --> B4
+```
+
+| 块 | 通俗理解 |
+|----|----------|
+| **界面** | 你在浏览器里点的页面、按钮、雷达图 |
+| **服务器** | 登录、存消息、读数据库等「幕后工作」 |
+| **算分规则** | 匹配打几分、首页推哪些帖——用写好的公式算，**不用 ChatGPT 那种大模型** |
+
+---
+
+### 2. 仓库目录职责
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '15px'}, 'flowchart': {'nodeSpacing': 35, 'rankSpacing': 45}}}%%
+flowchart LR
+  subgraph Root ["code_demo_web 根目录"]
+    direction TB
+    APP["app/ 页面与 API"]
+    COMP["components/ UI 组件"]
+    LIB["lib/ 业务与算法"]
+    PRISMA["prisma/ 表结构与种子"]
+    MSG["messages/ 中英文文案"]
+    I18N["i18n/ 路由国际化"]
+  end
+
+  APP --> P1["locale 用户界面"]
+  APP --> P2["api REST 接口"]
+  LIB --> L1["matching 匹配引擎"]
+  LIB --> L2["chat 会话逻辑"]
+  LIB --> L3["auth 登录注册"]
+  PRISMA --> DB[("PostgreSQL")]
+```
+
+---
+
+### 3. 一次请求的旅程
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}}}%%
+sequenceDiagram
+  participant U as 用户浏览器
+  participant M as middleware
+  participant P as 页面或 API
+  participant L as lib 业务层
+  participant D as PostgreSQL
+
+  U->>M: 访问 /match 或 /api/match
+  M->>M: 语言前缀与页面登录检查
+  M->>P: 放行
+  P->>L: 读 Cookie 取用户 ID
+  L->>D: Prisma 查询或写入
+  D-->>L: 数据
+  L-->>P: 结果
+  P-->>U: HTML 或 JSON
+```
+
+说明：`/api/*` 在 middleware 中不强制登录，由各接口自行返回 401。
+
+---
+
+### 4. 五大产品子系统
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '15px'}, 'flowchart': {'nodeSpacing': 40, 'rankSpacing': 50}}}%%
+flowchart TB
+  Hub["VibeCoding 创业社交平台"]
+
+  subgraph Social ["社交与匹配"]
+    S1["发现流 /home"]
+    S2["伙伴匹配 /match"]
+    S3["私信 /messages"]
+    S4["用户主页 /user"]
+  end
+
+  subgraph Content ["内容与创作"]
+    C1["发布 /publish"]
+    C2["项目 /project"]
+    C3["搜索 /search"]
+  end
+
+  subgraph Tools ["工具与模型"]
+    T1["工具商城 /tools"]
+    T2["模型排行 /models"]
+    T3["模板 /templates"]
+  end
+
+  subgraph Growth ["学习与留存"]
+    G1["学习路径 /learn"]
+    G2["成就 /achievements"]
+    G3["工作台 /workspace"]
+  end
+
+  subgraph Brand ["品牌与账户"]
+    B1["营销站 /"]
+    B2["注册登录 /welcome"]
+  end
+
+  Hub --> Social
+  Hub --> Content
+  Hub --> Tools
+  Hub --> Growth
+  Hub --> Brand
+```
+
+---
+
+### 5. 伙伴匹配：设计流水线
+
+匹配在服务端完成；前端只展示分数、雷达与理由文案。
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '15px'}, 'flowchart': {'nodeSpacing': 35, 'rankSpacing': 48}}}%%
+flowchart TB
+  Start["用户画像 UserProfile"]
+  Parse["解析 parseProfile"]
+  Pool["候选池 其他用户资料"]
+  Score["逐人打分 scorePair"]
+
+  subgraph Dims ["七维子分 各 0~1"]
+    D1["角色互补 26%"]
+    D2["技能关键词 18%"]
+    D3["创业方向 14%"]
+    D4["兴趣画像 16%"]
+    D5["双向意向 10%"]
+    D6["资金档位 8%"]
+    D7["活跃度 4%"]
+  end
+
+  Total["加权总分"]
+  Rank["排序 rankCandidates"]
+  UI["雷达 + 理由 + 联系 TA"]
+
+  Start --> Parse
+  Parse --> Score
+  Pool --> Score
+  Score --> D1
+  Score --> D2
+  Score --> D3
+  Score --> D4
+  Score --> D5
+  Score --> D6
+  Score --> D7
+  D1 --> Total
+  D2 --> Total
+  D3 --> Total
+  D4 --> Total
+  D5 --> Total
+  D6 --> Total
+  D7 --> Total
+  Total --> Rank
+  Rank --> UI
+```
+
+| API | 用途 |
+|-----|------|
+| `POST /api/match` | 返回 Top-N 候选人 + breakdown |
+| `GET /api/match?daily=1` | 首页「今日一人」（按日哈希稳定） |
+
+**为什么不用「神秘 AI」，而用七项打分相加？**
+
+| 好处 | 说明 |
+|------|------|
+| 说得清 | 每一项对应真实问题：角色合不合、技能像不像、方向近不近… |
+| 好改 | 觉得「角色」该更重要？调一下比例就行，不用重新训练模型 |
+| 好展示 | 雷达图和下面那几句理由，来自同一套计算 |
+| 省钱 | 不调用付费 AI 接口，演示阶段够用 |
+| 好回访 | 「今日一人」+ 理由，让人愿意明天再来看 |
+
+控件级说明见 [伙伴匹配 /match](#伙伴匹配-match)。
+
+---
+
+### 6. 私信模块：设计逻辑
+
+**不做相似度计算**；只做会话存储、未读判断与定时拉取。
+
+**为什么聊天不用「秒回」那种实时通道？**
+
+| 原因 | 说明 |
+|------|------|
+| 够用 | 创业私聊不需要像游戏语音那样即时 |
+| 好部署 | 演示和上线都更简单 |
+| 重点在匹配 | 先把「找对人说上话」做好 |
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}, 'flowchart': {'nodeSpacing': 45, 'rankSpacing': 55}}}%%
+flowchart TB
+  subgraph Client ["前端 MessagesClient"]
+    List["会话列表"]
+    Chat["聊天窗口"]
+    Poll["定时轮询 5s / 20s"]
+  end
+
+  subgraph API ["REST 接口"]
+    C1["GET /api/conversations"]
+    C2["POST /api/conversations"]
+    C3["GET/POST .../messages"]
+    C4["POST .../read"]
+  end
+
+  subgraph Store ["数据库"]
+    Conv["Conversation 会话"]
+    Part["Participant 参与者"]
+    Msg["Message 消息体 + meta"]
+  end
+
+  List --> C1
+  Chat --> C3
+  Chat --> C4
+  Poll --> C1
+  Poll --> C3
+
+  C1 --> Conv
+  C2 --> Conv
+  C3 --> Msg
+  C2 --> Part
+  C4 --> Part
+```
+
+**未读规则：** 最后一条消息是对方发的，且你的 `lastReadAt` 早于该消息时间 → 显示红点。
+
+**从匹配进入聊天：**
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}}}%%
+flowchart LR
+  M["/match 点击联系"]
+  API["POST conversations"]
+  Page["/messages?peer=..."]
+  M --> API --> Page
+```
+
+---
+
+### 7. 认证与会话
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}}}%%
+flowchart TB
+  Reg["注册 POST /api/auth/register"]
+  Login["登录 POST /api/auth/login"]
+  Cookie["Cookie vbc_session"]
+  Session["Session 表"]
+  Protected["受保护页面 /home /match ..."]
+
+  Reg --> Cookie
+  Login --> Cookie
+  Cookie --> Session
+  Cookie --> Protected
+```
+
+---
+
+### 8. 主 Tab 与 API 对应关系
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}, 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 40}}}%%
+flowchart LR
+  subgraph Tabs ["底部主 Tab"]
+    H["/home"]
+    Ma["/match"]
+    Me["/messages"]
+    My["/me"]
+  end
+
+  subgraph APIs ["主要 API"]
+    A1["/api/feed /api/posts"]
+    A2["/api/match /api/profile"]
+    A3["/api/conversations"]
+    A4["/api/me /api/profile"]
+  end
+
+  H --> A1
+  Ma --> A2
+  Me --> A3
+  My --> A4
+```
 
 ---
 
@@ -577,7 +1123,7 @@ flowchart TB
 | **内容** | `GET/POST /api/posts` · `GET/PATCH/DELETE /api/posts/[id]` | 帖子 CRUD |
 | | `POST /api/posts/[id]/react` · `GET/POST .../comments` | 互动与评论 |
 | **社交** | `POST /api/follow` · `GET /api/feed/following` | 关注与关注流 |
-| **匹配** | `GET/POST /api/match` | 画像保存与匹配计算 |
+| **匹配** | `GET/POST /api/match` | 伙伴打分排序；画像读写见 `/api/profile` |
 | **消息** | `GET/POST /api/conversations` · `.../messages` · `.../read` | 会话与已读 |
 | **工具/模型** | `GET /api/models` · `POST .../reviews` · `tools/[id]/reviews` | 目录与评价 |
 | **其他** | `GET /api/home/rail` · `learn/progress` · `wishlist` · `orders` · `templates` | 首页推荐 / 学习 / 心愿单 |
@@ -652,6 +1198,7 @@ code_demo_web/
 ├── docs/assets/readme/     # README 截图 / GIF / manifest.json
 ├── i18n/                   # next-intl 配置
 ├── lib/                    # 业务逻辑、鉴权、匹配算法
+├── docs/                   # ARCHITECTURE.md 技术架构与算法详解
 ├── messages/               # zh.json / en.json（1286 键）
 ├── prisma/                 # schema + migrations + seed
 ├── scripts/
@@ -760,14 +1307,31 @@ Neon 连接池并发导致，稍后重试或用 `DIRECT_URL` 直连执行 `npx p
 
 </details>
 
+<details>
+<summary><strong>匹配分数是怎么算出来的？会用 AI 吗？</strong></summary>
+
+**不会**用 ChatGPT 这类大模型给你「算缘分」。服务器按你填的资料，从 **7 个方面** 分别打分（例如角色是否互补、关键词是否重合），再加权成一个总分，并写出几句中文理由。  
+想看得更细：[技术文档 · 七维公式](./docs/ARCHITECTURE.md#23-七维打分公式)；想理解产品想法：[产品设计哲学](#产品设计哲学)。
+
+</details>
+
+<details>
+<summary><strong>品牌站雷达和 App 里分数不一致？</strong></summary>
+
+这是正常的。官网上的雷达多半是**固定展示图**，为了好看；**只有 App 里点「开始匹配」**，才会根据你的资料现场算分。
+
+</details>
+
 ---
 
 ## 相关链接
 
 | 资源 | 路径 |
 |------|------|
+| **技术架构与算法** | [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) |
 | 环境变量模板 | [`.env.example`](./.env.example) |
 | 数据模型 | [`prisma/schema.prisma`](./prisma/schema.prisma) |
+| 匹配引擎 | [`lib/matching/score.ts`](./lib/matching/score.ts) |
 | 种子逻辑 | [`lib/seedRun.ts`](./lib/seedRun.ts) |
 | 注册 API | [`app/api/auth/register/route.ts`](./app/api/auth/register/route.ts) |
 | 截图清单 | [`docs/assets/readme/manifest.json`](./docs/assets/readme/manifest.json) |
