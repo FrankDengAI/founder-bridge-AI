@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import { useRequireAuth } from "@/lib/hooks/useRequireAuth";
+import { useProtectedNav } from "@/lib/hooks/useProtectedNav";
 
 type Props = {
   href: string;
@@ -12,9 +12,9 @@ type Props = {
 };
 
 export function AuthLoginLink({ href, reason, className, children, onClick }: Props) {
-  const { isAuthenticated, requireAuth } = useRequireAuth();
+  const { authed, guardNav } = useProtectedNav();
 
-  if (isAuthenticated) {
+  if (authed) {
     return (
       <Link href={href} className={className} onClick={onClick}>
         {children}
@@ -28,7 +28,7 @@ export function AuthLoginLink({ href, reason, className, children, onClick }: Pr
       className={className}
       onClick={() => {
         onClick?.();
-        requireAuth({ next: href, reason });
+        guardNav(href, reason);
       }}
     >
       {children}

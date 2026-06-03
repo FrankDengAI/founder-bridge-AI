@@ -7,15 +7,15 @@ import { useTranslations } from "next-intl";
 import { getUnlockedBadges } from "@/lib/gamification";
 import { readCheckIn, readMissionProgress } from "@/lib/retention";
 import { useConversationStats } from "@/lib/hooks/useConversationStats";
-import { useClientUserId } from "@/lib/hooks/useClientUserId";
+import { useSessionEnabled } from "@/lib/hooks/useClientUserId";
 
 export function MeRetentionHub() {
   const t = useTranslations("homeUi.meHub");
-  const userId = useClientUserId();
+  const sessionEnabled = useSessionEnabled();
   const [streak, setStreak] = useState(0);
   const [missions, setMissions] = useState(0);
   const [badges, setBadges] = useState(0);
-  const { total: threads, unread: msgUnread } = useConversationStats(Boolean(userId));
+  const { total: threads, unread: msgUnread } = useConversationStats(sessionEnabled);
 
   useEffect(() => {
     const refresh = () => {

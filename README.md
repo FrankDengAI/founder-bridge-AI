@@ -21,7 +21,7 @@
 
 <p align="center">
   <sub>
-    <strong>37</strong> 页面 · <strong>31</strong> API · <strong>1286</strong> i18n 键 · <strong>25</strong> 种子用户 · App / Web 双模式
+    <strong>37</strong> 页面 · <strong>31</strong> API · <strong>1286+</strong> i18n 键 · <strong>28</strong> 种子用户 · 先逛后登 · App / Web 双模式
   </sub>
 </p>
 
@@ -181,6 +181,11 @@
       <sub><strong>/publish</strong> 多类型内容发布</sub>
     </td>
   </tr>
+  <tr>
+    <td align="center" width="33%" colspan="3">
+      <sub><strong>/search</strong> 搜索 · 热搜榜 · 实时热榜（帖子 / 工具 / 模型）· 类型筛选与热度排序</sub>
+    </td>
+  </tr>
 </table>
 
 ---
@@ -264,7 +269,7 @@
 | **新人不尴尬** | 刚注册也不能空白首页 | 先选兴趣就能逛；首页仍有热门内容；资料不够会提示你去补 |
 | **路径要短** | 别让人找半天 | 底部四个入口：发现、匹配、消息、我的；匹配完能直接聊 |
 | **快慢自选** | 有人要快，有人要仪式感 | 匹配时可选调「快 / 正常 / 慢一点」的等待动画，也能跳过 |
-| **演示能跑通** | 给别人看时要真有数据 | 官网和 App 同一套库；内置 25 个演示账号方便体验匹配 |
+| **演示能跑通** | 给别人看时要真有数据 | 官网和 App 同一套库；28 个种子用户 + `demo`/`demo1`–`demo3` 可直接密码登录 |
 
 ```mermaid
 flowchart LR
@@ -620,10 +625,11 @@ UserProfile → parseProfile → scorePair(me, eachCandidate)
 | 步骤 | 为什么这样 |
 |------|------------|
 | **不用邮箱也能注册** | 少填一项，更快进来（以后需要可加邮箱验证） |
+| **四步注册向导** | 渐变顶栏 + 进度条：账号 → 昵称 → 分工 → 兴趣（[`RegisterWizard`](./app/[locale]/(shell)/welcome/register/RegisterWizard.tsx)） |
 | **中间要选角色** | 一注册就能用匹配 |
 | **要选至少 1 个兴趣** | 首页推荐才有依据 |
 | **访客模式** | 扫码先逛一圈，再决定是否注册 |
-| **演示账号** | 路演时用 `demo` 等账号，立刻能看到匹配效果 |
+| **演示账号** | `demo` / `demo1`–`demo3` 密码 `12345678`（seed 写入）；或登录页「快速体验」 |
 | **选手机版或电脑版** | 同一套产品，两种界面 |
 
 ---
@@ -665,9 +671,11 @@ UserProfile → parseProfile → scorePair(me, eachCandidate)
 | 页面 | 干什么 | 为什么 |
 |------|--------|--------|
 | **发布** | 写笔记、发项目、招募 | 一个入口够用；你发的内容会出现在首页流里 |
-| **搜索** | 搜人、搜帖 | 东西多了以后好找；和 ⌘K 快捷键互补 |
-| **帖子详情** | 点赞、评论、收藏 | 越热闹的内容越容易被推荐 |
+| **搜索** `/search` | 标题检索 + 类型 / 最新·热度排序 | 吸顶搜索框；未输入时展示**热搜榜**与**社区热榜**（综合 / 帖子 / 工具 / 模型 Tab，Top3 大卡 + 4–10 列表）；与 ⌘K 互补 |
+| **帖子详情** | 点赞、评论、收藏 | 越热闹的内容越容易被推荐；游客点击触发登录弹层（先逛后登） |
 | **他人主页** | 看对方公开信息 | 匹配前先了解；也方便分享链接 |
+
+搜索相关组件：[`SearchTrendingBoard`](./components/search/SearchTrendingBoard.tsx) · [`SearchHotQueries`](./components/search/SearchHotQueries.tsx) · [`SearchDiscoverySections`](./components/search/SearchDiscoverySections.tsx)
 
 ---
 
@@ -729,11 +737,11 @@ flowchart TB
 
 | 能力域 | 一句话 | 详细设计说明 |
 |--------|--------|----------------|
-| 发现与内容 | 灵感流 + For You + 发布/搜索 | [发现首页](#发现首页-home) · [发布与搜索](#发布与搜索) |
+| 发现与内容 | 灵感流 + For You + 发布/搜索/热榜 | [发现首页](#发现首页-home) · [发布与搜索](#发布与搜索) |
 | 匹配与社交 | 七维可解释匹配 → 私信闭环 | [伙伴匹配](#伙伴匹配-match) · [私信](#私信-messages) |
 | 工具与模型 | 工具链 + 模型榜 + 模板演示 | [工具与模型](#工具与模型-tools-models) |
 | 学习与成长 | 分步路径、成就、协作空间 | `/learn` · `/me/achievements` · `/collab/[id]` |
-| 账户与安全 | 低摩擦注册 + Cookie 会话 | [注册 Onboarding](#注册与-onboarding) · [账户与认证](#账户与认证) |
+| 账户与安全 | 先逛后登 + 四步注册 + 演示密码号 | [先逛后登](#先逛后登弹窗登录) · [注册 Onboarding](#注册与-onboarding) · [账户与认证](#账户与认证) |
 
 ---
 
@@ -781,21 +789,31 @@ npx prisma migrate deploy
 npm run db:seed
 ```
 
-写入 **25 个种子用户** + 工具 / 模型 / 帖子等演示数据（详见 [账户与认证](#账户与认证)）。
+写入 **28 个种子用户**（含 `demo` / `demo1`–`demo3` 可密码登录）+ 工具 / 模型 / 帖子等演示数据（详见 [账户与认证](#账户与认证)）。
 
 ### 4. 启动开发服务器
 
 ```bash
-npm run dev
+npm run dev          # 默认 http://localhost:3000
+# 或（Windows 一键，默认 3001，自动 npm install）：
+python main.py
 ```
 
-| 入口 | 地址 |
+| 入口 | 地址（以实际端口为准） |
+|------|----------------------|
+| 品牌落地页 | `http://localhost:3000/` 或 `3001` |
+| 欢迎 / 注册 | `/welcome` · `/welcome/register` |
+| 应用首页（中文） | `/home` |
+| 搜索 / 热榜 | `/search` |
+| 应用首页（英文） | `/en/home` |
+| 健康检查 | `/api/health` |
+
+**本地演示登录（需已 `db:seed`）：**
+
+| 账号 | 密码 |
 |------|------|
-| 品牌落地页 | http://localhost:3000 |
-| 欢迎 / 注册 | http://localhost:3000/welcome |
-| 应用首页（中文） | http://localhost:3000/home |
-| 应用首页（英文） | http://localhost:3000/en/home |
-| 健康检查 | http://localhost:3000/api/health |
+| `demo` | `12345678` |
+| `demo1` · `demo2` · `demo3` | `12345678` |
 
 ### 5. 生产构建（本地验证）
 
@@ -808,19 +826,19 @@ npm start
 
 ## 账户与认证
 
-> **速查：** seed 后固定 **25** 个演示用户 · 正式注册 **无需邮箱** · 账号 ≥3 位 + 密码 ≥8 位 + 昵称 + 角色 + ≥1 兴趣标签
+> **速查：** seed 后 **28** 个演示用户（其中 `demo` / `demo1`–`demo3` 可密码登录，默认 `12345678`）· 正式注册 **无需邮箱** · 账号 ≥3 位 + 密码 ≥8 位 + 昵称 + 角色 + ≥1 兴趣标签
 
 ### 数据库里有多少用户？
 
 | 类型 | 数量 | 标识 | 密码登录 |
 |------|:----:|------|:--------:|
-| 主演示账号 | 1 | `demo` / `user_demo_vibe` | ❌¹ |
+| 可密码登录演示号 | 4 | `demo`、`demo1`、`demo2`、`demo3` | ✅ 统一 `12345678` |
 | 匹配池创业者 | 24 | `founder_01` … `founder_24` | ❌¹ |
-| **种子用户合计** | **25** | 均为 `isDemo: true` | ❌¹ |
+| **种子用户合计** | **28** | 均为 `isDemo: true` | 见上 |
 | 正式注册用户 | 不限 | 自注册，`isDemo: false` | ✅ |
 | 游客 | 按需 | `guest_*` 临时 ID | ❌ |
 
-> ¹ 种子用户**无密码哈希**，不能走「账号 + 密码」登录；需 `ENABLE_DEMO_LOGIN=true` 使用快速体验，或自行注册新账号。
+> ¹ `founder_xx` 仍无密码，仅用于匹配池；需 `ENABLE_DEMO_LOGIN=true` 走「快速体验」，或使用上表 `demo` / `demo1`–`demo3` 账号密码登录。密码由 `npm run db:seed` 写入（见 `lib/auth/demoSeed.ts` 中 `DEMO_SEED_PASSWORD`）。
 
 **总用户数** = 25（seed）+ 正式注册数 + 游客数。  
 `npm run db:seed` 为 **upsert**：刷新种子与 catalog，**不会删除**你已注册的真实账号。全量清空重建用 `npm run db:seed:reset`。
@@ -829,16 +847,16 @@ npm start
 
 ---
 
-### 三种账号怎么选？
+### 账号类型怎么选？
 
-| | 正式注册 | 游客 | 种子快速体验 |
-|---|:---:|:---:|:---:|
-| 入口 | `/welcome/register` | `/welcome/guest` | 登录页「快速体验」 |
-| 环境开关 | 无 | `ENABLE_GUEST=true` | `ENABLE_DEMO_LOGIN=true` |
-| 密码 | 自设 ≥8 位 | 无 | 口令 `demo` 或留空 |
-| 邮箱 | 不需要 | 不需要 | 不需要 |
-| 画像 | 账号+昵称+角色+兴趣 | 仅兴趣标签 | 预置完整资料 |
-| 适用 | 长期使用 | 零门槛试用 | 本地/demo 演示 |
+| | 正式注册 | 游客 | 演示（账号+密码） | 演示（快速体验） |
+|---|:---:|:---:|:---:|:---:|
+| 入口 | `/welcome/register` | `/welcome/guest` | `/welcome/login` 或首页登录弹层 | 登录页「快速体验」 |
+| 环境开关 | 无 | `ENABLE_GUEST=true` | 无（seed 写入密码） | `ENABLE_DEMO_LOGIN=true` |
+| 密码 | 自设 ≥8 位 | 无 | **`demo` / `demo1`–`demo3` → `12345678`** | 口令 `demo` 或留空（选种子 userId） |
+| 邮箱 | 不需要 | 不需要 | 不需要 | 不需要 |
+| 画像 | 账号+昵称+角色+兴趣 | 仅兴趣标签 | 预置完整资料 | 预置完整资料 |
+| 适用 | 长期使用 | 零门槛试用 | **路演最快：直接输账号密码** | 本地选 `founder_xx` 等无密码种子 |
 
 ---
 
@@ -862,9 +880,9 @@ flowchart TD
 | 方式 | 说明 |
 |------|------|
 | **正式注册** | 4 步向导 → 自动登录 → 模式选择 → 进入 App |
-| **账号登录** | 已注册用户的 `username` + `password`（账号自动转小写） |
+| **账号登录** | 已注册用户或 **`demo` / `demo1`–`demo3`**（密码 `12345678`，见 [`lib/auth/demoSeed.ts`](./lib/auth/demoSeed.ts)） |
 | **游客** | 选 ≥1 兴趣标签即进 App；无密码，建议后续注册转正 |
-| **快速体验** | 选择 `demo` 或 `founder_xx` 等种子账号进入 |
+| **快速体验** | `ENABLE_DEMO_LOGIN=true` 时选 `founder_xx` 等无密码种子（口令 `demo`） |
 
 生产环境（[`render.yaml`](./render.yaml) 默认）关闭 `ENABLE_DEMO_LOGIN` 与 `ENABLE_GUEST`，仅保留注册 / 登录。
 
@@ -885,13 +903,17 @@ flowchart TD
 
 **视图模式：** [`ViewModeGate`](./components/view-mode/ViewModeGate.tsx) 首访无 `sessionStorage` 时按视口静默默认 App/Web，**不阻断**直达 `/home`；仍可在 `/welcome/mode` 主动切换。
 
-**自动化验收（需本地已 `npm run build` 且 `npm run start`，默认 `http://localhost:3000`）：**
+**自动化验收（需本地已 `npm run build` 且 `npm run start`；端口与 dev 一致，如 `3000` 或 `python main.py` 的 `3001`）：**
 
 ```bash
 npm run smoke:guest          # 游客 middleware + /api/posts
 npm run auth:smoke           # 注册/登录 API
 npm run smoke:pages          # 登录后页面非 500
-npm run test:e2e             # Playwright：先逛、弹窗、注册进匹配
+npm run test:e2e             # Playwright：先逛、弹窗、Feed/底栏、注册进匹配
+
+# 非默认端口时：
+# set PLAYWRIGHT_BASE_URL=http://localhost:3001   (Windows)
+# PLAYWRIGHT_BASE_URL=http://localhost:3001 npm run test:e2e
 ```
 
 > Edge middleware 仅校验 Cookie 形状与过期（[`sessionCookieEdge`](./lib/auth/sessionCookieEdge.ts)），完整验签在 Node API；演示环境可接受，生产请配置 `SESSION_SECRET`。
@@ -951,8 +973,8 @@ curl -X POST http://localhost:3000/api/auth/register \
 
 | 场景 | `POST /api/auth/login` 请求体 |
 |------|-------------------------------|
-| 正式用户 | `{ "username": "xiaolin", "password": "..." }` |
-| 演示账号 | `{ "userId": "user_demo_vibe", "demoMode": true, "password": "demo" }` |
+| 正式用户 / 演示密码号 | `{ "username": "demo", "password": "12345678" }`（`demo1`–`demo3` 同理） |
+| 快速体验（无密码种子） | `{ "userId": "user_demo_vibe", "demoMode": true, "password": "demo" }`（需 `ENABLE_DEMO_LOGIN`） |
 
 生产建议配置固定 `SESSION_SECRET`（≥32 位），避免 Render 重启后全员掉线。
 
@@ -960,12 +982,13 @@ curl -X POST http://localhost:3000/api/auth/register \
 
 ### 种子数据明细（`db:seed` 后）
 
-**用户（25）**
+**用户（28）**
 
-| 账号 | 说明 |
-|------|------|
-| `demo` | 主演示角色，含示例项目与帖子 |
-| `founder_01` … `founder_24` | 匹配候选池；各含 Profile，多数有 Post / Project |
+| 账号 | 密码登录 | 说明 |
+|------|:--------:|------|
+| `demo` | ✅ `12345678` | 主演示角色（`user_demo_vibe`），含示例项目与帖子 |
+| `demo1` · `demo2` · `demo3` | ✅ `12345678` | 额外演示号，分工分别为增长 / 运营 / 技术 |
+| `founder_01` … `founder_24` | ❌ | 匹配候选池；各含 Profile，多数有 Post / Project；走快速体验或注册 |
 
 **Catalog（非用户，每次 seed 刷新）**
 
@@ -1410,13 +1433,17 @@ npm run docs:assets -- --only=marketing # 仅品牌站区块
 
 | 命令 | 说明 |
 |------|------|
-| `npm run dev` | 启动开发服务器 |
+| `python main.py` | Windows 一键启动 Next（默认 **3001**，可 `--port`） |
+| `npm run dev` | 启动开发服务器（默认 3000） |
 | `npm run build` | 生产构建 |
 | `npm run check:i18n` | 扫描 UI 硬编码中文 |
 | `npm run docs:assets` | 重新生成 README 截图与 GIF |
-| `npm run db:seed` | 写入演示种子数据 |
+| `npm run db:seed` | 写入演示种子（含演示密码；见 `lib/auth/demoSeed.ts`） |
+| `npm run db:seed:reset` | 全库清空后重建（慎用） |
 | `npm run auth:smoke` | 认证流程冒烟测试 |
+| `npm run smoke:guest` | 先逛后登：游客 `/home`、middleware |
 | `npm run smoke:pages` | 受保护页面可达性测试 |
+| `npm run test:e2e` | Playwright E2E（可用 `PLAYWRIGHT_BASE_URL` 改端口） |
 
 ---
 
@@ -1426,7 +1453,7 @@ npm run docs:assets -- --only=marketing # 仅品牌站区块
 code_demo_web/
 ├── app/[locale]/           # 国际化页面（marketing + shell）
 ├── app/api/                # 31 个 REST Route Handlers
-├── components/             # UI 组件（Feed、Match、WebHero…）
+├── components/             # UI（Feed、Match、search/ 热榜与热搜…）
 ├── docs/assets/readme/     # README 截图 / GIF / manifest.json
 ├── i18n/                   # next-intl 配置
 ├── lib/                    # 业务逻辑、鉴权、匹配算法
@@ -1491,16 +1518,25 @@ npm run lint && npm run check:i18n && npx tsc --noEmit
 ## 常见问题
 
 <details>
-<summary><strong>能用 founder_01 当账号密码登录吗？</strong></summary>
+<summary><strong>演示账号怎么登录？</strong></summary>
 
-不能。`founder_01` … `founder_24` 与 `demo` 均为种子演示用户，**数据库中无 passwordHash**。请用 `ENABLE_DEMO_LOGIN=true` 的快速体验入口，或注册新账号 `username` + `password` 登录。
+执行 `npm run db:seed` 后，可用 **账号 + 密码** 登录：
+
+| 账号 | 密码 |
+|------|------|
+| `demo` | `12345678` |
+| `demo1` · `demo2` · `demo3` | `12345678` |
+
+密码定义见 [`lib/auth/demoSeed.ts`](./lib/auth/demoSeed.ts)（改 `DEMO_SEED_PASSWORD` 后需重新 seed）。
+
+`founder_01` … `founder_24` **仍无密码**，仅匹配池；需 `ENABLE_DEMO_LOGIN=true` 的「快速体验」，或自行注册。
 
 </details>
 
 <details>
 <summary><strong>重复执行 db:seed 会删掉我的账号吗？</strong></summary>
 
-不会。默认 `npm run db:seed` 为 upsert：只刷新 25 个 `isDemo` 用户的内容与 catalog，**已注册的真实账号保留**。若需清空整库重建，使用 `npm run db:seed:reset`（慎用）。
+不会。默认 `npm run db:seed` 为 upsert：只刷新 **28** 个 `isDemo` 用户的内容与 catalog，**已注册的真实账号保留**。若需清空整库重建，使用 `npm run db:seed:reset`（慎用）。
 
 </details>
 

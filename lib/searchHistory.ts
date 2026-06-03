@@ -12,6 +12,11 @@ export function readSearchHistory(): string[] {
   }
 }
 
+export function clearSearchHistory() {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(KEY);
+}
+
 export function rememberSearchQuery(q: string) {
   const t = q.trim();
   if (!t || typeof window === "undefined") return;

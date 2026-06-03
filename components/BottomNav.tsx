@@ -4,9 +4,9 @@ import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { MAIN_NAV_ITEMS, resolveTab, type NavTab } from "@/lib/navConfig";
-import { useClientUserId } from "@/lib/hooks/useClientUserId";
+import { useSessionEnabled } from "@/lib/hooks/useClientUserId";
 import { useConversationStats } from "@/lib/hooks/useConversationStats";
-import { useRequireAuth } from "@/lib/hooks/useRequireAuth";
+import { useProtectedNav } from "@/lib/hooks/useProtectedNav";
 
 const TAB_REASON: Partial<Record<NavTab, string>> = {
   "/match": "match",
@@ -17,9 +17,9 @@ const TAB_REASON: Partial<Record<NavTab, string>> = {
 export function BottomNav() {
   const pathname = usePathname() ?? "";
   const tab = resolveTab(pathname);
-  const userId = useClientUserId();
-  const { isAuthenticated, isReady, requireAuth } = useRequireAuth();
-  const { unread: msgUnread } = useConversationStats(Boolean(userId));
+  const sessionEnabled = useSessionEnabled();
+  const { authed, isReady, guardNav } = useProtectedNav();
+  const { unread: msgUnread } = useConversationStats(sessionEnabled);
   const t = useTranslations("nav");
   const tNavExtra = useTranslations("navExtra");
 
@@ -71,15 +71,14 @@ export function BottomNav() {
                 </>
               );
 
-              if (needsAuth && !isAuthenticated) {
+              if (needsAuth && !authed) {
                 return (
                   <button
                     key={it.href}
                     type="button"
-                    disabled={!isReady}
-                    className={clsx(className, !isReady && "opacity-50")}
+                    className={clsx(className, !isReady && "opacity-70")}
                     onClick={() => {
-                      requireAuth({ next: it.href, reason: reason ?? "default" });
+                      guardNav(it.href, reason ?? "default");
                     }}
                   >
                     {inner}

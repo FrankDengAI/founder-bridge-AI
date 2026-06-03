@@ -6,8 +6,8 @@ import { Command, MessageCircle, PenSquare, Search } from "lucide-react";
 import clsx from "clsx";
 import { NotificationHub } from "@/components/NotificationHub";
 import { useConversationStats } from "@/lib/hooks/useConversationStats";
-import { useClientUserId } from "@/lib/hooks/useClientUserId";
-import { useRequireAuth } from "@/lib/hooks/useRequireAuth";
+import { useSessionEnabled } from "@/lib/hooks/useClientUserId";
+import { useProtectedNav } from "@/lib/hooks/useProtectedNav";
 
 type Props = {
   className?: string;
@@ -19,17 +19,16 @@ const iconBtnClass =
 export function AppQuickActions({ className }: Props) {
   const tApp = useTranslations("homeUi.discoveryApp");
   const tc = useTranslations("common");
-  const userId = useClientUserId();
-  const { isAuthenticated, isReady, requireAuth } = useRequireAuth();
-  const { unread: msgUnread } = useConversationStats(Boolean(userId));
+  const sessionEnabled = useSessionEnabled();
+  const { authed, isReady, guardNav } = useProtectedNav();
+  const { unread: msgUnread } = useConversationStats(sessionEnabled);
 
-  const guestBtnClass = (base: string) =>
-    clsx(base, !isReady && "pointer-events-none opacity-50");
+  const guestBtnClass = (base: string) => clsx(base, !isReady && "opacity-70");
 
   return (
     <div className={clsx("flex shrink-0 items-center gap-0.5", className)}>
       <NotificationHub size="compact" />
-      {isAuthenticated ? (
+      {authed ? (
         <Link href="/messages" className={clsx("relative", iconBtnClass)} aria-label={tApp("messages")}>
           <MessageCircle className="h-4 w-4" />
           {msgUnread > 0 ? (
@@ -42,9 +41,8 @@ export function AppQuickActions({ className }: Props) {
         <button
           type="button"
           className={guestBtnClass(iconBtnClass)}
-          disabled={!isReady}
           aria-label={tApp("messages")}
-          onClick={() => requireAuth({ next: "/messages", reason: "messages" })}
+          onClick={() => guardNav("/messages", "messages")}
         >
           <MessageCircle className="h-4 w-4" />
         </button>
@@ -54,18 +52,17 @@ export function AppQuickActions({ className }: Props) {
         title={tc("commandPalette")}
         aria-label={tc("commandPalette")}
         onClick={() => {
-          if (isAuthenticated) {
+          if (authed) {
             window.dispatchEvent(new Event("vibe-open-command-palette"));
           } else {
-            requireAuth({ next: "/search", reason: "search" });
+            guardNav("/search", "search");
           }
         }}
         className={guestBtnClass(iconBtnClass)}
-        disabled={!isReady}
       >
         <Command className="h-4 w-4" />
       </button>
-      {isAuthenticated ? (
+      {authed ? (
         <Link href="/search" className={iconBtnClass} aria-label={tc("openSearch")}>
           <Search className="h-4 w-4" />
         </Link>
@@ -73,14 +70,13 @@ export function AppQuickActions({ className }: Props) {
         <button
           type="button"
           className={guestBtnClass(iconBtnClass)}
-          disabled={!isReady}
           aria-label={tc("openSearch")}
-          onClick={() => requireAuth({ next: "/search", reason: "search" })}
+          onClick={() => guardNav("/search", "search")}
         >
           <Search className="h-4 w-4" />
         </button>
       )}
-      {isAuthenticated ? (
+      {authed ? (
         <Link
           href="/publish"
           aria-label={tApp("publishAction")}
@@ -93,13 +89,12 @@ export function AppQuickActions({ className }: Props) {
       ) : (
         <button
           type="button"
-          disabled={!isReady}
           aria-label={tApp("publishAction")}
           data-testid="topbar-publish"
           className={guestBtnClass(
             "inline-flex h-8 shrink-0 items-center gap-1 rounded-lg bg-gradient-to-r from-brand-600 to-fuchsia-600 px-2 text-[10px] font-semibold text-white shadow-glow transition hover:brightness-105 active:scale-[0.98]",
           )}
-          onClick={() => requireAuth({ next: "/publish", reason: "publish" })}
+          onClick={() => guardNav("/publish", "publish")}
         >
           <PenSquare className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">{tApp("publishShort")}</span>

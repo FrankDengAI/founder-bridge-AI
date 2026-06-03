@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import {
   Bookmark,
   BookOpen,
@@ -147,6 +147,7 @@ function tagDictionary(locale: string) {
 }
 
 export function FeedCard(p: FeedCardProps) {
+  const router = useRouter();
   const locale = useLocale();
   const tCommon = useTranslations("common");
   const tFeed = useTranslations("feed");
@@ -166,6 +167,14 @@ export function FeedCard(p: FeedCardProps) {
   const userId = useClientUserId();
   const { isAuthenticated, isReady, requireAuth } = useRequireAuth();
   const postHref = `/post/${p.id}`;
+
+  const openPost = useCallback(() => {
+    if (isReady && isAuthenticated) {
+      router.push(postHref);
+      return;
+    }
+    requireAuth({ next: postHref, reason: "viewPost" });
+  }, [isReady, isAuthenticated, router, postHref, requireAuth]);
   const t: PostType = isPostType(p.type) ? p.type : "NOTE";
   const theme = TYPE_THEME[t];
   const [saved, setSaved] = useState(Boolean(p.initiallySaved));
@@ -337,22 +346,17 @@ export function FeedCard(p: FeedCardProps) {
         "hover:-translate-y-1 hover:shadow-[0_24px_60px_-22px_rgba(139,92,246,0.5)] hover:ring-violet-300/50 motion-reduce:hover:translate-y-0",
       )}
     >
-      {isAuthenticated ? (
-        <Link href={postHref} className="block" data-author={p.authorId}>
-          {cardBody}
-        </Link>
-      ) : (
-        <button
-          type="button"
-          className="block w-full cursor-pointer text-left"
-          data-author={p.authorId}
-          onClick={() => {
-            requireAuth({ next: postHref, reason: "viewPost" });
-          }}
-        >
-          {cardBody}
-        </button>
-      )}
+      <button
+        type="button"
+        className={clsx(
+          "block w-full cursor-pointer text-left",
+          !isReady && "opacity-70",
+        )}
+        data-author={p.authorId}
+        onClick={openPost}
+      >
+        {cardBody}
+      </button>
 
       <button
         type="button"

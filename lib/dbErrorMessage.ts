@@ -23,11 +23,25 @@ export function dbErrorMessage(err: unknown): string {
   }
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     if (err.code === "P2002") return "该账号已被占用";
+    if (err.code === "P1017") {
+      return isProd
+        ? "数据库连接中断，请稍后重试或检查 Render 数据库状态"
+        : "数据库连接中断：请检查 DATABASE_URL 与网络，或确认 Neon 库未休眠";
+    }
+    if (err.code === "P2024") {
+      return "数据库连接繁忙，请稍后重试（若本地开发可改用直连 URL 或增大 pooler connection_limit）";
+    }
     if (err.code === "P2021" || err.code === "P2022") {
       return isProd
         ? "数据库表结构未就绪：请在 Render 部署日志中确认 prisma migrate deploy 已成功"
         : "数据库结构未就绪：请执行 npx prisma migrate deploy";
     }
+  }
+  if (
+    err instanceof Error &&
+    /connection pool|Timed out fetching a new connection/i.test(err.message)
+  ) {
+    return "数据库连接繁忙，请稍后重试";
   }
   if (err instanceof Error && /Environment variable not found: DATABASE_URL/i.test(err.message)) {
     return isProd

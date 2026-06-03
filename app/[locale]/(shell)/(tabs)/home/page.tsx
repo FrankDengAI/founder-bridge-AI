@@ -20,17 +20,11 @@ import { HomeDiscoveryMeta } from "@/components/home/HomeDiscoveryMeta";
 import { HomeSavedFeed } from "@/components/home/HomeSavedFeed";
 import { HomeToolbar } from "@/components/home/HomeToolbar";
 import { PageHeader } from "@/components/PageHeader";
-import { scorePostForProfile } from "@/lib/forYou";
 import { feedNextCursor, toFeedPostItem } from "@/lib/feedCursor";
-import type { Prisma } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import { loadHomeFeedPosts, loadHomeMetaCounts } from "@/lib/homeFeed";
 import { getUserIdFromCookies } from "@/lib/session";
 import { isPostType } from "@/lib/domain/postType";
 import { getTranslations } from "next-intl/server";
-
-type PostWithAuthor = Prisma.PostGetPayload<{
-  include: { author: { select: { id: true; displayName: true } } };
-}>;
 
 const APP_TAKE = 20;
 const WEB_TAKE = 40;
@@ -50,51 +44,34 @@ export default async function HomePage({
   const sortRaw = searchParams?.sort?.toLowerCase();
   const sort: "new" | "hot" = sortRaw === "hot" ? "hot" : "new";
 
-  const orderBy =
-    sort === "hot"
-      ? [{ likes: "desc" as const }, { createdAt: "desc" as const }]
-      : { createdAt: "desc" as const };
-
-  const [postCount, userCount, toolCount, projectCount, modelCount, reviewCount] =
-    await Promise.all([
-      prisma.post.count(),
-      prisma.user.count(),
-      prisma.tool.count(),
-      prisma.project.count(),
-      prisma.aiModel.count(),
-      prisma.aiModelReview.count(),
-    ]);
-
-  const metaCounts = {
-    posts: postCount,
-    users: userCount,
-    tools: toolCount,
-    projects: projectCount,
-    models: modelCount,
-    reviews: reviewCount,
-  };
+  const metaCounts = await loadHomeMetaCounts();
 
   const retentionBlocks = (
-  <WebOnly>
-    <>
-      <HomeClearLanding />
-      <details className="rounded-2xl border border-zinc-200/80 bg-white/80 px-4 py-3 text-sm shadow-sm">
-        <summary className="cursor-pointer font-semibold text-zinc-800">{tExtra("moreModules")}</summary>
-        <div className="mt-4 space-y-4">
-          <HomeCommunityHub modelCount={modelCount} reviewCount={reviewCount} />
-          <StreakRiskBanner />
-          <LearnProgressCard variant="compact" />
-          <ActivationJourney />
-          <WeekReviewCard />
-          <PublishDraftBanner />
-          <SocialProofTicker reviewCount={reviewCount} />
-          <FollowingActivityStrip />
-          <ContinueReading />
-          <HomeHotRanking />
-        </div>
-      </details>
-    </>
-  </WebOnly>
+    <WebOnly>
+      <>
+        <HomeClearLanding />
+        <details className="rounded-2xl border border-zinc-200/80 bg-white/80 px-4 py-3 text-sm shadow-sm">
+          <summary className="cursor-pointer font-semibold text-zinc-800">
+            {tExtra("moreModules")}
+          </summary>
+          <div className="mt-4 space-y-4">
+            <HomeCommunityHub
+              modelCount={metaCounts.models}
+              reviewCount={metaCounts.reviews}
+            />
+            <StreakRiskBanner />
+            <LearnProgressCard variant="compact" />
+            <ActivationJourney />
+            <WeekReviewCard />
+            <PublishDraftBanner />
+            <SocialProofTicker reviewCount={metaCounts.reviews} />
+            <FollowingActivityStrip />
+            <ContinueReading />
+            <HomeHotRanking />
+          </div>
+        </details>
+      </>
+    </WebOnly>
   );
 
   const currentView =
@@ -130,75 +107,17 @@ export default async function HomePage({
   }
 
   const uid = await getUserIdFromCookies();
-  let posts: PostWithAuthor[];
-
-  if (view === "for-you") {
-    const profile = uid
-      ? await prisma.userProfile.findUnique({ where: { userId: uid } })
-      : null;
-    const pool = await prisma.post.findMany({
-      where: { status: "published", ...(type ? { type } : {}) },
-      orderBy: { createdAt: "desc" },
-      take: 120,
-      include: { author: { select: { id: true, displayName: true } } },
-    });
-    const scored = pool
-      .map((p) => ({ p, s: scorePostForProfile(p, profile) }))
-      .sort((a, b) => {
-        if (b.s !== a.s) return b.s - a.s;
-        return b.p.createdAt.getTime() - a.p.createdAt.getTime();
-      });
-    posts = scored.slice(0, APP_TAKE).map((x) => x.p);
-    if (posts.length < 12) {
-      const fallback = pool
-        .filter((p) => !posts.some((x) => x.id === p.id))
-        .slice(0, APP_TAKE - posts.length);
-      posts = [...posts, ...fallback];
-    }
-  } else {
-    posts = await prisma.post.findMany({
-      where: { status: "published", ...(type ? { type } : {}) },
-      orderBy,
-      take: APP_TAKE,
-      include: { author: { select: { id: true, displayName: true } } },
-    });
-  }
+  const { app: posts, web: webPosts } = await loadHomeFeedPosts({
+    view,
+    type,
+    sort,
+    uid,
+    appTake: APP_TAKE,
+    webTake: WEB_TAKE,
+  });
 
   const feedItems = posts.map(toFeedPostItem);
   const nextCursor = view === "for-you" ? null : feedNextCursor(posts, APP_TAKE);
-
-  let webPosts: PostWithAuthor[];
-  if (view === "for-you") {
-    const profile = uid
-      ? await prisma.userProfile.findUnique({ where: { userId: uid } })
-      : null;
-    const pool = await prisma.post.findMany({
-      where: { status: "published", ...(type ? { type } : {}) },
-      orderBy: { createdAt: "desc" },
-      take: 120,
-      include: { author: { select: { id: true, displayName: true } } },
-    });
-    const scored = pool
-      .map((p) => ({ p, s: scorePostForProfile(p, profile) }))
-      .sort((a, b) => {
-        if (b.s !== a.s) return b.s - a.s;
-        return b.p.createdAt.getTime() - a.p.createdAt.getTime();
-      });
-    webPosts = scored.slice(0, WEB_TAKE).map((x) => x.p);
-    if (webPosts.length < 12) {
-      const fallback = pool
-        .filter((p) => !webPosts.some((x) => x.id === p.id))
-        .slice(0, WEB_TAKE - webPosts.length);
-      webPosts = [...webPosts, ...fallback];
-    }
-  } else {
-    webPosts = await prisma.post.findMany({
-      where: { status: "published", ...(type ? { type } : {}) },
-      orderBy,
-      take: WEB_TAKE,
-      include: { author: { select: { id: true, displayName: true } } },
-    });
-  }
 
   const webFeed = (
     <>

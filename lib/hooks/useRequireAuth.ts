@@ -9,8 +9,7 @@ export function useRequireAuth() {
 
   const requireAuth = useCallback(
     (opts?: OpenLoginOptions): boolean => {
-      if (!isReady) return false;
-      if (isAuthenticated) return true;
+      if (isReady && isAuthenticated) return true;
       openLogin({
         ...opts,
         reason: opts?.reason ?? loginReasonFromNext(opts?.next),

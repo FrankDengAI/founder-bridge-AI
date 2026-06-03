@@ -70,7 +70,23 @@ def _default_port_from_env() -> int:
         return 3001
 
 
+def _port_is_listening(port: int) -> bool:
+    """Windows 上仅 bind 探测可能误判；若本机已能连上该端口则视为占用。"""
+    for host in ("127.0.0.1", "::1"):
+        fam = socket.AF_INET if host == "127.0.0.1" else socket.AF_INET6
+        try:
+            with socket.socket(fam, socket.SOCK_STREAM) as s:
+                s.settimeout(0.25)
+                if s.connect_ex((host, port)) == 0:
+                    return True
+        except OSError:
+            continue
+    return False
+
+
 def _can_bind_port(port: int) -> bool:
+    if _port_is_listening(port):
+        return False
     try:
         with socket.socket(socket.AF_INET6, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

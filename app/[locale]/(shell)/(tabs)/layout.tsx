@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { AuthGateProvider } from "@/components/auth/AuthGateProvider";
 import { AuthGateUrlHandler } from "@/components/auth/AuthGateUrlHandler";
+import { GuestTabGate } from "@/components/auth/GuestTabGate";
 import { AdaptiveTabsFrame } from "@/components/view-mode/AdaptiveTabsFrame";
 import { ViewModeProvider } from "@/components/view-mode/ViewModeProvider";
 
@@ -24,6 +25,7 @@ export default function TabsLayout({
       <AuthGateProvider>
         <Suspense fallback={<TabsLoadingFallback />}>
           <AuthGateUrlHandler />
+          <GuestTabGate />
           <AdaptiveTabsFrame>{children}</AdaptiveTabsFrame>
         </Suspense>
       </AuthGateProvider>

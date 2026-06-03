@@ -1,5 +1,6 @@
 import "server-only";
 import { randomBytes } from "crypto";
+import { cache } from "react";
 import type { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
@@ -47,7 +48,8 @@ export async function createUserSession(userId: string): Promise<string> {
   return buildSessionCookieValue(sessionId, expiresAt.getTime());
 }
 
-export async function getUserIdFromSession(): Promise<string | null> {
+/** 同一 RSC/API 请求内只查库一次，减轻 connection_limit:1 池排队 */
+async function resolveUserIdFromSession(): Promise<string | null> {
   const store = cookies();
   const parsed = parseSessionCookie(store.get(COOKIE_SESSION)?.value);
   if (parsed) {
@@ -55,12 +57,10 @@ export async function getUserIdFromSession(): Promise<string | null> {
     if (row && row.expiresAt.getTime() > Date.now()) return row.userId;
   }
 
-  if (store.get(COOKIE_DONE)?.value === "1") {
-    const uid = store.get(COOKIE_UID)?.value;
-    if (uid && uid.length > 0) return uid;
-  }
   return null;
 }
+
+export const getUserIdFromSession = cache(resolveUserIdFromSession);
 
 export function setSessionCookieOnResponse(res: NextResponse, cookieValue: string) {
   res.cookies.set(COOKIE_SESSION, cookieValue, cookieBase());

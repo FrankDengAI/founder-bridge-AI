@@ -44,7 +44,13 @@ export function AuthGateUrlHandler() {
       openLogin({ next, reason: loginReasonFromNext(next) });
     }
 
-    router.replace(homeClean);
+    // 已在 /home 时仅清 URL，避免 router.replace 触发整页 RSC 重载（10s+）
+    const url = new URL(window.location.href);
+    url.searchParams.delete("auth");
+    url.searchParams.delete("next");
+    const restQs = url.searchParams.toString();
+    const clean = restQs ? `${url.pathname}?${restQs}` : url.pathname;
+    window.history.replaceState(window.history.state, "", clean);
   }, [searchParams, pathname, router, openLogin, isAuthenticated, isReady]);
 
   useEffect(() => {

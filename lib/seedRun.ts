@@ -1,5 +1,11 @@
 import type { PrismaClient } from "@prisma/client";
 import { DEMO_USER_ID } from "@/lib/constants";
+import {
+  allDemoSeedUserIds,
+  DEMO_LOGIN_SEED_USERS,
+  DEMO_SEED_PASSWORD,
+} from "@/lib/auth/demoSeed";
+import { hashPassword } from "@/lib/auth/password";
 import type { PostType } from "@/lib/domain/postType";
 import type { Role } from "@/lib/domain/role";
 import { computeRankScore } from "@/lib/models/rank";
@@ -41,7 +47,7 @@ function randomRoles(n: number): Role[] {
 }
 
 function demoUserIds(): string[] {
-  const ids = [DEMO_USER_ID];
+  const ids = [...allDemoSeedUserIds()];
   for (let i = 0; i < 24; i++) {
     ids.push(`user_seed_${String(i + 1).padStart(2, "0")}`);
   }
@@ -99,10 +105,13 @@ async function wipeAll(prisma: PrismaClient) {
 }
 
 async function insertSeedData(prisma: PrismaClient) {
+  const demoPasswordHash = await hashPassword(DEMO_SEED_PASSWORD);
+
   await prisma.user.create({
     data: {
       id: DEMO_USER_ID,
       username: "demo",
+      passwordHash: demoPasswordHash,
       isDemo: true,
       displayName: "演示用户",
       avatarUrl: "https://i.pravatar.cc/150?u=demo",
@@ -137,6 +146,32 @@ async function insertSeedData(prisma: PrismaClient) {
       },
     },
   });
+
+  for (let di = 0; di < DEMO_LOGIN_SEED_USERS.length; di++) {
+    const u = DEMO_LOGIN_SEED_USERS[di];
+    const partnerRoles: Role[] = ["JUNGLE", "SUPPORT", "ADC"].filter((r) => r !== u.role) as Role[];
+    await prisma.user.create({
+      data: {
+        id: u.id,
+        username: u.username,
+        passwordHash: demoPasswordHash,
+        isDemo: true,
+        displayName: u.displayName,
+        avatarUrl: `https://i.pravatar.cc/150?u=${u.username}`,
+        profile: {
+          create: {
+            role: u.role,
+            budgetTier: 2,
+            intro: `${u.displayName}：演示用账号，可直接账号密码登录。`,
+            direction: pick(directions, di),
+            skillKeywords: JSON.stringify([pick(keywordsPool, 0), pick(keywordsPool, 1)]),
+            interestTags: JSON.stringify(["VibeCoding", "AI编程", "创业"]),
+            desiredPartnerRoles: JSON.stringify(partnerRoles),
+          },
+        },
+      },
+    });
+  }
 
   const roles: Role[] = ["JUNGLE", "SUPPORT", "ADC"];
   const postTypes: PostType[] = [

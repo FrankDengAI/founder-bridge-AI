@@ -5,23 +5,39 @@ import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import { PenLine, Settings } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { MAIN_NAV_ITEMS, resolveTab } from "@/lib/navConfig";
-import { useClientUserId } from "@/lib/hooks/useClientUserId";
+import { MAIN_NAV_ITEMS, resolveTab, type NavTab } from "@/lib/navConfig";
+import { useSessionEnabled } from "@/lib/hooks/useClientUserId";
 import { useConversationStats } from "@/lib/hooks/useConversationStats";
+import { useProtectedNav } from "@/lib/hooks/useProtectedNav";
 import { ViewModeSwitchButton } from "@/components/view-mode/ViewModeSwitchButton";
 import { useViewModeOptional } from "@/components/view-mode/ViewModeProvider";
 import { useViewModeLabel } from "@/lib/hooks/useViewModeLabel";
 
+const TAB_REASON: Partial<Record<NavTab, string>> = {
+  "/match": "match",
+  "/messages": "messages",
+  "/me": "me",
+};
+
 export function WebSidebarNav() {
   const pathname = usePathname() ?? "";
   const tab = resolveTab(pathname);
-  const userId = useClientUserId();
-  const { unread: msgUnread } = useConversationStats(Boolean(userId));
+  const sessionEnabled = useSessionEnabled();
+  const { authed, isReady, guardNav, requireAuth } = useProtectedNav();
+  const { unread: msgUnread } = useConversationStats(sessionEnabled);
   const viewMode = useViewModeOptional();
   const t = useTranslations("nav");
   const tNavExtra = useTranslations("navExtra");
   const tw = useTranslations("webShell");
   const modeLabel = useViewModeLabel(viewMode?.mode);
+
+  const navItemClass = (active: boolean) =>
+    clsx(
+      "flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[15px] font-semibold transition duration-200 hover:translate-x-0.5",
+      active
+        ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-md shadow-violet-500/25"
+        : "text-zinc-600 hover:bg-violet-50 hover:text-vinc-900",
+    );
 
   return (
     <aside className="sticky top-0 hidden h-screen w-[260px] shrink-0 flex-col border-r border-violet-200/50 bg-white/85 px-4 py-6 backdrop-blur-xl lg:flex">
@@ -38,18 +54,11 @@ export function WebSidebarNav() {
           const active = tab === it.tab;
           const Icon = it.Icon;
           const showBadge = it.unread && msgUnread > 0;
-          return (
-            <Link
-              key={it.href}
-              href={it.href}
-              aria-current={active ? "page" : undefined}
-              className={clsx(
-                "flex items-center gap-3 rounded-xl px-3 py-3 text-[15px] font-semibold transition duration-200 hover:translate-x-0.5",
-                active
-                  ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-md shadow-violet-500/25"
-                      : "text-zinc-600 hover:bg-violet-50 hover:text-vinc-900",
-              )}
-            >
+          const needsAuth = it.tab !== "/home";
+          const reason = TAB_REASON[it.tab];
+
+          const inner = (
+            <>
               <span className="relative">
                 <Icon className="h-5 w-5" />
                 {showBadge ? (
@@ -59,26 +68,80 @@ export function WebSidebarNav() {
                 ) : null}
               </span>
               {t(it.labelKey)}
+            </>
+          );
+
+          if (needsAuth && !authed) {
+            return (
+              <button
+                key={it.href}
+                type="button"
+                className={clsx(navItemClass(active), !isReady && "opacity-70")}
+                onClick={() => {
+                  guardNav(it.href, reason ?? "default");
+                }}
+              >
+                {inner}
+              </button>
+            );
+          }
+
+          return (
+            <Link
+              key={it.href}
+              href={it.href}
+              aria-current={active ? "page" : undefined}
+              className={navItemClass(active)}
+            >
+              {inner}
             </Link>
           );
         })}
       </nav>
 
       <div className="mt-3 space-y-1 border-t border-zinc-200/70 pt-3 dark:border-zinc-800">
-        <Link
-          href="/publish"
-          className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-600 transition hover:bg-violet-50 hover:text-violet-800"
-        >
-          <PenLine className="h-4 w-4" />
-          {tw("quickPublish")}
-        </Link>
-        <Link
-          href="/settings"
-          className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-600 transition hover:bg-violet-50 hover:text-violet-800"
-        >
-          <Settings className="h-4 w-4" />
-          {tw("quickSettings")}
-        </Link>
+        {authed ? (
+          <Link
+            href="/publish"
+            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-600 transition hover:bg-violet-50 hover:text-violet-800"
+          >
+            <PenLine className="h-4 w-4" />
+            {tw("quickPublish")}
+          </Link>
+        ) : (
+          <button
+            type="button"
+            className={clsx(
+              "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm font-semibold text-zinc-600 transition hover:bg-violet-50 hover:text-violet-800",
+              !isReady && "opacity-70",
+            )}
+            onClick={() => requireAuth({ next: "/publish", reason: "publish" })}
+          >
+            <PenLine className="h-4 w-4" />
+            {tw("quickPublish")}
+          </button>
+        )}
+        {authed ? (
+          <Link
+            href="/settings"
+            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-semibold text-zinc-600 transition hover:bg-violet-50 hover:text-violet-800"
+          >
+            <Settings className="h-4 w-4" />
+            {tw("quickSettings")}
+          </Link>
+        ) : (
+          <button
+            type="button"
+            className={clsx(
+              "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm font-semibold text-zinc-600 transition hover:bg-violet-50 hover:text-violet-800",
+              !isReady && "opacity-70",
+            )}
+            onClick={() => requireAuth({ next: "/settings", reason: "me" })}
+          >
+            <Settings className="h-4 w-4" />
+            {tw("quickSettings")}
+          </button>
+        )}
         <ViewModeSwitchButton variant="sidebar" />
       </div>
     </aside>

@@ -91,6 +91,13 @@ export function useCurrentUser(): { user: MeUser | null; loading: boolean } {
   return { user: s.user, loading: s.loading };
 }
 
+/** 会话已就绪且已登录（用于开启需鉴权的客户端请求） */
+export function useSessionEnabled(): boolean {
+  const ready = useClientUserReady();
+  const userId = useClientUserId();
+  return ready && Boolean(userId);
+}
+
 /** 登录/登出后强制刷新会话缓存，返回最新用户 */
 export function refreshClientSession(): Promise<MeUser | null> {
   inflight = null;

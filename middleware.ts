@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import createIntlMiddleware from "next-intl/middleware";
-import {
-  COOKIE_DONE,
-  COOKIE_SESSION,
-  COOKIE_UID,
-  isSessionCookieValidEdge,
-} from "@/lib/auth/sessionCookieEdge";
+import { COOKIE_SESSION, isSessionCookieValidEdge } from "@/lib/auth/sessionCookieEdge";
 import { routing } from "@/i18n/routing";
 import {
   detectLocaleFromPathname,
@@ -35,12 +30,10 @@ function isGuestBrowsablePath(pathname: string): boolean {
   return base === "/home";
 }
 
+/** Edge 仅校验 Session Cookie 形状；完整验签在 Node API（与 README 一致） */
 function hasValidSession(req: NextRequest): boolean {
   const session = req.cookies.get(COOKIE_SESSION)?.value;
-  if (isSessionCookieValidEdge(session)) return true;
-  const done = req.cookies.get(COOKIE_DONE)?.value === "1";
-  const uid = req.cookies.get(COOKIE_UID)?.value?.trim();
-  return Boolean(done && uid);
+  return isSessionCookieValidEdge(session);
 }
 
 function copyCookies(from: NextResponse, to: NextResponse) {
