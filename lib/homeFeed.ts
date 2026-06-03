@@ -62,10 +62,10 @@ export async function loadHomeFeedPosts(opts: {
     status: "published" as const,
     ...(opts.type ? { type: opts.type } : {}),
   };
-  const orderBy =
+  const orderBy: Prisma.PostOrderByWithRelationInput | Prisma.PostOrderByWithRelationInput[] =
     opts.sort === "hot"
-      ? ([{ likes: "desc" as const }, { createdAt: "desc" as const }] as const)
-      : ({ createdAt: "desc" as const } as const);
+      ? [{ likes: "desc" }, { createdAt: "desc" }]
+      : { createdAt: "desc" };
 
   if (opts.view === "for-you") {
     const profile = opts.uid
