@@ -61,7 +61,7 @@ export function LocaleSwitcher({ variant = "compact", className }: Props) {
       type="button"
       onClick={() => switchTo(locale === "zh" ? "en" : "zh")}
       className={clsx(
-        "rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-zinc-700 ring-1 ring-zinc-200/80 transition hover:bg-white hover:ring-violet-300 active:scale-95",
+        "inline-flex h-8 shrink-0 items-center rounded-lg bg-white/90 px-2 text-[10px] font-bold uppercase tracking-wide text-zinc-700 ring-1 ring-zinc-200/80 transition hover:bg-white hover:ring-violet-300 active:scale-95",
         className,
       )}
       title={locale === "zh" ? t("switchToEn") : t("switchToZh")}

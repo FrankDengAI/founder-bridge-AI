@@ -91,10 +91,15 @@ export function useCurrentUser(): { user: MeUser | null; loading: boolean } {
   return { user: s.user, loading: s.loading };
 }
 
-/** 登录/登出后强制刷新会话缓存 */
-export function invalidateClientSession() {
+/** 登录/登出后强制刷新会话缓存，返回最新用户 */
+export function refreshClientSession(): Promise<MeUser | null> {
   inflight = null;
   snapshot = { user: null, loading: true };
   notify();
-  void ensureSessionLoaded();
+  return ensureSessionLoaded();
+}
+
+/** @deprecated 请用 refreshClientSession */
+export function invalidateClientSession() {
+  void refreshClientSession();
 }

@@ -28,6 +28,7 @@ import {
 import { completeActivationStep } from "@/lib/activation";
 import { completeMission, trackEvent } from "@/lib/retention";
 import { startConversation } from "@/lib/chat/client";
+import { DailyMatchCard } from "@/components/home/DailyMatchCard";
 import { PageHeader } from "@/components/PageHeader";
 import { MatchProgress } from "./MatchProgress";
 import { useIsWebMode } from "@/lib/hooks/useIsWebMode";
@@ -362,6 +363,8 @@ export function MatchExperience() {
           </Link>
         }
       />
+
+      <DailyMatchCard />
 
       <div
         className={clsx(

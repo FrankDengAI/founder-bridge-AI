@@ -19,9 +19,13 @@
     "db:seed:reset": "cross-env SEED_MODE=reset prisma db seed",
     "auth:smoke": "node scripts/auth-smoke-test.cjs",
     "smoke:pages": "node scripts/smoke-protected-pages.cjs",
+    "smoke:guest": "node scripts/smoke-guest-browse.cjs",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "check:i18n": "node scripts/check-i18n-hardcoded.mjs",
     "docs:assets": "node scripts/capture-readme-assets.mjs",
     "docs:assets:install": "npx playwright install chromium",
+    "validate:readme": "node scripts/validate-readme.mjs",
     "postinstall": "node scripts/prisma-generate.cjs"
   },
   "prisma": {
@@ -40,20 +44,21 @@
     "resend": "^6.12.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.35",
     "gif-encoder-2": "^1.0.5",
     "playwright": "^1.51.1",
     "pngjs": "^7.0.0",
-    "sharp": "^0.34.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.35",
     "postcss": "^8",
     "prisma": "5.22.0",
+    "sharp": "^0.34.1",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.21.0",
     "typescript": "^5"

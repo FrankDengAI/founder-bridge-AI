@@ -5,6 +5,20 @@ import { isPostType } from "@/lib/domain/postType";
 import { getUserIdFromCookies } from "@/lib/session";
 import { sanitizeText } from "@/lib/sanitize";
 
+function encodeCursor(createdAt: Date, id: string) {
+  return `${createdAt.toISOString()}_${id}`;
+}
+
+function decodeCursor(raw: string): { createdAt: Date; id: string } | null {
+  const idx = raw.lastIndexOf("_");
+  if (idx <= 0) return null;
+  const iso = raw.slice(0, idx);
+  const id = raw.slice(idx + 1);
+  const createdAt = new Date(iso);
+  if (Number.isNaN(createdAt.getTime()) || !id) return null;
+  return { createdAt, id };
+}
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const sessionUserId = await getUserIdFromCookies();
@@ -18,10 +32,12 @@ export async function GET(req: Request) {
     searchParams.get("saved") === "1" && Boolean(sessionUserId);
   const take = Math.min(60, Math.max(1, Number(searchParams.get("take") ?? "40")));
   const sort = (searchParams.get("sort") ?? "new").toLowerCase();
+  const cursorRaw = (searchParams.get("cursor") ?? "").trim();
+  const cursor = cursorRaw ? decodeCursor(cursorRaw) : null;
   const orderBy =
     sort === "hot"
       ? [{ likes: "desc" as const }, { createdAt: "desc" as const }]
-      : { createdAt: "desc" as const };
+      : [{ createdAt: "desc" as const }, { id: "desc" as const }];
 
   const idList = idsRaw
     ? idsRaw
@@ -30,6 +46,45 @@ export async function GET(req: Request) {
         .filter(Boolean)
         .slice(0, 60)
     : [];
+
+  // hot cursor: fetch anchor likes once
+  let hotCursorWhere: object = {};
+  if (cursor && !idList.length && sort === "hot") {
+    const anchor = await prisma.post.findUnique({
+      where: { id: cursor.id },
+      select: { likes: true, createdAt: true },
+    });
+    if (anchor) {
+      hotCursorWhere = {
+        OR: [
+          { likes: { lt: anchor.likes } },
+          {
+            AND: [
+              { likes: anchor.likes },
+              { createdAt: { lt: anchor.createdAt } },
+            ],
+          },
+          {
+            AND: [
+              { likes: anchor.likes },
+              { createdAt: anchor.createdAt },
+              { id: { lt: cursor.id } },
+            ],
+          },
+        ],
+      };
+    }
+  }
+
+  const newCursorWhere =
+    cursor && !idList.length && sort !== "hot"
+      ? {
+          OR: [
+            { createdAt: { lt: cursor.createdAt } },
+            { AND: [{ createdAt: cursor.createdAt }, { id: { lt: cursor.id } }] },
+          ],
+        }
+      : {};
 
   const posts = await prisma.post.findMany({
     where: {
@@ -54,6 +109,7 @@ export async function GET(req: Request) {
             ? {}
             : { status: "published" },
         includeDrafts && !savedOnly ? { authorId: sessionUserId ?? undefined } : {},
+        idList.length || q || savedOnly ? {} : sort === "hot" ? hotCursorWhere : newCursorWhere,
       ],
     },
     /** 按 id 列表查询时禁用 orderBy，保持请求顺序 */
@@ -72,7 +128,13 @@ export async function GET(req: Request) {
         })()
       : posts;
 
-  return NextResponse.json({ posts: ordered });
+  const last = ordered.length > 0 ? ordered[ordered.length - 1] : null;
+  const nextCursor =
+    !idList.length && !q && !savedOnly && ordered.length === take && last
+      ? encodeCursor(last.createdAt, last.id)
+      : null;
+
+  return NextResponse.json({ posts: ordered, nextCursor });
 }
 
 export async function POST(req: Request) {

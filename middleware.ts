@@ -29,6 +29,12 @@ function isPublicPath(pathname: string): boolean {
   return false;
 }
 
+/** 未登录可浏览：仅发现流（先逛后登） */
+function isGuestBrowsablePath(pathname: string): boolean {
+  const base = stripLocalePrefix(pathname);
+  return base === "/home";
+}
+
 function hasValidSession(req: NextRequest): boolean {
   const session = req.cookies.get(COOKIE_SESSION)?.value;
   if (isSessionCookieValidEdge(session)) return true;
@@ -79,7 +85,7 @@ export default function middleware(req: NextRequest) {
     return redirectWithIntlCookies(req, intlResponse, target);
   }
 
-  if (isPublicPath(pathname)) {
+  if (isPublicPath(pathname) || isGuestBrowsablePath(pathname)) {
     return intlResponse;
   }
 
@@ -88,9 +94,19 @@ export default function middleware(req: NextRequest) {
   }
 
   const locale = resolveLocaleFromRequest(pathname, cookieLocale);
-  const welcomePath =
-    locale === routing.defaultLocale ? "/welcome" : `/${locale}/welcome`;
-  return redirectWithIntlCookies(req, intlResponse, welcomePath);
+  const base = stripLocalePrefix(pathname);
+  const nextPath = req.nextUrl.search ? `${base}${req.nextUrl.search}` : base;
+  const homePath = localizedPath("/home", locale);
+  const url = req.nextUrl.clone();
+  url.pathname = homePath;
+  url.search = "";
+  url.searchParams.set("auth", "login");
+  if (nextPath !== "/home") {
+    url.searchParams.set("next", nextPath);
+  }
+  const response = NextResponse.redirect(url, 307);
+  copyCookies(intlResponse, response);
+  return response;
 }
 
 export const config = {

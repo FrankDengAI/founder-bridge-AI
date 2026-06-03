@@ -3,6 +3,7 @@ import { DEMO_USER_ID } from "@/lib/constants";
 import type { PostType } from "@/lib/domain/postType";
 import type { Role } from "@/lib/domain/role";
 import { computeRankScore } from "@/lib/models/rank";
+import { insertDiscoveryFeedPosts } from "@/lib/seedFeedPosts";
 
 const directions = [
   "AI编程教育",
@@ -140,6 +141,8 @@ async function insertSeedData(prisma: PrismaClient) {
   const roles: Role[] = ["JUNGLE", "SUPPORT", "ADC"];
   const postTypes: PostType[] = [
     "NOTE",
+    "VIDEO",
+    "ARTICLE",
     "SHOWCASE",
     "TUTORIAL",
     "REVIEW",
@@ -182,6 +185,18 @@ async function insertSeedData(prisma: PrismaClient) {
               likes: 20 + ((i * 7) % 200),
               saves: 5 + ((i * 3) % 80),
               tags: JSON.stringify(["VibeCoding", "AI", "独立开发"]),
+              createdAt: new Date(Date.now() - (i + 1) * 3 * 60 * 60 * 1000),
+            },
+            {
+              type: pick(postTypes, i + 2),
+              title: `周记 #${i + 1}：本周踩坑与下周计划`,
+              excerpt: "匹配、发布、工具试用 —— 一周小结。",
+              coverUrl: `https://picsum.photos/seed/vb${i}-b/400/580`,
+              body: "周记正文。",
+              likes: 12 + ((i * 11) % 120),
+              saves: 2 + ((i * 2) % 40),
+              tags: JSON.stringify(["周记", "复盘", "VibeCoding"]),
+              createdAt: new Date(Date.now() - (i + 1) * 7 * 60 * 60 * 1000),
             },
           ],
         },
@@ -206,6 +221,8 @@ async function insertSeedData(prisma: PrismaClient) {
       },
     });
   }
+
+  await insertDiscoveryFeedPosts(prisma);
 
   const tools = [
     { name: "Cursor", category: "写代码", description: "AI 原生编辑器", avgRating: 4.8 },

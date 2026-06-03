@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Filter, Flame, Search as SearchIcon, Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { SearchDiscoverySections } from "@/components/search/SearchDiscoverySections";
 import { getPostTypeLabel } from "@/lib/labels";
 import { POST_TYPES } from "@/lib/domain/postType";
 import { isPostType } from "@/lib/domain/postType";
@@ -108,6 +109,8 @@ export default function SearchPage() {
         subtitle={t("subtitle")}
         backHref="/home"
       />
+
+      <SearchDiscoverySections />
 
       <div className="glass-panel space-y-3 rounded-2xl p-3 shadow-sm">
         <div className="flex items-center gap-2 rounded-2xl bg-white/80 px-3 py-2 ring-1 ring-zinc-200/70">

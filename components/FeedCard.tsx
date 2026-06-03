@@ -27,6 +27,7 @@ import { syncSaveCountBadge } from "@/lib/gamification";
 import { completeActivationStep } from "@/lib/activation";
 import { completeMission } from "@/lib/retention";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
+import { useRequireAuth } from "@/lib/hooks/useRequireAuth";
 import clsx from "clsx";
 
 export type FeedCardProps = {
@@ -163,6 +164,8 @@ export function FeedCard(p: FeedCardProps) {
     [locale],
   );
   const userId = useClientUserId();
+  const { isAuthenticated, isReady, requireAuth } = useRequireAuth();
+  const postHref = `/post/${p.id}`;
   const t: PostType = isPostType(p.type) ? p.type : "NOTE";
   const theme = TYPE_THEME[t];
   const [saved, setSaved] = useState(Boolean(p.initiallySaved));
@@ -188,11 +191,16 @@ export function FeedCard(p: FeedCardProps) {
       setRipple(true);
       window.setTimeout(() => setRipple(false), 450);
 
-      if (userId) {
-        setSaveBusy(true);
-        const wasSaved = saved;
-        setSaved(!wasSaved);
-        void fetch(`/api/posts/${p.id}/react`, {
+      if (!isReady) return;
+      if (!isAuthenticated) {
+        requireAuth({ next: postHref, reason: "engage" });
+        return;
+      }
+
+      setSaveBusy(true);
+      const wasSaved = saved;
+      setSaved(!wasSaved);
+      void fetch(`/api/posts/${p.id}/react`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -213,28 +221,12 @@ export function FeedCard(p: FeedCardProps) {
             setSaved(wasSaved);
           })
           .finally(() => setSaveBusy(false));
-        return;
-      }
-
-      const next = toggleSavedPost(p.id);
-      setSaved(next);
-      syncSaveCountBadge(readSavedPostIds().length);
-      if (next) {
-        completeMission("save_post");
-        completeActivationStep("first_save");
-      }
     },
-    [p.id, saved, saveBusy, userId],
+    [p.id, saved, saveBusy, isReady, isAuthenticated, postHref, requireAuth],
   );
 
-  return (
-    <div
-      className={clsx(
-        "group relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-zinc-200/70 transition motion-reduce:transition-none",
-        "hover:-translate-y-1 hover:shadow-[0_24px_60px_-22px_rgba(139,92,246,0.5)] hover:ring-violet-300/50 motion-reduce:hover:translate-y-0",
-      )}
-    >
-      <Link href={`/post/${p.id}`} className="block" data-author={p.authorId}>
+  const cardBody = (
+    <>
         <div className="relative aspect-[4/5] w-full bg-zinc-100">
           <Image
             src={p.coverUrl}
@@ -335,7 +327,32 @@ export function FeedCard(p: FeedCardProps) {
             </span>
           </div>
         </div>
-      </Link>
+    </>
+  );
+
+  return (
+    <div
+      className={clsx(
+        "group relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-zinc-200/70 transition motion-reduce:transition-none",
+        "hover:-translate-y-1 hover:shadow-[0_24px_60px_-22px_rgba(139,92,246,0.5)] hover:ring-violet-300/50 motion-reduce:hover:translate-y-0",
+      )}
+    >
+      {isAuthenticated ? (
+        <Link href={postHref} className="block" data-author={p.authorId}>
+          {cardBody}
+        </Link>
+      ) : (
+        <button
+          type="button"
+          className="block w-full cursor-pointer text-left"
+          data-author={p.authorId}
+          onClick={() => {
+            requireAuth({ next: postHref, reason: "viewPost" });
+          }}
+        >
+          {cardBody}
+        </button>
+      )}
 
       <button
         type="button"

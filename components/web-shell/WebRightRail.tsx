@@ -13,8 +13,6 @@ import {
 } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { HomeCommunityHub } from "@/components/home/HomeCommunityHub";
-import { LearnProgressCard } from "@/components/learn/LearnProgressCard";
-import { TodayMissionStrip } from "@/components/home/TodayMissionStrip";
 import { stripLocalePrefix } from "@/lib/localePath";
 import { useConversationStats } from "@/lib/hooks/useConversationStats";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
@@ -99,27 +97,13 @@ export function WebRightRail({ pathname: pathnameProp }: { pathname?: string }) 
                 reviewCount={data?.reviewCount ?? 0}
               />
             </div>
-            <RailPanel
-              title={t("todayMission.title")}
-              purpose={t("todayMission.purpose")}
-              index={1}
-            >
-              <TodayMissionStrip />
-            </RailPanel>
-            <RailPanel
-              title={t("learnProgress.title")}
-              purpose={t("learnProgress.purpose")}
-              index={2}
-            >
-              <LearnProgressCard variant="compact" />
-            </RailPanel>
-            {loading ? <RailSkeleton index={3} /> : null}
+            {loading ? <RailSkeleton index={1} /> : null}
             {data ? (
               <RailHotList
                 hotPosts={data.hotPosts}
                 hotTools={data.hotTools}
                 hotModels={data.hotModels}
-                index={3}
+                index={1}
               />
             ) : null}
           </>

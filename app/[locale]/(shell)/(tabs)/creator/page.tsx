@@ -15,7 +15,7 @@ export default async function CreatorPage() {
   if (!uid) {
     return (
       <div className="space-y-4 pb-10">
-        <PageHeader title={t("title")} subtitle={t("loginRequired")} backHref="/me" />
+        <PageHeader title={t("title")} subtitle={t("loginRequired")} backHref="/home" />
         <p className="glass-panel rounded-shell p-4 text-sm text-zinc-600 shadow-panel">
           {t("noSession")}
         </p>

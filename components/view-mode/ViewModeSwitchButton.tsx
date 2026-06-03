@@ -10,9 +10,10 @@ import type { ViewMode } from "@/lib/viewMode";
 
 type Props = {
   variant?: "sidebar" | "compact" | "settings";
+  size?: "default" | "compact";
 };
 
-export function ViewModeSwitchButton({ variant = "compact" }: Props) {
+export function ViewModeSwitchButton({ variant = "compact", size = "default" }: Props) {
   const ctx = useViewModeOptional();
   const router = useRouter();
   const t = useTranslations("viewMode");
@@ -49,6 +50,8 @@ export function ViewModeSwitchButton({ variant = "compact" }: Props) {
     );
   }
 
+  const compact = size === "compact";
+
   return (
     <button
       type="button"
@@ -56,11 +59,12 @@ export function ViewModeSwitchButton({ variant = "compact" }: Props) {
       title={label}
       aria-label={label}
       className={clsx(
-        "flex h-11 w-11 items-center justify-center rounded-2xl shadow-md ring-1 transition active:scale-95",
+        "flex shrink-0 items-center justify-center shadow-md ring-1 transition active:scale-95",
+        compact ? "h-9 w-9 rounded-xl" : "h-11 w-11 rounded-2xl",
         "bg-white/90 text-violet-700 ring-zinc-200/80 hover:bg-white dark:bg-zinc-900 dark:text-violet-300 dark:ring-zinc-700",
       )}
     >
-      <Icon className="h-5 w-5" />
+      <Icon className={compact ? "h-4 w-4" : "h-5 w-5"} />
     </button>
   );
 }

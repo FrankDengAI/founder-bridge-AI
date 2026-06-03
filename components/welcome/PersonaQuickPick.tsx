@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { useOpenLogin } from "@/lib/hooks/useOpenLogin";
 import { completeActivationStep } from "@/lib/activation";
 import { useModePickerHref } from "@/lib/hooks/useModePickerHref";
 
@@ -14,6 +15,7 @@ const PRESETS = [
 
 export function PersonaQuickPick() {
   const router = useRouter();
+  const openLogin = useOpenLogin();
   const modeHref = useModePickerHref();
   const t = useTranslations("welcome");
   const tDir = useTranslations("welcome.personaDirections");
@@ -27,12 +29,12 @@ export function PersonaQuickPick() {
     try {
       const me = await fetch("/api/me", { credentials: "include" });
       if (!me.ok) {
-        router.push("/welcome/login");
+        openLogin({ next: p.href, reason: "default" });
         return;
       }
       const j = (await me.json()) as { userId: string | null };
       if (!j.userId) {
-        router.push("/welcome/login");
+        openLogin({ next: p.href, reason: "default" });
         return;
       }
       const label = t(p.titleKey);

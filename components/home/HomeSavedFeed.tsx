@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { AuthLoginLink } from "@/components/auth/AuthLoginLink";
 import { FeedCard } from "@/components/FeedCard";
 import { readSavedPostIds } from "@/lib/appHub";
 import { useClientUserId, useClientUserReady } from "@/lib/hooks/useClientUserId";
@@ -70,9 +70,9 @@ export function HomeSavedFeed() {
       <div className="glass-panel rounded-2xl p-6 text-center text-sm text-zinc-600">
         {userId ? t("noSavedLoggedIn") : t("noSavedGuest")}{" "}
         {!userId ? (
-          <Link href="/welcome/login" className="font-semibold text-violet-700 hover:underline">
+          <AuthLoginLink href="/home" reason="default" className="font-semibold text-violet-700 hover:underline">
             {tCommon("login")}
-          </Link>
+          </AuthLoginLink>
         ) : null}
       </div>
     );

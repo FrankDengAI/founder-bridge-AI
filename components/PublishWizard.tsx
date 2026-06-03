@@ -19,6 +19,8 @@ import {
   savePublishDraftLocal,
 } from "@/lib/retention";
 import { getPostTypeLabel } from "@/lib/labels";
+import { AuthLoginLink } from "@/components/auth/AuthLoginLink";
+import { useOpenLogin } from "@/lib/hooks/useOpenLogin";
 
 const STEP_KEYS = ["stepType", "stepContent", "stepCover", "stepConfirm"] as const;
 
@@ -32,6 +34,7 @@ export function PublishWizard() {
   const steps = useMemo(() => STEP_KEYS.map((k) => t(k)), [t]);
   const userId = useClientUserId();
   const userReady = useClientUserReady();
+  const openLogin = useOpenLogin();
   const [step, setStep] = useState(0);
   const [type, setType] = useState<string>("NOTE");
   const [linkedModelId, setLinkedModelId] = useState("");
@@ -120,7 +123,7 @@ export function PublishWizard() {
     if (!userReady) return;
     if (!userId) {
       setErr(t("loginFirst"));
-      router.push("/welcome/login");
+      openLogin({ next: "/publish", reason: "publish" });
       return;
     }
     setBusy(true);
@@ -347,9 +350,9 @@ export function PublishWizard() {
                   ) : (
                     <>
                       {t("confirmNeedLogin")}{" "}
-                      <Link href="/welcome/login" className="font-semibold text-violet-700 hover:underline">
+                      <AuthLoginLink href="/publish" reason="publish" className="font-semibold text-violet-700 hover:underline">
                         {tCommon("login")}
-                      </Link>
+                      </AuthLoginLink>
                     </>
                   )}
                 </p>

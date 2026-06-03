@@ -6,6 +6,7 @@ import { useLocale } from "next-intl";
 import { ArrowRight, LayoutGrid, Loader2, Monitor, Smartphone, Sparkles } from "lucide-react";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { localizedPath } from "@/lib/localePath";
 import { formatNextPathLabel, safeNextPath, setViewMode, type ViewMode } from "@/lib/viewMode";
 
@@ -61,6 +62,7 @@ function WebPreview() {
 const MODES: ViewMode[] = ["app", "web"];
 
 export function ViewModePicker() {
+  const router = useRouter();
   const locale = useLocale();
   const tWelcome = useTranslations("welcome");
   const tVm = useTranslations("viewMode");
@@ -101,8 +103,21 @@ export function ViewModePicker() {
     window.location.href = localizedPath(next, locale);
   };
 
+  const skipToBrowse = () => {
+    const m: ViewMode = preferWeb ? "web" : "app";
+    setViewMode(m);
+    router.push("/home");
+  };
+
   return (
     <div className="mx-auto w-full max-w-2xl space-y-5">
+      <button
+        type="button"
+        onClick={skipToBrowse}
+        className="inline-flex w-fit items-center gap-1 text-sm font-medium text-zinc-600 transition hover:text-zinc-900"
+      >
+        ← {tVm("backToBrowse")}
+      </button>
       <div className="text-center">
         <p className="inline-flex items-center gap-1.5 rounded-full border border-violet-300/60 bg-violet-50 px-3 py-1 text-[11px] font-semibold text-violet-700">
           <Sparkles className="h-3.5 w-3.5" />

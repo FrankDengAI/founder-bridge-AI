@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "@/i18n/navigation";
-import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Bookmark, Heart } from "lucide-react";
 import clsx from "clsx";
-import { useClientUserId } from "@/lib/hooks/useClientUserId";
+import { AuthLoginLink } from "@/components/auth/AuthLoginLink";
+import { useClientUserId, useClientUserReady } from "@/lib/hooks/useClientUserId";
+import { useOpenLogin } from "@/lib/hooks/useOpenLogin";
 
 type Props = {
   postId: string;
@@ -23,9 +23,11 @@ export function PostEngage({
   initiallyLiked = false,
   initiallySaved = false,
 }: Props) {
-  const router = useRouter();
   const t = useTranslations("engage");
+  const openLogin = useOpenLogin();
   const userId = useClientUserId();
+  const userReady = useClientUserReady();
+  const postHref = `/post/${postId}`;
   const [likes, setLikes] = useState(initialLikes);
   const [saves, setSaves] = useState(initialSaves);
   const [liked, setLiked] = useState(initiallyLiked);
@@ -43,8 +45,9 @@ export function PostEngage({
   const disabled = useMemo(() => busy !== null || !userId, [busy, userId]);
 
   const react = async (action: "like" | "save") => {
+    if (!userReady) return;
     if (!userId) {
-      router.push("/welcome/login");
+      openLogin({ next: postHref, reason: "engage" });
       return;
     }
     const wasActive = action === "like" ? liked : saved;
@@ -99,11 +102,15 @@ export function PostEngage({
 
   return (
     <div className="space-y-2">
-      {!userId ? (
+      {userReady && !userId ? (
         <p className="text-xs text-zinc-500">
-          <Link href="/welcome/login" className="font-semibold text-violet-700 hover:underline">
+          <AuthLoginLink
+            href={postHref}
+            reason="engage"
+            className="font-semibold text-violet-700 hover:underline"
+          >
             {t("loginLink")}
-          </Link>
+          </AuthLoginLink>
           {t("loginHint")}
         </p>
       ) : null}

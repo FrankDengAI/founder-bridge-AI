@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
-import { useRouter } from "@/i18n/navigation";
+import { AuthLoginLink } from "@/components/auth/AuthLoginLink";
+import { Link, useRouter } from "@/i18n/navigation";
 import { PageHeader } from "@/components/PageHeader";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
 import type { Role } from "@/lib/domain/role";
@@ -111,13 +111,13 @@ export function ProfileEditor() {
 
   return (
     <div className="space-y-4 pb-10">
-      <PageHeader title={t("title")} backHref="/me" />
+      <PageHeader title={t("title")} backHref="/settings" />
       {!userId ? (
         <p className="rounded-2xl bg-white/80 p-4 text-sm text-zinc-600 ring-1 ring-zinc-200">
           {t("loginPromptPrefix")}{" "}
-          <Link href="/welcome/login" className="font-semibold text-violet-700 hover:underline">
+          <AuthLoginLink href="/settings/profile" reason="default" className="font-semibold text-violet-700 hover:underline">
             {tCommon("login")}
-          </Link>{" "}
+          </AuthLoginLink>{" "}
           {t("loginPromptSuffix")}
         </p>
       ) : (

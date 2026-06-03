@@ -7,9 +7,14 @@ import { ChevronDown, LogOut, Settings, UserRound } from "lucide-react";
 import { performLogout } from "@/lib/authLogout";
 import clsx from "clsx";
 
-export function AccountMenu() {
+type Props = {
+  size?: "default" | "compact";
+};
+
+export function AccountMenu({ size = "default" }: Props) {
   const t = useTranslations("account");
   const tn = useTranslations("nav");
+  const compact = size === "compact";
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -28,7 +33,10 @@ export function AccountMenu() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={clsx(
-          "flex h-11 items-center gap-1 rounded-2xl px-2.5 shadow-md ring-1 transition",
+          "flex items-center shadow-md ring-1 transition",
+          compact
+            ? "h-9 w-9 justify-center rounded-xl px-0"
+            : "h-11 gap-1 rounded-2xl px-2.5",
           open
             ? "bg-zinc-950 text-white ring-zinc-700"
             : "bg-white/90 text-zinc-800 ring-zinc-200/80 hover:bg-white dark:bg-zinc-900/90 dark:text-zinc-100 dark:ring-zinc-700",
@@ -37,10 +45,12 @@ export function AccountMenu() {
         aria-haspopup="menu"
         aria-label={t("menu")}
       >
-        <UserRound className="h-5 w-5" />
-        <ChevronDown
-          className={clsx("h-4 w-4 transition-transform", open && "rotate-180")}
-        />
+        <UserRound className={compact ? "h-4 w-4" : "h-5 w-5"} />
+        {!compact ? (
+          <ChevronDown
+            className={clsx("h-4 w-4 transition-transform", open && "rotate-180")}
+          />
+        ) : null}
       </button>
 
       {open ? (

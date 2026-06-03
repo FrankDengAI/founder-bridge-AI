@@ -64,10 +64,7 @@ export default async function PostPage({ params }: Props) {
   return (
     <article className="space-y-4 pb-10">
       <RecordRecentView postId={post.id} title={post.title} postType={post.type} />
-      <PageHeader
-        title={isDraft ? t("draftPreview") : t("detail")}
-        backHref="/creator"
-      />
+      <PageHeader title={isDraft ? t("draftPreview") : t("detail")} backHref="/home" />
 
       {isDraft ? (
         <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-amber-200/80 bg-amber-50/90 px-4 py-3 text-sm text-amber-950">

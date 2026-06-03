@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { AuthLoginLink } from "@/components/auth/AuthLoginLink";
 import {
   BadgeCheck,
+  GraduationCap,
   LayoutGrid,
   LogOut,
   MessageCircle,
@@ -16,7 +18,9 @@ import {
   UserRound,
   Wrench,
 } from "lucide-react";
+import { MeBadgesStrip } from "@/components/me/MeBadgesStrip";
 import { MeRetentionHub } from "@/components/me/MeRetentionHub";
+import { TodayMissionStrip } from "@/components/home/TodayMissionStrip";
 import { LearnProgressInline } from "@/components/learn/LearnProgressInline";
 import { ActivationJourney } from "@/components/retention/ActivationJourney";
 import { ProfileStrengthCard } from "@/components/retention/ProfileStrengthCard";
@@ -41,6 +45,7 @@ const quickLinkKeys = [
   { href: "/tools", key: "tools", icon: Wrench },
   { href: "/settings", key: "settings", icon: Settings },
   { href: "/me/achievements", key: "achievements", icon: BadgeCheck },
+  { href: "/learn", key: "learn", icon: GraduationCap },
 ] as const;
 
 export function MePanel() {
@@ -96,6 +101,8 @@ export function MePanel() {
       <PublishDraftBanner />
       <ActivationJourney compact />
       <MeRetentionHub />
+      <TodayMissionStrip />
+      <MeBadgesStrip />
 
       <section className="rounded-3xl border border-rose-200/80 bg-gradient-to-br from-rose-50/90 to-white/80 p-4 shadow-sm ring-1 ring-rose-100/80">
         <p className="text-xs font-semibold text-rose-900">{t("accountSecurity")}</p>
@@ -187,9 +194,9 @@ export function MePanel() {
             {!user?.userId ? (
               <>
                 {" "}
-                <Link href="/welcome/login" className="font-semibold underline hover:text-brand-700">
+                <AuthLoginLink href="/me" reason="default" className="font-semibold underline hover:text-brand-700">
                   {t("goLogin")}
-                </Link>
+                </AuthLoginLink>
               </>
             ) : null}
           </p>
@@ -210,12 +217,13 @@ export function MePanel() {
               {t("open")}
             </Link>
           ) : (
-            <Link
-              href="/welcome/login"
+            <AuthLoginLink
+              href="/me"
+              reason="default"
               className="rounded-2xl bg-zinc-200 px-3 py-2 text-xs font-semibold text-zinc-700"
             >
               {t("loginFirst")}
-            </Link>
+            </AuthLoginLink>
           )}
         </div>
       </section>

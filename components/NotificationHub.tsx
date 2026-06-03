@@ -12,8 +12,13 @@ import {
 
 type Notif = LocalNotif;
 
-export function NotificationHub() {
+type Props = {
+  size?: "default" | "compact";
+};
+
+export function NotificationHub({ size = "default" }: Props) {
   const t = useTranslations("notifications");
+  const compact = size === "compact";
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<Notif[]>([]);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -64,7 +69,8 @@ export function NotificationHub() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={clsx(
-          "relative flex h-11 w-11 items-center justify-center rounded-2xl shadow-lg ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+          "relative flex items-center justify-center shadow-sm ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+          compact ? "h-8 w-8 rounded-lg" : "h-11 w-11 rounded-2xl shadow-lg",
           unread
             ? "bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white ring-white/30 hover:brightness-110"
             : "bg-white/90 text-zinc-800 ring-zinc-200/80 hover:bg-white dark:bg-zinc-900/90 dark:text-zinc-100 dark:ring-zinc-700",
@@ -74,7 +80,11 @@ export function NotificationHub() {
         aria-controls={open ? "vibe-notification-panel" : undefined}
         aria-label={t("hubLabel")}
       >
-        {unread ? <BellRing className="h-5 w-5 motion-safe:animate-pulse" /> : <Bell className="h-5 w-5" />}
+        {unread ? (
+          <BellRing className={clsx(compact ? "h-4 w-4" : "h-5 w-5", "motion-safe:animate-pulse")} />
+        ) : (
+          <Bell className={compact ? "h-4 w-4" : "h-5 w-5"} />
+        )}
         {unread ? (
           <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-amber-400 px-1 text-[10px] font-bold text-amber-950 ring-2 ring-white dark:ring-zinc-950">
             {unread > 9 ? "9+" : unread}

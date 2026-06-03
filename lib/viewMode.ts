@@ -1,3 +1,5 @@
+import { stripLocalePrefix } from "@/lib/localePath";
+
 /**
  * App / Web 双模式约定：
  * - 新功能只写 tabs 路由 page + 共享 components
@@ -41,13 +43,25 @@ export function clearViewMode(): void {
   }
 }
 
-/** 防止 open redirect：仅允许站内相对路径 */
+/** 首访无模式时按视口推断默认布局（先逛后登不阻断 /home） */
+export function defaultViewModeFromViewport(): ViewMode {
+  if (typeof window === "undefined") return "app";
+  return window.innerWidth >= 1024 ? "web" : "app";
+}
+
+/** 防止 open redirect：仅允许站内相对路径（去掉 locale 前缀） */
 export function safeNextPath(raw: string | null | undefined, fallback = "/home"): string {
-  const v = (raw ?? fallback).trim();
+  const v = stripLocalePrefix((raw ?? fallback).trim());
   if (!v.startsWith("/") || v.startsWith("//")) return fallback;
   if (v.includes("://") || v.includes("\\") || v.includes("@")) return fallback;
-  const clean = v.split("#")[0];
-  return clean || fallback;
+  const pathOnly = v.split("?")[0]?.split("#")[0] || fallback;
+  const qs = v.includes("?") ? v.slice(v.indexOf("?")) : "";
+  const params = new URLSearchParams(qs.startsWith("?") ? qs.slice(1) : qs);
+  params.delete("auth");
+  params.delete("next");
+  const cleanedQs = params.toString();
+  const combined = cleanedQs ? `${pathOnly}?${cleanedQs}` : pathOnly;
+  return combined || fallback;
 }
 
 /** 进入 App 区前的模式选择页（默认 locale；Client 请用 lib/localePath + useLocale） */

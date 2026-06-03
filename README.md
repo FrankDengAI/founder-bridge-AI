@@ -32,6 +32,7 @@
   <a href="#完整路由">完整路由</a> ·
   <a href="#账户与认证">账户</a> ·
   <a href="#架构图解">架构图</a> ·
+  <a href="#伙伴匹配算法详解">匹配算法</a> ·
   <a href="#界面与模块详解">设计说明</a> ·
   <a href="#部署指南">部署</a>
 </p>
@@ -46,7 +47,7 @@
 |--------|----------------|
 | 完全不懂技术 | 先 [术语小词典](#术语小词典看不懂可先看这里) → [核心能力](#核心能力) → [界面与模块详解](#界面与模块详解) |
 | 产品 / 运营 | [产品设计哲学](#产品设计哲学) → [界面与模块详解](#界面与模块详解) → [产品路径](#产品路径) |
-| 开发者 | [快速开始](#快速开始) → [系统架构](#系统架构) → [技术架构文档](./docs/ARCHITECTURE.md) |
+| 开发者 | [快速开始](#快速开始) → [伙伴匹配算法详解](#伙伴匹配算法详解) → [系统架构](#系统架构) → [技术架构文档](./docs/ARCHITECTURE.md) |
 | 投资人 / 路演 | [产品演示](#产品演示) → [品牌站亮点](#品牌站亮点) → [架构图解 §4](#4-五大产品子系统) |
 
 <details>
@@ -60,6 +61,7 @@
 - [界面与模块详解](#界面与模块详解)
   - [发现 / 匹配 / 消息 / 注册 / 我的 / 品牌 / 工具](#发现首页-home)
 - [产品路径](#产品路径)
+- [伙伴匹配算法详解](#伙伴匹配算法详解)
 - [项目简介](#项目简介)
 - [快速开始](#快速开始)
 - [账户与认证](#账户与认证)
@@ -142,7 +144,7 @@
       <sub><strong>/match</strong> 匹配 · 七维雷达与候选评分</sub>
     </td>
     <td align="center" width="33%">
-      <a href="#工具与模型-tools--models"><img src="./docs/assets/readme/app-tools-market.png" alt="工具商城" width="100%" /></a><br/>
+      <a href="#工具与模型-tools-models"><img src="./docs/assets/readme/app-tools-market.png" alt="工具商城" width="100%" /></a><br/>
       <sub><strong>/tools</strong> 工具 · 榜单与市场</sub>
     </td>
   </tr>
@@ -217,7 +219,7 @@
     </td>
     <td width="50%" valign="top">
       <h4>工具与模型</h4>
-      <p><a href="#工具与模型-tools--models">界面详解</a></p>
+      <p><a href="#工具与模型-tools-models">界面详解</a></p>
       <ul>
         <li>工具商城 · 大模型排行 · 模板与演示订单</li>
       </ul>
@@ -265,7 +267,6 @@
 | **演示能跑通** | 给别人看时要真有数据 | 官网和 App 同一套库；内置 25 个演示账号方便体验匹配 |
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}, 'flowchart': {'nodeSpacing': 40, 'rankSpacing': 50}}}%%
 flowchart LR
   A["填好资料"] --> B["系统排序推荐"]
   B --> C["看懂推荐理由"]
@@ -290,7 +291,7 @@ flowchart LR
 | [注册 Onboarding](#注册与-onboarding) | `/welcome/*` |
 | [我的](#我的-me) | `/me` |
 | [品牌站](#品牌落地页) | `/` |
-| [工具与模型](#工具与模型-tools--models) | `/tools` · `/models` |
+| [工具与模型](#工具与模型-tools-models) | `/tools` · `/models` |
 | [发布与搜索](#发布与搜索) | `/publish` · `/search` |
 
 ### 全局底部导航与视图模式
@@ -364,7 +365,241 @@ flowchart LR
 - 分成 **高匹配 / 中匹配 / 探索** 三档（大约 76 分以上、58 分以上、其余），不纠结差一两分。
 - **不是只有第一名才值得聊**——「探索」档也鼓励你先打个招呼试试。
 
-> **背后逻辑（可选读）：** 系统更推「不同角色搭档」（例如增长 + 技术），而不是两个完全一样的人。算法细节见 [技术文档](./docs/ARCHITECTURE.md#23-七维打分公式)。
+> **背后逻辑（可选读）：** 系统更推「不同角色搭档」（例如增长 + 技术），而不是两个完全一样的人。  
+> **完整公式、权重为何这样定、与小红书/大厂推荐的区别** → 见下文 **[伙伴匹配算法详解](#伙伴匹配算法详解)**（与代码 [`lib/matching/score.ts`](./lib/matching/score.ts) 一一对应）。
+
+---
+
+## 伙伴匹配算法详解
+
+本节回答三件事：**权重比例依据什么**、**最终分数怎么算出来**、**README 里图为什么有时画不出来**。实现以 [`lib/matching/score.ts`](./lib/matching/score.ts) 为准；程序员速查仍可用 [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md#23-七维打分公式)。
+
+### 权重是「抄小红书 / 大厂」的吗？
+
+**不是。** 小红书、抖音、LinkedIn、Tinder 等产品的推荐权重与模型参数属于**商业机密**，不会公开；它们也普遍使用**海量行为日志 + 深度学习/召回排序**，与当前 demo 的「几十到几百人、资料以表单为主」的冷启动场景不同。
+
+本项目的 **v2 七维加权** 是面向 **「创业组队找互补队友」** 的产品假设，在工程上做的**可解释启发式**（heuristic），具体数字在代码里以常量 `W_*` 写死，便于路演演示与后续 A/B 调参：
+
+| 常量（代码） | 权重 | 对应你填的字段 | 设计意图（为何是这个量级） |
+|:--:|:--:|--|--|
+| `W_ROLE` | **0.26** | 我的角色 | 组队第一性问题往往是「缺哪种分工」；同角色对角线故意低分，跨角色（如增长×技术）更高 → 对齐 Belbin / 创业铁三角类「**互补 > 克隆**」共识 |
+| `W_KW` | **0.18** | 技能关键词 | 能力栈是否对齐协作语言；与招聘/协作工具里的 skills overlap 类似，但不做简历 NLP |
+| `W_DIR` | **0.14** | 创业方向 | 做的东西是否像「一路人」；权重低于角色，避免方向文案略写就压过硬分工 |
+| `W_INT` | **0.16** | 简介 + 方向词 + 关键词拼合 | 补全「叙事层」相似度（兴趣画像），与 keywords 合计 **0.34**，体现「能做什么 + 想做什么」并重 |
+| `W_RECIPROCITY` | **0.10** | 期望伙伴角色 | 借鉴相亲/招聘里的 **mutual preference**（双向意向）；双方都勾选对方角色类型时显著加分 |
+| `W_BUDGET` | **0.08** | 资金档位 0–4 | 只表达投入阶段，不问具体金额；差一档仍可合作，故权重不宜过高 |
+| `W_ACTIVITY` | **0.04** | 资料新鲜度与密度 | **tie-breaker**：避免僵尸资料排太前，但不主导「合不合拍」 |
+
+**与常见「主流」机制的类比（仅思路，非数值抄袭）：**
+
+| 产品类型 | 常见信号 | 本项目中的近似 |
+|----------|----------|----------------|
+| 内容流（小红书等） | 点击、完播、关注、话题 embedding | **不参与**伙伴匹配；`interestTags` 只用于首页帖子 [`lib/forYou.ts`](./lib/forYou.ts) |
+| 职场社交（LinkedIn 等） | 技能、职位、共同连接 | `keywords` + `direction` + 部分 `interest` |
+| 相亲/社交 App | 双向喜欢、活跃、距离 | `reciprocity` + `activity`（无 LBS） |
+| 组队游戏匹配 | 角色定位、段位 | `role` 互补矩阵 + `desiredPartnerRoles` |
+
+调权记录见 `score.ts` 顶部注释 **v2 多维加权**；若线上有真实「邀约率 / 回复率」数据，应改为**离线标定**或学习排序，而不是继续拍脑袋改常数。
+
+### 总体公式（与 UI 的 0–100 分）
+
+对当前用户画像 **me** 与候选人 **them**，先算七个维度子分 `s_* ∈ [0, 1]`，再加权：
+
+```text
+S_raw = 0.26·s_role + 0.18·s_kw + 0.14·s_dir + 0.16·s_int
+      + 0.10·s_recip + 0.08·s_budget + 0.04·s_act
+```
+
+界面展示分（四舍五入整数）：
+
+```text
+S_ui = round(100 × S_raw)
+```
+
+档位（[`lib/matchUiCopy.ts`](./lib/matchUiCopy.ts)）：`S_ui ≥ 76` 高匹配 · `≥ 58` 中匹配 · 其余为探索档。
+
+候选池内按 `S_raw` **降序**取 Top-N（[`lib/matching/rank.ts`](./lib/matching/rank.ts)）。首页「今日一人」对同一用户池按**日期哈希**稳定抽 1 人（`GET /api/match?daily=1`），避免同一天反复变。
+
+### 七维子分：逐项公式
+
+以下与 [`lib/matching/score.ts`](./lib/matching/score.ts)、[`lib/matching/roleMatrix.ts`](./lib/matching/roleMatrix.ts) **完全一致**。
+
+#### 1. 角色互补 s_role（权重 0.26）
+
+查表 `RAW[myRole][theirRole]`，再按**我方行**归一化到 [0, 1]：
+
+```text
+s_role = RAW[r_me][r_them] / max_{r' ∈ {JUNGLE,SUPPORT,ADC}} RAW[r_me][r']
+```
+
+原始矩阵（同角色偏低、跨角色偏高）：
+
+| me / them | JUNGLE | SUPPORT | ADC |
+|-----------|--------|---------|-----|
+| JUNGLE | 0.45 | 0.82 | **0.95** |
+| SUPPORT | 0.88 | 0.50 | 0.90 |
+| ADC | **0.92** | 0.85 | 0.48 |
+
+#### 2. 能力关键词 s_kw（权重 0.18）
+
+设 `J(·,·)` 为集合 **Jaccard**，`C_TF(·,·)` 为技能标签词频向量的 **余弦相似度**：
+
+```text
+overlap = 0.5·J(K_me, K_them) + 0.5·C_TF(K_me, K_them)
+```
+
+期望角色加成 `b_desired`（me 勾选的期望伙伴类型）：
+
+| 条件 | b_desired |
+|------|-----------|
+| 未勾选任何期望角色 | 0.55 |
+| r_them ∈ desiredPartnerRoles_me | 1.0 |
+| 否则 | 0.25 |
+
+```text
+s_kw = min(1, 0.6·overlap + 0.4·b_desired)
+```
+
+#### 3. 创业方向 s_dir（权重 0.14）
+
+对 `direction` 字符串先 `normalize`（去空白、小写）。规则表：
+
+| 条件 | s_dir |
+|------|-------|
+| 双方为空 | 0.55 |
+| 仅一方为空 | 0.35 |
+| 归一化后相等 | 1.0 |
+| 一方字符串包含另一方 | 0.88 |
+| 其他 | min(1, 0.5·J(tokens) + 0.5·bigramOverlap) |
+
+`tokenize`：中英文混合轻量分词（中文按字、英文按词；过滤停用词）。`bigramOverlap` 为字符二元组上的重叠率。
+
+#### 4. 兴趣画像 s_int（权重 0.16）
+
+词池（对方同理得 P_them）：
+
+```text
+P_me = K_me ∪ tokenize(direction_me) ∪ tokenize(intro_me)
+```
+
+空池规则同 direction。否则：
+
+```text
+s_int = min(1, 0.6·C_TF(P_me, P_them) + 0.4·J(P_me, P_them))
+```
+
+> README 表格里的「兴趣相关（简介等）约 16%」对应这一维；**不是**注册页的 `interestTags`（后者只影响首页推帖）。
+
+#### 5. 双向意向 s_recip（权重 0.10）
+
+```text
+theyWantMe = (r_me ∈ desiredPartnerRoles_them)
+iWantThem  = (r_them ∈ desiredPartnerRoles_me)
+```
+
+| 条件 | s_recip |
+|------|---------|
+| theyWantMe 且 iWantThem | 1.0 |
+| 恰一方为真 | 0.65 |
+| 都未勾选 | max(0.3, 0.55 × s_role) |
+
+#### 6. 资金档位 s_budget（权重 0.08）
+
+`d = |budgetTier_me - budgetTier_them|`，档位 ∈ {0,…,4}：
+
+| d | 0 | 1 | 2 | 3 | ≥4 |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| s_budget | 1.00 | 0.82 | 0.58 | 0.35 | 0.15 |
+
+#### 7. 活跃度 s_act（权重 0.04）
+
+仅看**候选人**资料。新鲜度 `f`（按 `updatedAt` 距今天数）：
+
+| 天数 | f |
+|------|---|
+| ≤7 | 1.0 |
+| ≤30 | 0.85 |
+| ≤90 | 0.65 |
+| 更久 | 0.45 |
+
+```text
+s_act = min(1,
+  0.55·f
++ 0.18·min(1, |intro|/180)
++ 0.12·𝟙[direction 非空]
++ 0.15·min(1, |skillKeywords|/6)
+)
+```
+
+### 从公式到界面：流水线
+
+```mermaid
+flowchart TB
+  Start["UserProfile 数据库"]
+  Parse["parseProfile 解析 JSON 字段"]
+  Pool["候选池 除自己外已完善资料用户"]
+  Score["scorePair 逐对计算"]
+  D1["s_role  w=0.26"]
+  D2["s_kw  w=0.18"]
+  D3["s_dir  w=0.14"]
+  D4["s_int  w=0.16"]
+  D5["s_recip  w=0.10"]
+  D6["s_budget  w=0.08"]
+  D7["s_act  w=0.04"]
+  Total["S_raw 加权和"]
+  Rank["rankCandidates 排序截断"]
+  UI["雷达 breakdown + reasons 文案"]
+
+  Start --> Parse
+  Parse --> Score
+  Pool --> Score
+  Score --> D1
+  Score --> D2
+  Score --> D3
+  Score --> D4
+  Score --> D5
+  Score --> D6
+  Score --> D7
+  D1 --> Total
+  D2 --> Total
+  D3 --> Total
+  D4 --> Total
+  D5 --> Total
+  D6 --> Total
+  D7 --> Total
+  Total --> Rank --> UI
+```
+
+<details>
+<summary><strong>纯文本版流水线（图无法显示时可看）</strong></summary>
+
+```
+UserProfile → parseProfile → scorePair(me, eachCandidate)
+  ├─ s_role     × 0.26
+  ├─ s_kw       × 0.18
+  ├─ s_dir      × 0.14
+  ├─ s_int      × 0.16
+  ├─ s_recip    × 0.10
+  ├─ s_budget   × 0.08
+  └─ s_act      × 0.04
+       → S_raw → 排序 → UI 百分制 + 最多 8 条 reasons
+```
+
+</details>
+
+### 可解释文案 `reasons`
+
+`scorePair` 在算分后按阈值追加中文说明（如双向意向命中、共同技能标签、资金差过大等），最多 **8 条**，与雷达七维同源，避免「分数和文案各说各话」。
+
+### 为何 README 以前没写这么细？
+
+历史原因：主 README 面向**产品 / 路演**读者，只保留「填什么 → 大概占几分 → 为啥要问」；完整公式放在 [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) 给开发者。你反馈需要**一份文档里既能讲人话又能对公式**，因此把设计依据与公式前移到本节，并与代码常量对齐。
+
+### 如何改权重或矩阵？
+
+1. 修改 [`lib/matching/score.ts`](./lib/matching/score.ts) 顶部 `W_*`（须保持 **七项之和 = 1.0**）。  
+2. 修改角色倾向则改 [`lib/matching/roleMatrix.ts`](./lib/matching/roleMatrix.ts) 的 `RAW`。  
+3. 同步更新本节表格与 [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md#23-七维打分公式)，避免文档与代码漂移。
 
 ---
 
@@ -446,7 +681,7 @@ flowchart LR
 | 不保存也能试匹配 | 草稿和已保存资料合并计算 | 敢随便试 |
 | 匹配来源标记 | 聊天里记一笔来源 | 方便统计「匹配有没有促成聊天」 |
 
-公式和接口细节见 [技术文档](./docs/ARCHITECTURE.md)（偏程序员阅读）。
+公式、权重设计依据与接口细节见 **[伙伴匹配算法详解](#伙伴匹配算法详解)** 与 [技术文档](./docs/ARCHITECTURE.md)。
 
 ---
 
@@ -455,7 +690,6 @@ flowchart LR
 新用户从品牌站到主功能的典型路径（自上而下，避免交叉线）：
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}, 'flowchart': {'nodeSpacing': 40, 'rankSpacing': 55}}}%%
 flowchart TB
   Landing["① 品牌站 /"]
   Welcome["② 注册登录 /welcome"]
@@ -497,7 +731,7 @@ flowchart TB
 |--------|--------|----------------|
 | 发现与内容 | 灵感流 + For You + 发布/搜索 | [发现首页](#发现首页-home) · [发布与搜索](#发布与搜索) |
 | 匹配与社交 | 七维可解释匹配 → 私信闭环 | [伙伴匹配](#伙伴匹配-match) · [私信](#私信-messages) |
-| 工具与模型 | 工具链 + 模型榜 + 模板演示 | [工具与模型](#工具与模型-tools--models) |
+| 工具与模型 | 工具链 + 模型榜 + 模板演示 | [工具与模型](#工具与模型-tools-models) |
 | 学习与成长 | 分步路径、成就、协作空间 | `/learn` · `/me/achievements` · `/collab/[id]` |
 | 账户与安全 | 低摩擦注册 + Cookie 会话 | [注册 Onboarding](#注册与-onboarding) · [账户与认证](#账户与认证) |
 
@@ -612,16 +846,17 @@ npm start
 
 ```mermaid
 flowchart TD
-  Start["/welcome"] --> Reg["/welcome/register"]
+  Start["/welcome"] --> Browse["/home 先逛发现"]
+  Start --> Reg["/welcome/register"]
   Start --> Login["/welcome/login"]
   Start --> Guest["/welcome/guest"]
-  Start --> Demo["快速体验"]
 
-  Reg --> Mode["/welcome/mode?next=/home"]
-  Login --> Mode
+  Browse --> Gate{"需要登录?"}
+  Gate -->|弹窗/全屏| Login
+  Login --> Mode["/welcome/mode?next=…"]
+  Reg --> Mode
   Guest --> Mode
-  Demo --> Mode
-  Mode --> App["/home"]
+  Mode --> App["next 目标或 /home"]
 ```
 
 | 方式 | 说明 |
@@ -632,6 +867,53 @@ flowchart TD
 | **快速体验** | 选择 `demo` 或 `founder_xx` 等种子账号进入 |
 
 生产环境（[`render.yaml`](./render.yaml) 默认）关闭 `ENABLE_DEMO_LOGIN` 与 `ENABLE_GUEST`，仅保留注册 / 登录。
+
+---
+
+### 先逛后登（弹窗登录）
+
+未登录用户**默认进入发现页** `/home` 浏览双列帖子流（`GET /api/posts` 只读可用），不再被 middleware 强制打到全屏 `/welcome`。
+
+| 行为 | 说明 |
+|------|------|
+| 可游客访问 | 仅 `/home`（及 `/welcome/*`、公开 API） |
+| 需登录操作 | 点帖子详情、底栏匹配/消息/我的、顶栏发布/搜索/⌘K 等 → **半透明登录弹层**，背后仍是发现流 |
+| 直链受保护页 | 如 `/match` → `307` 到 `/home?auth=login&next=/match`，自动弹窗并在登录后跳转 |
+| 全屏登录页 | `/welcome/login` 保留，供 embed、分享深链；主路径为弹窗 |
+
+实现要点：`middleware.ts` 游客路径 · [`AuthGateProvider`](./components/auth/AuthGateProvider.tsx) / [`LoginModal`](./components/auth/LoginModal.tsx) · [`useRequireAuth`](./lib/hooks/useRequireAuth.ts) · 文案 `authModal.*`（`messages/zh.json`）。
+
+**视图模式：** [`ViewModeGate`](./components/view-mode/ViewModeGate.tsx) 首访无 `sessionStorage` 时按视口静默默认 App/Web，**不阻断**直达 `/home`；仍可在 `/welcome/mode` 主动切换。
+
+**自动化验收（需本地已 `npm run build` 且 `npm run start`，默认 `http://localhost:3000`）：**
+
+```bash
+npm run smoke:guest          # 游客 middleware + /api/posts
+npm run auth:smoke           # 注册/登录 API
+npm run smoke:pages          # 登录后页面非 500
+npm run test:e2e             # Playwright：先逛、弹窗、注册进匹配
+```
+
+> Edge middleware 仅校验 Cookie 形状与过期（[`sessionCookieEdge`](./lib/auth/sessionCookieEdge.ts)），完整验签在 Node API；演示环境可接受，生产请配置 `SESSION_SECRET`。
+
+### 进入 / 返回 / 退出（导航约定）
+
+统一由 [`lib/navBack.ts`](./lib/navBack.ts) 与 [`PageHeader`](./components/PageHeader.tsx) / [`BackButton`](./components/nav/BackButton.tsx) 处理：
+
+| 场景 | 返回目标 | 说明 |
+|------|----------|------|
+| 帖子详情 `/post/:id` | `/home` | 从发现流进入 |
+| 发布 / 搜索 / 模板等 | `/home` | 子功能回到发现枢纽 |
+| 设置 / 创作者中心 | `/me` | 个人中心子页 |
+| 设置 · 编辑资料 | `/settings` | 二级设置 |
+| 工具 / 模型详情 | `/tools` 或 `/models` | 列表父级 |
+| 欢迎页登录 / 注册 | `/home` | **先逛后登**主路径；欢迎页入口保留 |
+| 模式选择 `/welcome/mode` | `/home` | 可跳过选模式先逛 |
+| 主 Tab（发现/匹配/消息/我的） | 无顶栏返回钮 | 用底部 `BottomNav` |
+
+**`next` 参数：** 登录 / 注册 / 弹窗注册链会带上 `?next=/post/xxx` 等，成功后进入原目标（全屏页走 `modeHref(next)`，弹窗走 `AuthGateProvider` + `router.push`）。
+
+**退出登录：** 设置页登出后 middleware 不再放行受保护路由，会回到 `/home` 并保留游客可逛的发现流。
 
 ---
 
@@ -733,7 +1015,6 @@ curl -X POST http://localhost:3000/api/auth/register \
 **技术说：** 本项目是 **Next.js 14 单仓单体**——浏览器只连一个 Node 服务；页面、接口、匹配、数据库都在一个代码仓库里，**不是**三套独立微服务。
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}, 'flowchart': {'nodeSpacing': 45, 'rankSpacing': 50}}}%%
 flowchart TB
   Browser["浏览器"]
 
@@ -770,14 +1051,15 @@ flowchart TB
 ## 架构图解
 
 > 给想看清「怎么串起来」的读者：每张图只讲一件事。  
-> 不需要懂编程也能看懂大意；公式和接口字段见 [技术文档](./docs/ARCHITECTURE.md)。
+> 不需要懂编程也能看懂大意；**匹配公式**见 [伙伴匹配算法详解](#伙伴匹配算法详解)，接口字段见 [技术文档](./docs/ARCHITECTURE.md)。
+
+**若图显示 `Unable to render rich display`：** 常见于 Cursor / 部分 Markdown 预览器——(1) 节点文字里不要写半角 `%`（在 Mermaid 里会当成注释截断）；(2) 避免 `%%{init:...}%%` 主题行。本文已按此修正；仍失败时请用 [GitHub 网页预览](https://github.com) 打开本 README，或看各图下方的 **纯文本版** / [伙伴匹配算法详解](#伙伴匹配算法详解) 里的 ASCII 流水线。
 
 ### 1. 三大块：界面、服务器逻辑、算分规则
 
 （部署上仍是**一个程序在跑**，只是分工不同。）
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}, 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 60}}}%%
 flowchart TB
   subgraph Frontend ["前端 · 展示与交互"]
     F1["页面 app/locale"]
@@ -819,7 +1101,6 @@ flowchart TB
 ### 2. 仓库目录职责
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '15px'}, 'flowchart': {'nodeSpacing': 35, 'rankSpacing': 45}}}%%
 flowchart LR
   subgraph Root ["code_demo_web 根目录"]
     direction TB
@@ -844,7 +1125,6 @@ flowchart LR
 ### 3. 一次请求的旅程
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}}}%%
 sequenceDiagram
   participant U as 用户浏览器
   participant M as middleware
@@ -869,7 +1149,6 @@ sequenceDiagram
 ### 4. 五大产品子系统
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '15px'}, 'flowchart': {'nodeSpacing': 40, 'rankSpacing': 50}}}%%
 flowchart TB
   Hub["VibeCoding 创业社交平台"]
 
@@ -914,50 +1193,7 @@ flowchart TB
 
 ### 5. 伙伴匹配：设计流水线
 
-匹配在服务端完成；前端只展示分数、雷达与理由文案。
-
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '15px'}, 'flowchart': {'nodeSpacing': 35, 'rankSpacing': 48}}}%%
-flowchart TB
-  Start["用户画像 UserProfile"]
-  Parse["解析 parseProfile"]
-  Pool["候选池 其他用户资料"]
-  Score["逐人打分 scorePair"]
-
-  subgraph Dims ["七维子分 各 0~1"]
-    D1["角色互补 26%"]
-    D2["技能关键词 18%"]
-    D3["创业方向 14%"]
-    D4["兴趣画像 16%"]
-    D5["双向意向 10%"]
-    D6["资金档位 8%"]
-    D7["活跃度 4%"]
-  end
-
-  Total["加权总分"]
-  Rank["排序 rankCandidates"]
-  UI["雷达 + 理由 + 联系 TA"]
-
-  Start --> Parse
-  Parse --> Score
-  Pool --> Score
-  Score --> D1
-  Score --> D2
-  Score --> D3
-  Score --> D4
-  Score --> D5
-  Score --> D6
-  Score --> D7
-  D1 --> Total
-  D2 --> Total
-  D3 --> Total
-  D4 --> Total
-  D5 --> Total
-  D6 --> Total
-  D7 --> Total
-  Total --> Rank
-  Rank --> UI
-```
+匹配在服务端完成；前端只展示分数、雷达与理由文案。**七维公式、权重设计依据、百分制换算** 见 **[伙伴匹配算法详解](#伙伴匹配算法详解)**（含 Mermaid / ASCII 流水线图）。
 
 | API | 用途 |
 |-----|------|
@@ -991,7 +1227,6 @@ flowchart TB
 | 重点在匹配 | 先把「找对人说上话」做好 |
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}, 'flowchart': {'nodeSpacing': 45, 'rankSpacing': 55}}}%%
 flowchart TB
   subgraph Client ["前端 MessagesClient"]
     List["会话列表"]
@@ -999,11 +1234,11 @@ flowchart TB
     Poll["定时轮询 5s / 20s"]
   end
 
-  subgraph API ["REST 接口"]
+  subgraph RestAPI ["REST 接口"]
     C1["GET /api/conversations"]
     C2["POST /api/conversations"]
-    C3["GET/POST .../messages"]
-    C4["POST .../read"]
+    C3["GET/POST messages API"]
+    C4["POST read API"]
   end
 
   subgraph Store ["数据库"]
@@ -1030,7 +1265,6 @@ flowchart TB
 **从匹配进入聊天：**
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}}}%%
 flowchart LR
   M["/match 点击联系"]
   API["POST conversations"]
@@ -1043,7 +1277,6 @@ flowchart LR
 ### 7. 认证与会话
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}}}%%
 flowchart TB
   Reg["注册 POST /api/auth/register"]
   Login["登录 POST /api/auth/login"]
@@ -1062,7 +1295,6 @@ flowchart TB
 ### 8. 主 Tab 与 API 对应关系
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}, 'flowchart': {'nodeSpacing': 50, 'rankSpacing': 40}}}%%
 flowchart LR
   subgraph Tabs ["底部主 Tab"]
     H["/home"]
@@ -1133,7 +1365,7 @@ flowchart LR
 
 ## 更新截图
 
-README 视觉资源由 Playwright **自动生成并提交进仓库**，push 到 GitHub 后相对路径即可渲染。
+README 视觉资源由 Playwright **自动生成**（[`docs/assets/readme/`](./docs/assets/readme/)）。**推送到 GitHub 前请运行下方命令并把生成的 PNG/GIF 一并提交**，否则 README 里的 `<img>` 会显示裂图（仓库里仅有 `manifest.json` 不够）。
 
 ```bash
 npm run docs:assets:install   # 可选：安装 Playwright Chromium（或自动用本机 Chrome）

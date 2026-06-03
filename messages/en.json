@@ -71,6 +71,26 @@
     "noSavedGuest": "No local saves. Log in to sync saves to your account."
   },
   "homeUi": {
+    "clearLanding": {
+      "eyebrow": "Startup social platform",
+      "title": "Find partners, browse ideas, use practical tools",
+      "desc": "VibeCoding helps you match co-founders, read community notes, and discover AI tools. Most people start with one of these three.",
+      "todayPath": "Today",
+      "actions": {
+        "match": {
+          "title": "Match co-founders",
+          "desc": "Fill your profile, get ranked suggestions, chat in one tap"
+        },
+        "publish": {
+          "title": "Publish or recruit",
+          "desc": "Share notes, projects, or team-up posts"
+        },
+        "tools": {
+          "title": "Tools & model board",
+          "desc": "Community ratings to pick faster"
+        }
+      }
+    },
     "hero": {
       "badgeWeb": "Content · tools · matching · unified community",
       "badgeApp": "Live feed",
@@ -116,6 +136,19 @@
         "models": "Models",
         "reviews": "Reviews"
       }
+    },
+    "discoveryApp": {
+      "messages": "Team messages",
+      "newest": "New",
+      "publishShort": "Post",
+      "publishAction": "Publish content"
+    },
+    "infinite": {
+      "loading": "Loading more…",
+      "end": "You're all caught up",
+      "scrollHint": "Scroll for more",
+      "viewNoMore": "Load more not available in this view",
+      "retry": "Failed to load — tap to retry"
     },
     "hotRanking": {
       "label": "This week",
@@ -172,8 +205,8 @@
   "welcome": {
     "loginTitle": "Log in",
     "loginDesc": "Use your registered username and password.",
-    "registerTitle": "Sign up",
-    "registerDesc": "Set credentials, nickname, role, and interest tags.",
+    "registerTitle": "Create your founder account",
+    "registerDesc": "About 1 minute: secure login → display name → your team focus → interests.",
     "guestTitle": "Pick interests first",
     "guestDesc": "Create a guest account quickly; refine your profile later.",
     "personaTitle": "30-second persona (optional)",
@@ -190,6 +223,9 @@
     },
     "boardTitle": "Welcome aboard",
     "boardSubtitle": "Log in, sign up, or pick interests to unlock tabs, command palette, and the aurora workspace.",
+    "browseFirst": "Browse discovery first",
+    "browseFirstDesc": "See the feed without signing in; log in when you need more.",
+    "backToWelcomeBoard": "Welcome hub",
     "modeTitle": "Choose experience mode",
     "modeSubtitle": "You're signed in. Pick a layout; switch anytime in Settings or the top bar.",
     "modeSameContent": "Same content · Two layouts",
@@ -220,6 +256,7 @@
     "webFeature3": "Wide-screen browsing",
     "switchToWeb": "Switch to Web mode",
     "switchToApp": "Switch to App mode",
+    "backToBrowse": "Back to discovery (skip for now)",
     "current": "Current",
     "loadingMode": "Reading experience mode…",
     "redirectMode": "Opening mode picker…",
@@ -316,11 +353,11 @@
     "matchRequestFail": "Match request failed",
     "matchFail": "Matching failed",
     "whatTitle": "What does matching do?",
-    "whatBullet1": "Three startup roles (growth / product-ops / tech delivery) measure complementary division of labor.",
+    "whatBullet1": "Three focus areas (growth, product/ops, tech delivery) measure how well you complement each other.",
     "whatBullet2": "Skill keywords, direction, budget tier, and profile completeness produce explainable scores and reasons.",
     "whatBullet3": "The button below saves this form first, then runs match animation (skippable); recommendations compute in real time.",
-    "myRole": "My startup role",
-    "myRoleHint": "Pick one — you can change it anytime on Me or this page; role feeds complementarity rules.",
+    "myRole": "My focus",
+    "myRoleHint": "Choose growth, product/ops, or tech delivery — we use this to recommend complementary partners.",
     "budgetTier": "Budget willingness tier",
     "budgetTierHint": "Estimates whether investment pace aligns; one tier apart may still match; large gaps are down-weighted.",
     "budgetTier0": "No funding yet (find partners first)",
@@ -437,9 +474,25 @@
     "demoEnter": "Enter demo",
     "demoLoginFail": "Demo sign-in failed",
     "invalidLoginResponse": "Invalid sign-in response",
-    "dbNotConnected": "Database not connected — ask admin to configure DATABASE_URL"
+    "dbNotConnected": "Database not connected — ask admin to configure DATABASE_URL",
+    "backToDiscovery": "Back to discovery"
   },
   "authRegister": {
+    "backToWelcome": "Back to welcome",
+    "backToDiscovery": "Back to discovery",
+    "heroBadge": "Join the VibeCoding community",
+    "heroTitle": "Find complementary co-founders — start with one message",
+    "heroDesc": "After sign-up you get smart matching, community content, and a tool library. Richer profiles mean better recommendations.",
+    "heroPoint1": "Describe skills and direction — we recommend better teammates",
+    "heroPoint2": "One-tap chat with suggested icebreakers",
+    "heroPoint3": "No email required — about 1 minute to finish",
+    "stepProgress": "Step {current} of {total}",
+    "stepHintAccount": "Choose a login and password (min 8 characters).",
+    "stepHintNickname": "Name shown in the community — editable later.",
+    "stepHintRole": "Pick your main focus for matching (startup division of labor, not a game class).",
+    "stepHintInterest": "Pick at least one interest for the home feed.",
+    "roleSectionHint": "We favor complementary pairs, e.g. tech + growth.",
+    "interestSectionHint": "Multi-select — change anytime in settings.",
     "usernamePlaceholder": "e.g. xiaolin",
     "displayNamePlaceholder": "e.g. Lin",
     "autoLoginFail": "Auto sign-in failed",
@@ -503,6 +556,27 @@
     "subtitleFlow": "Four steps: type → content → cover → confirm.",
     "loadingWizard": "Loading publish wizard…"
   },
+  "authModal": {
+    "title": "Log in to continue",
+    "subtitle": "View details, match partners, and message after sign-in",
+    "submitContinue": "Continue after sign in",
+    "close": "Close",
+    "noAccount": "No account yet?",
+    "register": "Sign up free",
+    "guestFeedHint": "Log in to read posts, match co-founders, publish, and chat.",
+    "guestFeedCta": "Log in now",
+    "sessionRefreshFailed": "Signed in but session did not sync. Please try again or refresh.",
+    "reason": {
+      "default": "Log in to unlock full features",
+      "viewPost": "Log in to view post details and comments",
+      "match": "Log in to find co-founders",
+      "messages": "Log in to view team messages",
+      "me": "Log in to open your profile",
+      "publish": "Log in to publish content",
+      "search": "Log in to search and browse hot lists",
+      "engage": "Log in to save and interact"
+    }
+  },
   "auth": {
     "login": "Log in",
     "register": "Sign up",
@@ -516,11 +590,11 @@
     "loginFail": "Log in failed",
     "regStepAccount": "Account",
     "regStepNickname": "Nickname",
-    "regStepRole": "Role",
+    "regStepRole": "Focus",
     "regStepInterest": "Interests",
     "usernameHint": "Username (letter first, 3–32 chars)",
     "passwordHint": "Password (min 8 chars)",
-    "roleSection": "Startup role",
+    "roleSection": "Your team focus",
     "interestSection": "Interest tags (multi-select)",
     "passwordMismatch": "Passwords do not match",
     "hasAccount": "Already have an account?",
@@ -577,7 +651,8 @@
     "toolMarket": "Tool market"
   },
   "navExtra": {
-    "main": "Main navigation"
+    "main": "Main navigation",
+    "appToolbar": "App shortcuts"
   },
   "missions": {
     "home": {
@@ -728,7 +803,11 @@
       "newest": "Newest",
       "searching": "Searching…",
       "resultCount": "{count} results",
-      "empty": "No matches — try a shorter keyword or change type filter."
+      "empty": "No matches — try a shorter keyword or change type filter.",
+      "findPartnerTitle": "Find a co-founder",
+      "findPartnerDesc": "Complementary roles · chat in one tap",
+      "modelCtaTitle": "Model reputation board",
+      "modelCtaDesc": "Read reviews · rate by use case"
     },
     "workspace": {
       "title": "Workspace",
@@ -788,8 +867,12 @@
         "match": { "label": "Match", "desc": "Recommendations" },
         "tools": { "label": "Tools", "desc": "Directory / marketplace" },
         "settings": { "label": "Settings", "desc": "Account / data" },
-        "achievements": { "label": "Achievements", "desc": "Badges & sharing" }
-      }
+        "achievements": { "label": "Achievements", "desc": "Badges & sharing" },
+        "learn": { "label": "Learning path", "desc": "Step-by-step Vibe Coding" }
+      },
+      "badgesPreviewTitle": "Unlocked achievements",
+      "badgesPreviewDesc": "{count} badges unlocked",
+      "badgesPreviewCta": "View all"
     },
     "tools": {
       "title": "Tools & marketplace",
@@ -844,24 +927,37 @@
       "noModels": "No models in this scenario — try All"
     },
     "messages": {
-      "title": "Messages",
+      "title": "Team messages",
+      "teamSubtitle": "One-to-one chats with potential co-founders",
+      "teamHubTitle": "Collaboration inbox",
+      "teamHubDesc": "Chats from matching are grouped separately. Post a recruit note to attract inbound messages.",
+      "postRecruit": "Post recruit",
+      "statTotal": "All chats",
+      "statMatch": "From match",
+      "statUnread": "Unread",
+      "sectionMatch": "From matching",
+      "sectionOther": "Other chats",
+      "fromMatch": "Match",
+      "noPreview": "No messages yet",
+      "chatTitle": "Chat",
+      "chatHint": "Discuss collaboration, roles, and next steps here",
       "matchTitle": "Co-founder matching",
       "sent": "Message sent",
       "sentHint": "They may reply later — check back on this thread.",
       "justNow": "Just now",
-      "loginRequired": "Log in to use private chat",
+      "loginRequired": "Log in for team messages",
       "loginHint": "Please log in to view messages.",
-      "syncHint": "Conversations sync across devices.",
-      "conversations": "Conversations",
-      "goMatch": "Go to Match",
-      "noConversations": "No conversations yet. Start one from Match → “Reach out”.",
+      "syncHint": "Messages are saved in the cloud.",
+      "conversations": "Threads",
+      "goMatch": "Find partners",
+      "noConversations": "No chats yet. Use Match → “Reach out”, or publish a recruit post.",
       "new": "New",
-      "selectConversation": "Select a conversation",
-      "context": "Context: {title}",
-      "selectHint": "Select a thread on the left or start from Match.",
-      "selectToChat": "Select a conversation to start chatting.",
+      "selectConversation": "Select a partner",
+      "context": "From: {title}",
+      "selectHint": "Pick someone on the left, or go to Match first.",
+      "selectToChat": "Select a thread to start chatting.",
       "inputPlaceholder": "Type a message…",
-      "selectFirst": "Select a conversation first",
+      "selectFirst": "Select a thread first",
       "send": "Send",
       "loading": "Loading messages…"
     },
@@ -936,7 +1032,8 @@
       "feedTitle": "Inspiration feed",
       "feedDesc": "Notes and discussions signal who you are — express first so matching understands you.",
       "dailyPath": "Your daily path",
-      "dailyPathDesc": "Small steps — missions, learning, and match tips turn browsing into progress."
+      "dailyPathDesc": "Small steps — missions, learning, and match tips turn browsing into progress.",
+      "moreModules": "More: check-in, learning, hot list…"
     }
   },
   "models": {
@@ -1335,7 +1432,7 @@
       "totalScore": "Overall score",
       "highMatch": "Strong match",
       "dimensions": {
-        "role": { "label": "Role complement", "hint": "ADC × JUNGLE classic pairing" },
+        "role": { "label": "Role complement", "hint": "Tech delivery × growth · classic pairing" },
         "keywords": { "label": "Skill keywords", "hint": "Jaccard 0.64 + mutual intent hit" },
         "direction": { "label": "Direction semantics", "hint": "Global SaaS × dev tools · bigram overlap 0.7" },
         "interest": { "label": "Interest vector", "hint": "Note-tag cosine similarity" },
@@ -1363,7 +1460,7 @@
         "gmv": "GMV growth"
       },
       "events": {
-        "e1": "@Lin completed ADC × JUNGLE match · score 96",
+        "e1": "@Lin completed tech×growth match · score 96",
         "e2": "@Yu published long read “Cursor vs Claude Code workflows”",
         "e3": "@TZ listed “Global SaaS landing template” · $14",
         "e4": "@Yo saved 12 LLM app notes · interest graph upgraded",
@@ -1498,7 +1595,7 @@
       "score": "score",
       "liveTicker": "live ticker",
       "candidates": {
-        "0": { "title": "ADC × JUNGLE", "sub": "Next.js · growth" },
+        "0": { "title": "Tech × growth", "sub": "Next.js · growth" },
         "1": { "title": "Creator × growth", "sub": "Social ops · global" },
         "2": { "title": "Solo ship × design", "sub": "LLM apps · design system" }
       },

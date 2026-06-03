@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
+import { AuthLoginLink } from "@/components/auth/AuthLoginLink";
 import { useClientUserId, useClientUserReady } from "@/lib/hooks/useClientUserId";
 import {
   hasDailyMatchContactedToday,
@@ -88,12 +89,13 @@ export function DailyMatchCard() {
         <p className="mt-1 text-[11px] leading-relaxed text-violet-900/80">
           {t("dailyMatchLoginHint")}
         </p>
-        <Link
-          href="/welcome/login"
+        <AuthLoginLink
+          href="/match"
+          reason="match"
           className="mt-2 inline-flex rounded-xl bg-violet-600 px-3 py-2 text-[11px] font-semibold text-white"
         >
           {t("goLogin")}
-        </Link>
+        </AuthLoginLink>
       </section>
     );
   }

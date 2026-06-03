@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
+import { AuthLoginLink } from "@/components/auth/AuthLoginLink";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { LogIn, MessageSquarePlus, Star, ThumbsDown, ThumbsUp } from "lucide-react";
@@ -126,12 +127,13 @@ export function ModelReviewPanel({ modelId, initialReviews }: Props) {
             <LogIn className="h-3.5 w-3.5" />
             {t("loginHint")}
           </p>
-          <Link
-            href="/welcome/login"
+          <AuthLoginLink
+            href={`/models/${modelId}`}
+            reason="default"
             className="rounded-full bg-violet-700 px-3 py-1 text-[10px] font-semibold text-white hover:bg-violet-800"
           >
             {t("goLogin")}
-          </Link>
+          </AuthLoginLink>
         </div>
       ) : null}
       <div className="flex flex-wrap items-center justify-between gap-2">

@@ -40,7 +40,7 @@
     "home": "发现",
     "learn": "学习",
     "match": "匹配",
-    "messages": "消息",
+    "messages": "团队消息",
     "me": "我的",
     "search": "搜索",
     "publish": "发布",
@@ -71,6 +71,26 @@
     "noSavedGuest": "暂无本地收藏。登录后收藏会同步到账号。"
   },
   "homeUi": {
+    "clearLanding": {
+      "eyebrow": "创业社交平台",
+      "title": "找互补伙伴，看真实灵感，用得上手的工具",
+      "desc": "这里是 VibeCoding：帮你匹配创业队友、浏览社区笔记、发现 AI 工具。下面三件事是大多数人第一天会做的。",
+      "todayPath": "今日待办",
+      "actions": {
+        "match": {
+          "title": "匹配创业伙伴",
+          "desc": "填写技能与方向，获取推荐名单并一键开聊"
+        },
+        "publish": {
+          "title": "发布想法或招募",
+          "desc": "发笔记、晒项目或发组队帖，让同路人找到你"
+        },
+        "tools": {
+          "title": "逛工具与模型榜",
+          "desc": "看社区评价，选型更省心"
+        }
+      }
+    },
     "hero": {
       "badgeWeb": "内容 · 工具 · 匹配 · 一体化社区",
       "badgeApp": "实时动态",
@@ -116,6 +136,19 @@
         "models": "模型",
         "reviews": "短评"
       }
+    },
+    "discoveryApp": {
+      "messages": "团队消息",
+      "newest": "最新",
+      "publishShort": "发布",
+      "publishAction": "发布内容"
+    },
+    "infinite": {
+      "loading": "加载更多…",
+      "end": "已经到底啦",
+      "scrollHint": "继续下滑加载",
+      "viewNoMore": "当前视图暂不支持加载更多",
+      "retry": "加载失败，点击重试"
     },
     "hotRanking": {
       "label": "本周热榜",
@@ -165,15 +198,15 @@
       "threads": "私聊会话",
       "unread": "{count} 条未读",
       "goCheckIn": "去签到",
-      "messages": "消息",
+      "messages": "团队消息",
       "achievements": "成就墙"
     }
   },
   "welcome": {
     "loginTitle": "登录",
     "loginDesc": "使用注册的账号与密码登录。",
-    "registerTitle": "注册",
-    "registerDesc": "设置账号密码，填写昵称、角色与兴趣标签。",
+    "registerTitle": "创建你的创业伙伴账号",
+    "registerDesc": "约 1 分钟完成：账号安全设置 → 昵称 → 你在团队中的定位 → 兴趣方向。",
     "guestTitle": "先选兴趣",
     "guestDesc": "快速创建游客身份，稍后再完善资料。",
     "personaTitle": "30 秒人设快选（可选）",
@@ -190,6 +223,9 @@
     },
     "boardTitle": "欢迎登舰",
     "boardSubtitle": "登录 / 注册 / 先选兴趣，解锁底部 Tab、命令面板与极光工作台体验。",
+    "browseFirst": "先逛发现",
+    "browseFirstDesc": "无需登录即可浏览双列帖子流；需要时再登录。",
+    "backToWelcomeBoard": "欢迎页",
     "modeTitle": "选择体验模式",
     "modeSubtitle": "登录成功。请选择你习惯的浏览方式；会话内可随时在设置或顶栏切换。",
     "modeSameContent": "同一套内容 · 两种界面",
@@ -220,6 +256,7 @@
     "webFeature3": "适合宽屏浏览",
     "switchToWeb": "切换到网页模式",
     "switchToApp": "切换到 App 模式",
+    "backToBrowse": "返回发现，暂不选模式",
     "current": "当前",
     "loadingMode": "正在读取体验模式…",
     "redirectMode": "正在前往模式选择…",
@@ -319,8 +356,8 @@
     "whatBullet1": "用三类创业角色（增长 / 产品运营 / 技术交付）衡量分工互补程度。",
     "whatBullet2": "结合能力关键词、创业方向、资金档位与资料完整度，输出可解释的分数与理由。",
     "whatBullet3": "点击下方按钮会先保存当前表单，再进入匹配动效（可跳过）；系统会实时计算推荐结果。",
-    "myRole": "我的创业角色",
-    "myRoleHint": "三选一即可，后续仍可在「我的」或本页随时修改；角色会进入匹配的互补规则。",
+    "myRole": "我的分工定位",
+    "myRoleHint": "选择你最擅长的方向（增长、产品或技术），系统会据此推荐互补伙伴。",
     "budgetTier": "资金意愿档位",
     "budgetTierHint": "用于估算「投入节奏」是否接近；差一档仍可能匹配，差太多算法会适度降权。",
     "budgetTier0": "暂不出资（先找伙伴）",
@@ -364,9 +401,9 @@
     "recruitRole": "需求角色",
     "recruitTime": "时间投入",
     "recruitComp": "报酬方式",
-    "recruitRoleAdc": "射手 · 技术",
-    "recruitRoleSupport": "辅助 · 产品/运营",
-    "recruitRoleJungle": "打野 · 增长",
+    "recruitRoleAdc": "技术与交付",
+    "recruitRoleSupport": "产品与运营",
+    "recruitRoleJungle": "增长与商务",
     "defaultRecruitTime": "每周 10h+",
     "defaultRecruitComp": "股权 / 项目分成",
     "titleLabel": "标题",
@@ -437,9 +474,25 @@
     "demoEnter": "进入体验",
     "demoLoginFail": "体验登录失败",
     "invalidLoginResponse": "登录响应无效",
-    "dbNotConnected": "数据库未连接，请联系管理员配置 DATABASE_URL"
+    "dbNotConnected": "数据库未连接，请联系管理员配置 DATABASE_URL",
+    "backToDiscovery": "返回发现"
   },
   "authRegister": {
+    "backToWelcome": "返回欢迎页",
+    "backToDiscovery": "返回发现",
+    "heroBadge": "加入 VibeCoding 创业社区",
+    "heroTitle": "找到互补的创业伙伴，从第一次对话开始",
+    "heroDesc": "注册后即可使用智能匹配、社区内容与工具库。资料越完整，推荐越准确。",
+    "heroPoint1": "说明你的技能与方向，系统会推荐更合适的队友",
+    "heroPoint2": "支持一键发起私信，自带破冰话术",
+    "heroPoint3": "无需邮箱，约 1 分钟完成注册",
+    "stepProgress": "第 {current} / {total} 步",
+    "stepHintAccount": "请设置登录账号与密码（密码至少 8 位）。",
+    "stepHintNickname": "社区里显示的名字，可随时修改。",
+    "stepHintRole": "选择你最擅长的分工，用于匹配互补伙伴（不是游戏角色，是创业分工）。",
+    "stepHintInterest": "至少选 1 个兴趣，用于首页推荐内容。",
+    "roleSectionHint": "我们会优先推荐与你技能互补的人，例如「技术」配「增长」。",
+    "interestSectionHint": "可多选，之后可在设置里修改。",
     "usernamePlaceholder": "例如：xiaolin",
     "displayNamePlaceholder": "例如：小林",
     "autoLoginFail": "自动登录失败",
@@ -503,6 +556,27 @@
     "subtitleFlow": "四步完成：类型 → 内容 → 封面 → 确认。",
     "loadingWizard": "加载发布向导…"
   },
+  "authModal": {
+    "title": "登录后继续",
+    "subtitle": "登录后可查看详情、匹配伙伴与收发消息",
+    "submitContinue": "登录后继续",
+    "close": "关闭",
+    "noAccount": "还没有账号？",
+    "register": "免费注册",
+    "guestFeedHint": "登录后可查看帖子详情、匹配创业伙伴、发布内容与私信。",
+    "guestFeedCta": "立即登录",
+    "sessionRefreshFailed": "登录成功但会话未同步，请重试或刷新页面",
+    "reason": {
+      "default": "登录解锁完整功能",
+      "viewPost": "登录后查看帖子详情与评论",
+      "match": "登录后开始匹配创业伙伴",
+      "messages": "登录后查看团队消息",
+      "me": "登录后进入个人中心",
+      "publish": "登录后发布内容",
+      "search": "登录后使用搜索与热榜",
+      "engage": "登录后收藏与互动"
+    }
+  },
   "auth": {
     "login": "登录",
     "register": "注册",
@@ -516,23 +590,23 @@
     "loginFail": "登录失败",
     "regStepAccount": "账号",
     "regStepNickname": "昵称",
-    "regStepRole": "角色",
+    "regStepRole": "分工",
     "regStepInterest": "兴趣",
     "usernameHint": "账号（字母开头，3–32 位）",
     "passwordHint": "密码（至少 8 位）",
-    "roleSection": "创业角色",
+    "roleSection": "你在团队中的分工",
     "interestSection": "兴趣标签（多选）",
     "passwordMismatch": "两次密码不一致",
     "hasAccount": "已有账号？",
     "goLogin": "去登录"
   },
   "roles": {
-    "JUNGLE": "打野 · 增长/BD",
-    "JUNGLE_desc": "擅长获客、渠道与商务拓展，把产品与市场连接起来，适合补「技术强但缺增长」的一侧。",
-    "SUPPORT": "辅助 · 产品/运营",
-    "SUPPORT_desc": "擅长需求梳理、运营节奏与用户实验，能把想法拆成可执行里程碑，适合补「有产品但缺节奏」的一侧。",
-    "ADC": "射手 · 技术/交付",
-    "ADC_desc": "擅长工程落地、架构与交付，能把方案写成稳定可用的产品，适合补「有想法但缺实现」的一侧。"
+    "JUNGLE": "增长与商务",
+    "JUNGLE_desc": "擅长获客、渠道与商务拓展，把产品与市场连接起来。",
+    "SUPPORT": "产品与运营",
+    "SUPPORT_desc": "擅长需求梳理、运营节奏与用户实验，能把想法拆成可执行计划。",
+    "ADC": "技术与交付",
+    "ADC_desc": "擅长工程落地、架构与交付，能把方案做成稳定可用的产品。"
   },
   "postType": {
     "NOTE": "图文",
@@ -577,7 +651,8 @@
     "toolMarket": "工具商城"
   },
   "navExtra": {
-    "main": "主导航"
+    "main": "主导航",
+    "appToolbar": "应用快捷操作"
   },
   "missions": {
     "home": {
@@ -728,7 +803,11 @@
       "newest": "最新",
       "searching": "检索中…",
       "resultCount": "共 {count} 条结果",
-      "empty": "没有匹配到内容，试试更短的关键词或切换类型筛选。"
+      "empty": "没有匹配到内容，试试更短的关键词或切换类型筛选。",
+      "findPartnerTitle": "找创业搭子",
+      "findPartnerDesc": "角色互补匹配，一键开聊",
+      "modelCtaTitle": "大模型口碑榜",
+      "modelCtaDesc": "看短评、写评分，按场景选型"
     },
     "workspace": {
       "title": "工作台",
@@ -788,8 +867,12 @@
         "match": { "label": "匹配", "desc": "算法推荐" },
         "tools": { "label": "工具", "desc": "导航/商城" },
         "settings": { "label": "设置", "desc": "账户 / 数据" },
-        "achievements": { "label": "成就墙", "desc": "徽章与分享" }
-      }
+        "achievements": { "label": "成就墙", "desc": "徽章与分享" },
+        "learn": { "label": "学习路线", "desc": "按步骤入门 Vibe Coding" }
+      },
+      "badgesPreviewTitle": "已解锁成就",
+      "badgesPreviewDesc": "已解锁 {count} 枚徽章",
+      "badgesPreviewCta": "查看全部"
     },
     "tools": {
       "title": "工具与商城",
@@ -844,24 +927,37 @@
       "noModels": "该场景暂无模型，试试「全部」"
     },
     "messages": {
-      "title": "消息",
+      "title": "团队消息",
+      "teamSubtitle": "与潜在创业伙伴一对一沟通，跟进匹配与组队进展",
+      "teamHubTitle": "协作收件箱",
+      "teamHubDesc": "来自匹配的对话会单独分组；你也可以发布招募帖，吸引伙伴主动联系。",
+      "postRecruit": "发招募帖",
+      "statTotal": "全部对话",
+      "statMatch": "来自匹配",
+      "statUnread": "未读",
+      "sectionMatch": "匹配伙伴",
+      "sectionOther": "其他对话",
+      "fromMatch": "匹配",
+      "noPreview": "暂无消息",
+      "chatTitle": "对话",
+      "chatHint": "在这里继续讨论合作、分工与下一步计划",
       "matchTitle": "创业伙伴匹配",
       "sent": "消息已发出",
       "sentHint": "对方可能稍后回复，记得回来查看会话。",
       "justNow": "刚刚",
-      "loginRequired": "登录后可使用私聊",
+      "loginRequired": "登录后可使用团队消息",
       "loginHint": "请先 登录 后再查看消息。",
-      "syncHint": "会话保存在服务器，多端同步。",
-      "conversations": "会话",
-      "goMatch": "去匹配",
-      "noConversations": "还没有会话。去「匹配」点「发起沟通」会自动创建一条。",
+      "syncHint": "消息保存在云端，换设备登录仍可查看。",
+      "conversations": "对话列表",
+      "goMatch": "去找伙伴",
+      "noConversations": "还没有对话。去「匹配」点「联系 TA」，或发一条招募帖吧。",
       "new": "新",
-      "selectConversation": "请选择会话",
-      "context": "上下文：{title}",
-      "selectHint": "从左侧选择会话，或通过匹配页发起沟通。",
-      "selectToChat": "选择左侧会话开始聊天。",
+      "selectConversation": "请选择一位伙伴",
+      "context": "来自：{title}",
+      "selectHint": "从左侧选一位伙伴，或先去匹配页认识新队友。",
+      "selectToChat": "从左侧选择对话开始聊天。",
       "inputPlaceholder": "输入消息…",
-      "selectFirst": "先选择会话",
+      "selectFirst": "请先选择对话",
       "send": "发送",
       "loading": "加载消息…"
     },
@@ -936,7 +1032,8 @@
       "feedTitle": "灵感瀑布流",
       "feedDesc": "笔记与讨论是你的公开信号——先表达，匹配引擎才读得懂你要什么、能做什么。",
       "dailyPath": "你的今日动线",
-      "dailyPathDesc": "小步快跑：任务、学习与匹配提示，把「随便看看」变成「真的在推进」。"
+      "dailyPathDesc": "小步快跑：任务、学习与匹配提示，把「随便看看」变成「真的在推进」。",
+      "moreModules": "展开更多：签到、学习、热榜等"
     }
   },
   "models": {
@@ -1335,7 +1432,7 @@
       "totalScore": "综合得分",
       "highMatch": "高匹配",
       "dimensions": {
-        "role": { "label": "角色互补", "hint": "ADC × JUNGLE 经典互补组合" },
+        "role": { "label": "角色互补", "hint": "技术交付 × 增长商务 · 经典互补组合" },
         "keywords": { "label": "能力关键词", "hint": "Jaccard 0.64 + 双向意向命中" },
         "direction": { "label": "方向语义", "hint": "出海 SaaS × 开发者工具 · bigram 重叠 0.7" },
         "interest": { "label": "兴趣向量", "hint": "笔记标签 cosine 相似度" },
@@ -1363,7 +1460,7 @@
         "gmv": "GMV 增速"
       },
       "events": {
-        "e1": "@林深 完成 ADC × JUNGLE 匹配 · 96 分",
+        "e1": "@林深 完成技术×增长互补匹配 · 96 分",
         "e2": "@阿语 发布长文「Cursor 与 Claude Code 工作流对比」",
         "e3": "@TZ 上架《出海 SaaS 落地模板》¥99",
         "e4": "@Yo 收藏 12 篇 LLM 应用笔记 · 触发兴趣升级",
@@ -1498,7 +1595,7 @@
       "score": "score",
       "liveTicker": "live ticker",
       "candidates": {
-        "0": { "title": "ADC × JUNGLE", "sub": "Next.js · 增长黑客" },
+        "0": { "title": "技术 × 增长", "sub": "Next.js · 增长黑客" },
         "1": { "title": "创作者 × 增长", "sub": "小红书运营 · 出海" },
         "2": { "title": "独立交付 × 设计", "sub": "LLM 应用 · 设计系统" }
       },

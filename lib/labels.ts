@@ -17,9 +17,9 @@ export function getPostTypeLabel(t: LabelFn, type: PostType): string {
 
 /** @deprecated Server-side matching reasons — use getRoleLabel with getTranslations in UI */
 export const ROLE_LABEL: Record<Role, string> = {
-  JUNGLE: "打野 · 增长/BD",
-  SUPPORT: "辅助 · 产品/运营",
-  ADC: "射手 · 技术/交付",
+  JUNGLE: "增长与商务",
+  SUPPORT: "产品与运营",
+  ADC: "技术与交付",
 };
 
 /** @deprecated Use getRoleMatchDesc with getTranslations('roles') in UI */

@@ -137,7 +137,6 @@ export function WorkspaceDashboard({ stats }: { stats: Stats }) {
       <PageHeader
         title={t("title")}
         subtitle={t("subtitle")}
-        backHref="/home"
       />
 
       <LearnProgressCard variant="full" />

@@ -3,14 +3,22 @@
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-import { MAIN_NAV_ITEMS, resolveTab } from "@/lib/navConfig";
+import { MAIN_NAV_ITEMS, resolveTab, type NavTab } from "@/lib/navConfig";
 import { useClientUserId } from "@/lib/hooks/useClientUserId";
 import { useConversationStats } from "@/lib/hooks/useConversationStats";
+import { useRequireAuth } from "@/lib/hooks/useRequireAuth";
+
+const TAB_REASON: Partial<Record<NavTab, string>> = {
+  "/match": "match",
+  "/messages": "messages",
+  "/me": "me",
+};
 
 export function BottomNav() {
   const pathname = usePathname() ?? "";
   const tab = resolveTab(pathname);
   const userId = useClientUserId();
+  const { isAuthenticated, isReady, requireAuth } = useRequireAuth();
   const { unread: msgUnread } = useConversationStats(Boolean(userId));
   const t = useTranslations("nav");
   const tNavExtra = useTranslations("navExtra");
@@ -27,18 +35,18 @@ export function BottomNav() {
               const active = tab === it.tab;
               const Icon = it.Icon;
               const showBadge = it.unread && msgUnread > 0;
-              return (
-                <Link
-                  key={it.href}
-                  href={it.href}
-                  aria-current={active ? "page" : undefined}
-                  className={clsx(
-                    "relative flex min-w-[52px] flex-1 flex-col items-center gap-1 rounded-2xl py-2 text-[10px] transition-all duration-300 motion-safe:active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 sm:min-w-[56px] sm:text-[11px]",
-                    active
-                      ? "bg-gradient-to-br from-violet-600 via-fuchsia-600 to-violet-700 text-white shadow-lg shadow-fuchsia-500/35 ring-1 ring-white/25"
-                      : "text-zinc-600 hover:bg-violet-50/80 hover:text-violet-900",
-                  )}
-                >
+              const needsAuth = it.tab !== "/home";
+              const reason = TAB_REASON[it.tab];
+
+              const className = clsx(
+                "relative flex min-w-[52px] flex-1 flex-col items-center gap-1 rounded-2xl py-2 text-[10px] transition-all duration-300 motion-safe:active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 sm:min-w-[56px] sm:text-[11px]",
+                active
+                  ? "bg-gradient-to-br from-violet-600 via-fuchsia-600 to-violet-700 text-white shadow-lg shadow-fuchsia-500/35 ring-1 ring-white/25"
+                  : "text-zinc-600 hover:bg-violet-50/80 hover:text-violet-900",
+              );
+
+              const inner = (
+                <>
                   {active ? (
                     <span className="absolute inset-x-2 -top-1 h-1 rounded-full bg-gradient-to-r from-amber-300 via-white to-cyan-200 opacity-90 blur-[2px] motion-safe:animate-pulse sm:inset-x-3" />
                   ) : null}
@@ -60,6 +68,33 @@ export function BottomNav() {
                   <span className={clsx("relative z-[1]", active && "font-bold tracking-wide")}>
                     {t(it.labelKey)}
                   </span>
+                </>
+              );
+
+              if (needsAuth && !isAuthenticated) {
+                return (
+                  <button
+                    key={it.href}
+                    type="button"
+                    disabled={!isReady}
+                    className={clsx(className, !isReady && "opacity-50")}
+                    onClick={() => {
+                      requireAuth({ next: it.href, reason: reason ?? "default" });
+                    }}
+                  >
+                    {inner}
+                  </button>
+                );
+              }
+
+              return (
+                <Link
+                  key={it.href}
+                  href={it.href}
+                  aria-current={active ? "page" : undefined}
+                  className={className}
+                >
+                  {inner}
                 </Link>
               );
             })}
