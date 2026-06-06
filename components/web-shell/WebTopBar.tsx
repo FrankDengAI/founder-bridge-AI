@@ -27,6 +27,9 @@ export function WebTopBar({ pageLabelKey }: Props) {
 
   return (
     <header className="sticky top-0 z-30 border-b border-violet-200/50 bg-white/90 backdrop-blur-xl">
+      {pageLabelKey ? (
+        <h1 className="sr-only">{t(pageLabelKey)}</h1>
+      ) : null}
       <div className="flex h-16 items-center gap-3 px-3 sm:gap-4 sm:px-4">
         <Link
           href="/home"
@@ -35,12 +38,18 @@ export function WebTopBar({ pageLabelKey }: Props) {
           VibeCoding
         </Link>
         {pageLabelKey ? (
-          <span className="shrink-0 rounded-lg bg-violet-50 px-2 py-0.5 text-sm font-semibold text-violet-800 lg:hidden">
+          <span
+            aria-hidden="true"
+            className="shrink-0 rounded-lg bg-violet-50 px-2 py-0.5 text-sm font-semibold text-violet-800 lg:hidden"
+          >
             {t(pageLabelKey)}
           </span>
         ) : null}
         {pageLabelKey ? (
-          <div className="hidden min-w-0 shrink-0 lg:block lg:max-w-[200px] xl:max-w-[240px]">
+          <div
+            aria-hidden="true"
+            className="hidden min-w-0 shrink-0 lg:block lg:max-w-[200px] xl:max-w-[240px]"
+          >
             <p className="truncate text-sm font-bold text-zinc-900">{t(pageLabelKey)}</p>
             {missionTagline ? (
               <p className="truncate text-[10px] leading-snug text-zinc-500">{missionTagline}</p>

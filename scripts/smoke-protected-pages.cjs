@@ -1,11 +1,15 @@
 /**
  * 部署前冒烟：登录后访问受保护页面不得 500
  * 用法：node scripts/smoke-protected-pages.cjs [baseUrl]
+ * 默认 http://localhost:3000（与 npm start / Playwright 一致），可用 SMOKE_BASE_URL 覆盖
  */
 require("dotenv").config({ path: ".env" });
 require("dotenv").config({ path: ".env.local", override: true });
 
-const base = (process.argv[2] || "http://localhost:3010").replace(/\/$/, "");
+const base = (process.argv[2] || process.env.SMOKE_BASE_URL || "http://localhost:3000").replace(
+  /\/$/,
+  "",
+);
 
 function parseSessionCookie(setCookie) {
   const m = String(setCookie || "").match(/vbc_session=([^;]+)/);
@@ -62,7 +66,7 @@ async function main() {
   }
   console.log("OK login");
 
-  const paths = ["/login", "/welcome/login", "/welcome/mode?next=/home", "/home", "/match", "/tools"];
+  const paths = ["/login", "/welcome/login", "/welcome/mode?next=/home", "/home", "/match", "/bounty", "/messages", "/tools"];
   let failed = false;
   for (const p of paths) {
     const r = await req(p, cookie);

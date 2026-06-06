@@ -3,6 +3,7 @@ export const AUTH_MODAL_REASONS = new Set([
   "default",
   "viewPost",
   "match",
+  "bounty",
   "messages",
   "me",
   "publish",

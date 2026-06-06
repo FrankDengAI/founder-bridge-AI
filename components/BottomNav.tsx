@@ -10,6 +10,7 @@ import { useProtectedNav } from "@/lib/hooks/useProtectedNav";
 
 const TAB_REASON: Partial<Record<NavTab, string>> = {
   "/match": "match",
+  "/bounty": "bounty",
   "/messages": "messages",
   "/me": "me",
 };
@@ -37,9 +38,17 @@ export function BottomNav() {
               const showBadge = it.unread && msgUnread > 0;
               const needsAuth = it.tab !== "/home";
               const reason = TAB_REASON[it.tab];
+              const qs =
+                typeof window !== "undefined"
+                  ? window.location.search.replace(/^\?/, "")
+                  : "";
+              const href =
+                it.tab === "/messages" && tab === "/messages" && qs
+                  ? `${it.href}?${qs}`
+                  : it.href;
 
               const className = clsx(
-                "relative flex min-w-[52px] flex-1 flex-col items-center gap-1 rounded-2xl py-2 text-[10px] transition-all duration-300 motion-safe:active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 sm:min-w-[56px] sm:text-[11px]",
+                "relative flex min-w-[44px] flex-1 flex-col items-center gap-0.5 rounded-2xl py-1.5 text-[9px] transition-all duration-300 motion-safe:active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 sm:min-w-[48px] sm:text-[10px]",
                 active
                   ? "bg-gradient-to-br from-violet-600 via-fuchsia-600 to-violet-700 text-white shadow-lg shadow-fuchsia-500/35 ring-1 ring-white/25"
                   : "text-zinc-600 hover:bg-violet-50/80 hover:text-violet-900",
@@ -89,7 +98,7 @@ export function BottomNav() {
               return (
                 <Link
                   key={it.href}
-                  href={it.href}
+                  href={href}
                   aria-current={active ? "page" : undefined}
                   className={className}
                 >

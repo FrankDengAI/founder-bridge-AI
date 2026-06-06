@@ -10,8 +10,8 @@ import type { Role } from "@/lib/domain/role";
 import { ROLES, isRole } from "@/lib/domain/role";
 import { getRoleLabel } from "@/lib/labels";
 import {
-  getDirectionPresets,
-  getKeywordSuggestions,
+  getDirectionKeys,
+  getKeywordKeys,
 } from "@/lib/matchUiCopy";
 import { completeActivationStep } from "@/lib/activation";
 import {
@@ -23,6 +23,8 @@ export function ProfileEditor() {
   const t = useTranslations("profileEditor");
   const tCommon = useTranslations("common");
   const tRoles = useTranslations("roles");
+  const td = useTranslations("matchDirections");
+  const tk = useTranslations("matchKeywords");
   const router = useRouter();
   const userId = useClientUserId();
   const [role, setRole] = useState<Role>("ADC");
@@ -106,8 +108,8 @@ export function ProfileEditor() {
     }
   };
 
-  const suggestions = getKeywordSuggestions(role);
-  const directions = getDirectionPresets(role);
+  const keywordKeys = getKeywordKeys(role);
+  const directionKeys = getDirectionKeys(role);
 
   return (
     <div className="space-y-4 pb-10">
@@ -148,16 +150,19 @@ export function ProfileEditor() {
         <section className="space-y-2">
           <p className="text-xs font-semibold text-zinc-900">{t("direction")}</p>
           <div className="flex flex-wrap gap-1.5">
-            {directions.map((d) => (
+            {directionKeys.map((key) => {
+              const label = td(key);
+              return (
               <button
-                key={d}
+                key={key}
                 type="button"
-                onClick={() => setDirection(d)}
+                onClick={() => setDirection(label)}
                 className="rounded-full border border-zinc-200 bg-white px-2.5 py-1 text-[10px] font-medium text-zinc-600 hover:border-violet-200"
               >
-                {d}
+                {label}
               </button>
-            ))}
+            );
+            })}
           </div>
           <input
             className="w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm"
@@ -169,18 +174,21 @@ export function ProfileEditor() {
         <section className="space-y-2">
           <p className="text-xs font-semibold text-zinc-900">{t("skillKeywords")}</p>
           <div className="flex flex-wrap gap-1.5">
-            {suggestions.slice(0, 10).map((s) => (
+            {keywordKeys.slice(0, 10).map((key) => {
+              const label = tk(key);
+              return (
               <button
-                key={s}
+                key={key}
                 type="button"
                 onClick={() =>
-                  setSkillKeywords((k) => (k.includes(s) ? k : [...k, s]))
+                  setSkillKeywords((k) => (k.includes(label) ? k : [...k, label]))
                 }
                 className="rounded-full bg-zinc-100 px-2 py-1 text-[10px] font-medium text-zinc-700"
               >
-                + {s}
+                + {label}
               </button>
-            ))}
+            );
+            })}
           </div>
           <div className="flex gap-2">
             <input

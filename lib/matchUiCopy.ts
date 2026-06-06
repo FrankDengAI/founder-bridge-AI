@@ -1,118 +1,117 @@
 import type { Role } from "@/lib/domain/role";
-import type { ScoreBreakdown } from "@/lib/matching/types";
 
-/** 射手 · 技术交付 */
-export const MATCH_KEYWORD_SUGGESTIONS_ADC = [
-  "Next.js",
-  "React",
-  "TypeScript",
-  "全栈",
-  "Python",
-  "Rust",
-  "LLM 应用",
-  "Agent 工程",
-  "RAG",
-  "设计系统",
-  "App 上架",
-  "支付接入",
+/** i18n keys under matchDirections.* */
+export const MATCH_DIRECTION_KEYS_ADC = [
+  "aiCodingEdu",
+  "globalSaas",
+  "devTools",
+  "agentWorkflow",
+  "verticalCopilot",
+  "enterpriseInternal",
 ] as const;
 
-/** 辅助 · 产品/运营/内容 */
-export const MATCH_KEYWORD_SUGGESTIONS_SUPPORT = [
-  "PRD",
-  "用户研究",
-  "竞品分析",
-  "AB 测试",
-  "产品设计",
-  "增长黑客",
-  "社群运营",
-  "内容创作",
-  "短视频脚本",
-  "小红书运营",
-  "数据分析",
-  "融资路演",
+export const MATCH_DIRECTION_KEYS_SUPPORT = [
+  "contentCommunity",
+  "aiCodingEdu",
+  "localLife",
+  "eduGamification",
+  "contentCollab",
+  "enterpriseDigital",
 ] as const;
 
-/** 打野 · 增长/资源 */
-export const MATCH_KEYWORD_SUGGESTIONS_JUNGLE = [
-  "出海",
-  "BD",
-  "渠道合作",
-  "私域裂变",
-  "短视频投放",
-  "品牌联名",
-  "供应链",
-  "融资对接",
-  "政府资源",
-  "线下活动",
-  "电商运营",
-  "KOL 合作",
+export const MATCH_DIRECTION_KEYS_JUNGLE = [
+  "globalSaas",
+  "ecommerceBrand",
+  "localLife",
+  "hardwareSoftware",
+  "channelDistribution",
+  "brandColdStart",
 ] as const;
 
-export const MATCH_KEYWORD_SUGGESTIONS_BY_ROLE: Record<
+export const MATCH_DIRECTION_KEYS_BY_ROLE: Record<
   Role,
   readonly string[]
 > = {
-  ADC: MATCH_KEYWORD_SUGGESTIONS_ADC,
-  SUPPORT: MATCH_KEYWORD_SUGGESTIONS_SUPPORT,
-  JUNGLE: MATCH_KEYWORD_SUGGESTIONS_JUNGLE,
+  ADC: MATCH_DIRECTION_KEYS_ADC,
+  SUPPORT: MATCH_DIRECTION_KEYS_SUPPORT,
+  JUNGLE: MATCH_DIRECTION_KEYS_JUNGLE,
 };
 
-/** @deprecated 使用 MATCH_KEYWORD_SUGGESTIONS_BY_ROLE[role] */
-export const MATCH_KEYWORD_SUGGESTIONS = [
-  ...MATCH_KEYWORD_SUGGESTIONS_ADC,
-  ...MATCH_KEYWORD_SUGGESTIONS_SUPPORT.slice(0, 4),
+/** i18n keys under matchKeywords.* */
+export const MATCH_KEYWORD_KEYS_ADC = [
+  "nextjs",
+  "react",
+  "typescript",
+  "fullstack",
+  "python",
+  "rust",
+  "llmApp",
+  "agentEng",
+  "rag",
+  "designSystem",
+  "appStore",
+  "payments",
 ] as const;
 
-export const MATCH_DIRECTION_PRESETS_ADC = [
-  "AI 编程教育",
-  "出海 SaaS",
-  "开发者工具",
-  "Agent 工作流平台",
-  "AI Copilot 垂直行业",
-  "企业内部管理系统",
+export const MATCH_KEYWORD_KEYS_SUPPORT = [
+  "prd",
+  "userResearch",
+  "competitive",
+  "abTest",
+  "productDesign",
+  "growthHacking",
+  "communityOps",
+  "contentCreation",
+  "shortVideo",
+  "xiaohongshu",
+  "dataAnalysis",
+  "fundraising",
 ] as const;
 
-export const MATCH_DIRECTION_PRESETS_SUPPORT = [
-  "内容社区",
-  "AI 编程教育",
-  "本地生活服务",
-  "教育 + 游戏化",
-  "内容合作 / 访谈",
-  "企业数字化",
+export const MATCH_KEYWORD_KEYS_JUNGLE = [
+  "globalExpansion",
+  "bd",
+  "channelPartnership",
+  "privateTraffic",
+  "shortVideoAds",
+  "brandCollab",
+  "supplyChain",
+  "fundingIntro",
+  "govResources",
+  "offlineEvents",
+  "ecommerceOps",
+  "kolPartnership",
 ] as const;
 
-export const MATCH_DIRECTION_PRESETS_JUNGLE = [
-  "出海 SaaS",
-  "电商品牌",
-  "本地生活服务",
-  "硬件 + 软件",
-  "渠道分销",
-  "品牌冷启动",
-] as const;
-
-export const MATCH_DIRECTION_PRESETS_BY_ROLE: Record<
-  Role,
-  readonly string[]
-> = {
-  ADC: MATCH_DIRECTION_PRESETS_ADC,
-  SUPPORT: MATCH_DIRECTION_PRESETS_SUPPORT,
-  JUNGLE: MATCH_DIRECTION_PRESETS_JUNGLE,
+export const MATCH_KEYWORD_KEYS_BY_ROLE: Record<Role, readonly string[]> = {
+  ADC: MATCH_KEYWORD_KEYS_ADC,
+  SUPPORT: MATCH_KEYWORD_KEYS_SUPPORT,
+  JUNGLE: MATCH_KEYWORD_KEYS_JUNGLE,
 };
 
-/** @deprecated 使用 MATCH_DIRECTION_PRESETS_BY_ROLE[role] */
-export const MATCH_DIRECTION_PRESETS = [
-  ...MATCH_DIRECTION_PRESETS_ADC,
-  "内容社区",
-  "电商品牌",
-] as const;
-
-export function getKeywordSuggestions(role: Role): readonly string[] {
-  return MATCH_KEYWORD_SUGGESTIONS_BY_ROLE[role];
+export function getDirectionKeys(role: Role): readonly string[] {
+  return MATCH_DIRECTION_KEYS_BY_ROLE[role];
 }
 
-export function getDirectionPresets(role: Role): readonly string[] {
-  return MATCH_DIRECTION_PRESETS_BY_ROLE[role];
+export function getKeywordKeys(role: Role): readonly string[] {
+  return MATCH_KEYWORD_KEYS_BY_ROLE[role];
+}
+
+export const MATCH_INTENT_CHOSEN_KEY = "vibe_match_intent_chosen";
+
+export function readMatchIntentChosen(): boolean {
+  if (typeof window === "undefined") return false;
+  return localStorage.getItem(MATCH_INTENT_CHOSEN_KEY) === "1";
+}
+
+export function writeMatchIntentChosen(): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(MATCH_INTENT_CHOSEN_KEY, "1");
+}
+
+export function clearMatchIntentChosen(): void {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(MATCH_INTENT_CHOSEN_KEY);
 }
 
 export const MATCH_ANIM_MODE_KEY = "vibe_match_anim_mode";
@@ -140,36 +139,24 @@ export function matchAnimDurationMs(mode: MatchAnimMode): number {
   return 30_000;
 }
 
-export const MATCH_BREAKDOWN_LABELS = {
-  role: {
-    title: "角色互补",
-    hint: "增长、产品运营与技术交付三类分工的协同程度",
-  },
-  keywords: {
-    title: "能力关键词",
-    hint: "技能标签重叠度，以及是否命中对方期望的伙伴类型",
-  },
-  direction: {
-    title: "方向一致",
-    hint: "创业方向与关注领域的相似程度",
-  },
-  interest: {
-    title: "兴趣画像",
-    hint: "综合关键词、方向与个人简介的整体契合度",
-  },
-  reciprocity: {
-    title: "双向意向",
-    hint: "你们是否互为对方勾选的「期望伙伴类型」",
-  },
-  budget: {
-    title: "资金档位",
-    hint: "投入意愿是否接近，差一档仍可能匹配",
-  },
-  activity: {
-    title: "活跃度",
-    hint: "资料完整度与近期更新情况",
-  },
-} as const satisfies Record<
-  keyof ScoreBreakdown,
-  { title: string; hint: string }
->;
+export type MatchIntent = "PARTNER" | "RECRUIT";
+
+export const MATCH_BREAKDOWN_LABEL_KEYS = {
+  role: { title: "roleTitle", hint: "roleHint" },
+  keywords: { title: "keywordsTitle", hint: "keywordsHint" },
+  direction: { title: "directionTitle", hint: "directionHint" },
+  interest: { title: "interestTitle", hint: "interestHint" },
+  reciprocity: { title: "reciprocityTitle", hint: "reciprocityHint" },
+  budget: { title: "budgetTitle", hint: "budgetHint" },
+  activity: { title: "activityTitle", hint: "activityHint" },
+} as const;
+
+/** @deprecated use getKeywordKeys + i18n */
+export function getKeywordSuggestions(role: Role): readonly string[] {
+  return MATCH_KEYWORD_KEYS_BY_ROLE[role];
+}
+
+/** @deprecated use getDirectionKeys + i18n */
+export function getDirectionPresets(role: Role): readonly string[] {
+  return MATCH_DIRECTION_KEYS_BY_ROLE[role];
+}

@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 import { prependLocalNotif } from "@/lib/notificationsLocal";
 
 type Author = { id: string; displayName: string; avatarUrl: string | null };
@@ -129,15 +129,13 @@ export function PostComments({ postId, viewerId }: Props) {
         <ul className="space-y-3">
           {items.map((c) => (
             <li key={c.id} className="flex gap-2 rounded-2xl bg-zinc-50/80 p-2 ring-1 ring-zinc-200/60 dark:bg-zinc-900/50 dark:ring-zinc-800">
-              <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl bg-zinc-200">
-                {c.author.avatarUrl ? (
-                  <Image src={c.author.avatarUrl} alt="" fill className="object-cover" />
-                ) : (
-                  <span className="flex h-full w-full items-center justify-center text-[10px] font-bold text-zinc-500">
-                    {c.author.displayName.slice(0, 1)}
-                  </span>
-                )}
-              </div>
+              <UserAvatar
+                userId={c.author.id}
+                displayName={c.author.displayName}
+                avatarUrl={c.author.avatarUrl}
+                size="xs"
+                className="rounded-xl"
+              />
               <div className="min-w-0 flex-1">
                 <p className="text-[11px] font-semibold text-zinc-900 dark:text-zinc-100">
                   {c.author.displayName}

@@ -6,7 +6,7 @@ import { useAuthGate } from "@/components/auth/AuthGateProvider";
 import { loginReasonFromNext } from "@/lib/auth/loginReason";
 import { stripLocalePrefix } from "@/lib/localePath";
 
-const GUEST_PROTECTED_PREFIXES = ["/match", "/messages", "/me", "/publish", "/search"];
+const GUEST_PROTECTED_PREFIXES = ["/match", "/bounty", "/messages", "/me", "/publish", "/search"];
 
 function isGuestProtectedPath(pathname: string): boolean {
   const base = stripLocalePrefix(pathname);
@@ -33,8 +33,13 @@ export function GuestTabGate() {
     }
     if (prompted.current === base) return;
     prompted.current = base;
+    const qs =
+      typeof window !== "undefined"
+        ? window.location.search.replace(/^\?/, "")
+        : "";
+    const next = qs ? `${base}?${qs}` : base;
     openLogin({
-      next: base,
+      next,
       reason: loginReasonFromNext(base) ?? "default",
     });
   }, [pathname, isReady, isAuthenticated, openLogin]);

@@ -45,7 +45,7 @@ export function getDefaultBackHref(pathname: string): string {
   if (base === "/welcome") return "/home";
 
   const tab = resolveTab(pathname);
-  if (tab === "/match" || tab === "/messages") return "/home";
+  if (tab === "/match" || tab === "/messages" || tab === "/bounty") return "/home";
   if (tab === "/me" && base !== "/me") return "/me";
 
   return "/home";
@@ -57,6 +57,7 @@ export function shouldAutoShowBack(pathname: string): boolean {
   const hubExact = new Set([
     "/home",
     "/match",
+    "/bounty",
     "/messages",
     "/me",
     "/tools",

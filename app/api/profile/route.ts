@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isRole } from "@/lib/domain/role";
 import { getUserIdFromCookies } from "@/lib/session";
+import { checkProfanity } from "@/lib/moderation/profanity";
+
+const MATCH_INTENTS = new Set(["PARTNER", "RECRUIT"]);
 
 function parseJsonArray(raw: string | null | undefined): string[] {
   if (!raw) return [];
@@ -39,6 +42,7 @@ export async function GET(req: Request) {
       direction: user.profile.direction,
       skillKeywords: parseJsonArray(user.profile.skillKeywords),
       desiredPartnerRoles: parseJsonArray(user.profile.desiredPartnerRoles),
+      matchIntent: user.profile.matchIntent,
       interestTags: parseJsonArray(user.profile.interestTags),
       remoteOk: user.profile.remoteOk,
       githubUrl: user.profile.githubUrl,
@@ -61,6 +65,7 @@ export async function PUT(req: Request) {
     direction?: string;
     skillKeywords?: string[];
     desiredPartnerRoles?: string[];
+    matchIntent?: string;
     interestTags?: string[];
     remoteOk?: boolean;
     githubUrl?: string;
@@ -70,6 +75,21 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "invalid role" }, { status: 400 });
   }
   const desired = (body.desiredPartnerRoles ?? []).filter(isRole);
+
+  const textFields = [body.intro, body.direction].filter(Boolean).join(" ");
+  if (textFields) {
+    const { blocked } = checkProfanity(textFields);
+    if (blocked) {
+      return NextResponse.json(
+        { error: "profanity", message: "Content contains prohibited words." },
+        { status: 422 },
+      );
+    }
+  }
+
+  if (body.matchIntent && !MATCH_INTENTS.has(body.matchIntent)) {
+    return NextResponse.json({ error: "invalid matchIntent" }, { status: 400 });
+  }
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) {
@@ -91,6 +111,10 @@ export async function PUT(req: Request) {
     desiredPartnerRoles:
       body.desiredPartnerRoles !== undefined
         ? JSON.stringify(desired)
+        : undefined,
+    matchIntent:
+      body.matchIntent && MATCH_INTENTS.has(body.matchIntent)
+        ? body.matchIntent
         : undefined,
     interestTags:
       body.interestTags !== undefined
@@ -121,6 +145,10 @@ export async function PUT(req: Request) {
       direction: body.direction ?? "",
       skillKeywords: JSON.stringify(body.skillKeywords ?? []),
       desiredPartnerRoles: JSON.stringify(desired),
+      matchIntent:
+        body.matchIntent && MATCH_INTENTS.has(body.matchIntent)
+          ? body.matchIntent
+          : "PARTNER",
     },
     update: Object.fromEntries(
       Object.entries(data).filter(([, v]) => v !== undefined),

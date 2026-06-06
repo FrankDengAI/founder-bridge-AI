@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { Users } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 type Item = {
   postId: string;
@@ -40,15 +40,13 @@ export function FollowingActivityStrip() {
               href={`/post/${it.postId}`}
               className="flex items-center gap-2 rounded-xl bg-white/70 px-2 py-2 ring-1 ring-cyan-100/80 transition hover:bg-white"
             >
-              <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-xl bg-cyan-100">
-                {it.avatarUrl ? (
-                  <Image src={it.avatarUrl} alt="" fill className="object-cover" unoptimized />
-                ) : (
-                  <span className="flex h-full w-full items-center justify-center text-[10px] font-bold text-cyan-800">
-                    {it.authorName.slice(0, 1)}
-                  </span>
-                )}
-              </div>
+              <UserAvatar
+                userId={it.authorId}
+                displayName={it.authorName}
+                avatarUrl={it.avatarUrl}
+                size="xs"
+                className="rounded-xl"
+              />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[11px] font-semibold text-zinc-900">{it.title}</p>
                 <p className="text-[10px] text-zinc-500">{it.authorName}</p>

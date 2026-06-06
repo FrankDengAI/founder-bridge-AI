@@ -1,21 +1,13 @@
 import { FeedCard } from "@/components/FeedCard";
-import { ContinueReading } from "@/components/home/ContinueReading";
+import { HomeClearLanding } from "@/components/home/HomeClearLanding";
 import { DiscoveryAppChrome } from "@/components/home/DiscoveryAppChrome";
-import { HomeCommunityHub } from "@/components/home/HomeCommunityHub";
-import { HomeHotRanking } from "@/components/home/HomeHotRanking";
+import { HomePlazaSection } from "@/components/home/HomePlazaSection";
+import { DiscoveryPlazaStrip } from "@/components/home/DiscoveryPlazaStrip";
 import { HomeFeedGrid } from "@/components/home/HomeFeedGrid";
 import { HomeInfiniteFeed } from "@/components/home/HomeInfiniteFeed";
 import { WebHomeBody } from "@/components/home/WebHomeBody";
 import { AppOnly } from "@/components/view-mode/AppOnly";
 import { WebOnly } from "@/components/view-mode/WebOnly";
-import { LearnProgressCard } from "@/components/learn/LearnProgressCard";
-import { ActivationJourney } from "@/components/retention/ActivationJourney";
-import { FollowingActivityStrip } from "@/components/retention/FollowingActivityStrip";
-import { PublishDraftBanner } from "@/components/retention/PublishDraftBanner";
-import { SocialProofTicker } from "@/components/retention/SocialProofTicker";
-import { StreakRiskBanner } from "@/components/retention/StreakRiskBanner";
-import { WeekReviewCard } from "@/components/retention/WeekReviewCard";
-import { HomeClearLanding } from "@/components/home/HomeClearLanding";
 import { HomeDiscoveryMeta } from "@/components/home/HomeDiscoveryMeta";
 import { HomeSavedFeed } from "@/components/home/HomeSavedFeed";
 import { HomeToolbar } from "@/components/home/HomeToolbar";
@@ -49,33 +41,23 @@ export default async function HomePage({
   const retentionBlocks = (
     <WebOnly>
       <>
-        <HomeClearLanding />
-        <details className="rounded-2xl border border-zinc-200/80 bg-white/80 px-4 py-3 text-sm shadow-sm">
-          <summary className="cursor-pointer font-semibold text-zinc-800">
-            {tExtra("moreModules")}
-          </summary>
-          <div className="mt-4 space-y-4">
-            <HomeCommunityHub
-              modelCount={metaCounts.models}
-              reviewCount={metaCounts.reviews}
-            />
-            <StreakRiskBanner />
-            <LearnProgressCard variant="compact" />
-            <ActivationJourney />
-            <WeekReviewCard />
-            <PublishDraftBanner />
-            <SocialProofTicker reviewCount={metaCounts.reviews} />
-            <FollowingActivityStrip />
-            <ContinueReading />
-            <HomeHotRanking />
-          </div>
-        </details>
+        {view !== "plaza" ? <HomeClearLanding /> : null}
+        <HomePlazaSection
+          modelCount={metaCounts.models}
+          reviewCount={metaCounts.reviews}
+        />
       </>
     </WebOnly>
   );
 
   const currentView =
-    view === "for-you" ? "for-you" : view === "saved" ? "saved" : "default";
+    view === "for-you"
+      ? "for-you"
+      : view === "saved"
+        ? "saved"
+        : view === "plaza"
+          ? "plaza"
+          : "default";
 
   if (view === "saved") {
     return (
@@ -155,7 +137,14 @@ export default async function HomePage({
             sort={sort}
             view={view === "for-you" ? "for-you" : undefined}
           />
-          <HomeInfiniteFeed
+          <DiscoveryPlazaStrip />
+          {view === "plaza" ? (
+            <HomePlazaSection
+              modelCount={metaCounts.models}
+              reviewCount={metaCounts.reviews}
+            />
+          ) : (
+            <HomeInfiniteFeed
             initialPosts={feedItems}
             initialNextCursor={nextCursor}
             type={type}
@@ -163,6 +152,7 @@ export default async function HomePage({
             view={view === "for-you" ? "for-you" : undefined}
             emptyMessage={tExtra("empty")}
           />
+          )}
         </div>
       </AppOnly>
 
@@ -180,7 +170,7 @@ export default async function HomePage({
           <HomeDiscoveryMeta
             currentType={type}
             sort={sort}
-            currentView={currentView}
+            currentView={currentView === "plaza" ? "default" : currentView}
             counts={metaCounts}
           />
           <WebHomeBody retention={retentionBlocks} feed={webFeed} />

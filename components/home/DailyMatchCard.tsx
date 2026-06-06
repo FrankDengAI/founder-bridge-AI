@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 import { Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -126,15 +126,12 @@ export function DailyMatchCard() {
         {t("dailyPick")}
       </p>
       <div className="mt-2 flex items-center gap-3">
-        <div className="relative h-12 w-12 overflow-hidden rounded-2xl bg-violet-100">
-          {c.avatarUrl ? (
-            <Image src={c.avatarUrl} alt="" fill className="object-cover" unoptimized />
-          ) : (
-            <span className="flex h-full w-full items-center justify-center text-sm font-bold text-violet-800">
-              {c.displayName.slice(0, 1)}
-            </span>
-          )}
-        </div>
+        <UserAvatar
+          userId={c.userId}
+          displayName={c.displayName}
+          avatarUrl={c.avatarUrl}
+          size="md"
+        />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-zinc-900">{c.displayName}</p>
           <p className="text-[10px] text-zinc-600">

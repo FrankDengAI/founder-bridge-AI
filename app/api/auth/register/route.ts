@@ -4,6 +4,7 @@ import { isRole } from "@/lib/domain/role";
 import { hashPassword, validatePasswordStrength } from "@/lib/auth/password";
 import { setSessionOnResponse } from "@/lib/auth/sessionStore";
 import { normalizeUsername, validateUsername } from "@/lib/auth/username";
+import { checkProfanity } from "@/lib/moderation/profanity";
 import { dbErrorMessage, authConfigErrorMessage } from "@/lib/dbErrorMessage";
 
 export async function POST(req: Request) {
@@ -29,6 +30,13 @@ export async function POST(req: Request) {
 
   const name = body.displayName?.trim();
   if (!name) return NextResponse.json({ error: "请输入昵称" }, { status: 400 });
+
+  if (checkProfanity(name).blocked || checkProfanity(username).blocked) {
+    return NextResponse.json(
+      { error: "profanity", message: "Content contains prohibited words." },
+      { status: 422 },
+    );
+  }
 
   try {
     const existing = await prisma.user.findUnique({ where: { username } });

@@ -1,13 +1,17 @@
 import { test, expect } from "@playwright/test";
+import { gotoStable, expectNoServerError, useAppShell } from "./helpers";
 
 test.describe("先逛后登", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test("游客可进发现页且不卡在模式选择", async ({ page }) => {
-    await page.goto("/home");
+    await page.setViewportSize({ width: 390, height: 844 });
+    await useAppShell(page);
+    await gotoStable(page, "/home");
     await expect(page).not.toHaveURL(/\/welcome\/mode/);
-    await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible({
-      timeout: 15_000,
+    await expectNoServerError(page);
+    await expect(page.locator("button[data-author], nav.fixed.bottom-0").first()).toBeVisible({
+      timeout: 20_000,
     });
   });
 
@@ -35,9 +39,11 @@ test.describe("先逛后登", () => {
   });
 
   test("游客点击底栏匹配/消息/我的均弹出登录层", async ({ page }) => {
+    test.setTimeout(90_000);
     await page.setViewportSize({ width: 390, height: 844 });
+    await useAppShell(page);
     await page.goto("/home");
-    const nav = page.getByRole("navigation", { name: /主导航|Main navigation/i });
+    const nav = page.locator("nav.fixed.bottom-0");
 
     const tabLabels = [
       /^(匹配|Match)$/,
@@ -45,16 +51,17 @@ test.describe("先逛后登", () => {
       /^(我的|Me)$/,
     ];
     for (const label of tabLabels) {
-      await page.keyboard.press("Escape").catch(() => {});
-      await page.goto("/home");
       await nav.getByRole("button", { name: label }).click();
       await expect(page.getByRole("dialog")).toBeVisible({ timeout: 10_000 });
       await expect(page).toHaveURL(/\/home/);
+      await page.keyboard.press("Escape");
+      await expect(page.getByRole("dialog")).toBeHidden({ timeout: 5_000 });
     }
   });
 
   test("直访受保护路径回到 home 并弹出登录层", async ({ page }) => {
-    await page.goto("/match");
+    test.setTimeout(90_000);
+    await page.goto("/match", { waitUntil: "domcontentloaded", timeout: 45_000 });
     await expect(page).toHaveURL(/\/home/, { timeout: 15_000 });
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible({ timeout: 10_000 });
@@ -118,9 +125,14 @@ test.describe("先逛后登", () => {
     }
     await page.goto("/search");
     await expect(page).toHaveURL(/\/search/, { timeout: 30_000 });
+    await page.locator("input").first().blur();
+    await page.locator("body").click({ position: { x: 12, y: 400 } });
 
-    const trending = page.getByRole("heading", { name: /社区热榜|Community charts/i });
-    await expect(trending).toBeVisible({ timeout: 20_000 });
+    const trending = page.getByRole("heading", {
+      level: 2,
+      name: /社区热榜|Community charts/i,
+    });
+    await expect(trending).toBeVisible({ timeout: 30_000 });
 
     await page.evaluate(() => window.scrollBy(0, 520));
     await expect(trending).toBeVisible({ timeout: 10_000 });

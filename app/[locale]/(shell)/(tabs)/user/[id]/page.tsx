@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import Image from "next/image";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { MessageCircle } from "lucide-react";
@@ -11,7 +11,7 @@ import { getUserIdFromCookies } from "@/lib/session";
 import { isRole } from "@/lib/domain/role";
 import { getRoleLabel } from "@/lib/labels";
 
-type Props = { params: { id: string } };
+type Props = { params: { id: string }; searchParams?: { from?: string } };
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +24,7 @@ function parseJsonArray(raw: string): string[] {
   }
 }
 
-export default async function UserPage({ params }: Props) {
+export default async function UserPage({ params, searchParams }: Props) {
   const t = await getTranslations("pages.userProfile");
   const tRoles = await getTranslations("roles");
   const viewerId = await getUserIdFromCookies();
@@ -66,22 +66,23 @@ export default async function UserPage({ params }: Props) {
 
   return (
     <div className="space-y-4 pb-10">
-      <PageHeader title={t("title")} backHref="/home" />
+      <PageHeader
+        title={t("title")}
+        backHref={searchParams?.from === "match" ? "/match" : "/home"}
+      />
 
       <section className="glass-panel overflow-hidden rounded-3xl shadow-soft ring-1 ring-white/70">
         <div className="relative h-28 bg-gradient-to-r from-brand-600 via-fuchsia-600 to-sky-500">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.35),transparent_55%)]" />
         </div>
         <div className="relative -mt-10 flex items-end gap-3 px-4 pb-4">
-          <div className="relative h-20 w-20 overflow-hidden rounded-3xl bg-white ring-4 ring-white shadow-sm">
-            {user.avatarUrl ? (
-              <Image src={user.avatarUrl} alt="" fill className="object-cover" />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-lg font-bold text-zinc-500">
-                VC
-              </div>
-            )}
-          </div>
+          <UserAvatar
+            userId={user.id}
+            displayName={user.displayName}
+            avatarUrl={user.avatarUrl}
+            size="xl"
+            className="ring-4 ring-white shadow-sm"
+          />
           <div className="min-w-0 flex-1 pb-1">
             <div className="flex flex-wrap items-start justify-between gap-2">
               <h1 className="truncate text-lg font-semibold text-zinc-950">

@@ -11,6 +11,11 @@ type Props = {
   className?: string;
 };
 
+function currentSearchQuery(): string {
+  if (typeof window === "undefined") return "";
+  return window.location.search.replace(/^\?/, "");
+}
+
 export function LocaleSwitcher({ variant = "compact", className }: Props) {
   const locale = useLocale() as AppLocale;
   const router = useRouter();
@@ -19,11 +24,13 @@ export function LocaleSwitcher({ variant = "compact", className }: Props) {
 
   const switchTo = (next: AppLocale) => {
     if (next === locale) return;
-    router.replace(pathname, { locale: next });
+    const qs = currentSearchQuery();
+    const href = qs ? `${pathname}?${qs}` : pathname;
+    router.replace(href, { locale: next });
     window.setTimeout(() => {
       if (typeof window === "undefined") return;
       if (currentBrowserLocale() !== next) {
-        window.location.assign(localizedPath(pathname || "/", next));
+        window.location.assign(localizedPath(href || "/", next));
       }
     }, 120);
   };

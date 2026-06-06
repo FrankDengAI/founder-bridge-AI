@@ -2,11 +2,9 @@
 
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { Command, MessageCircle, PenSquare, Search } from "lucide-react";
+import { Command, PenSquare, Search } from "lucide-react";
 import clsx from "clsx";
 import { NotificationHub } from "@/components/NotificationHub";
-import { useConversationStats } from "@/lib/hooks/useConversationStats";
-import { useSessionEnabled } from "@/lib/hooks/useClientUserId";
 import { useProtectedNav } from "@/lib/hooks/useProtectedNav";
 
 type Props = {
@@ -19,34 +17,13 @@ const iconBtnClass =
 export function AppQuickActions({ className }: Props) {
   const tApp = useTranslations("homeUi.discoveryApp");
   const tc = useTranslations("common");
-  const sessionEnabled = useSessionEnabled();
   const { authed, isReady, guardNav } = useProtectedNav();
-  const { unread: msgUnread } = useConversationStats(sessionEnabled);
 
   const guestBtnClass = (base: string) => clsx(base, !isReady && "opacity-70");
 
   return (
     <div className={clsx("flex shrink-0 items-center gap-0.5", className)}>
       <NotificationHub size="compact" />
-      {authed ? (
-        <Link href="/messages" className={clsx("relative", iconBtnClass)} aria-label={tApp("messages")}>
-          <MessageCircle className="h-4 w-4" />
-          {msgUnread > 0 ? (
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-bold text-white">
-              {msgUnread > 9 ? "9+" : msgUnread}
-            </span>
-          ) : null}
-        </Link>
-      ) : (
-        <button
-          type="button"
-          className={guestBtnClass(iconBtnClass)}
-          aria-label={tApp("messages")}
-          onClick={() => guardNav("/messages", "messages")}
-        >
-          <MessageCircle className="h-4 w-4" />
-        </button>
-      )}
       <button
         type="button"
         title={tc("commandPalette")}

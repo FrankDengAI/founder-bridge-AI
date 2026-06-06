@@ -35,8 +35,9 @@ model User {
 
   authTokens    AuthToken[]
   sessions      Session[]
-  sentMessages  Message[]                  @relation("MessageSender")
-  conversations ConversationParticipant[]
+  sentMessages   Message[]                  @relation("MessageSender")
+  conversations  ConversationParticipant[]
+  bountyRequests BountyRequest[]
 }
 
 model UserProfile {
@@ -50,6 +51,7 @@ model UserProfile {
   skillKeywords        String    @default("[]")
   interestTags         String    @default("[]")
   desiredPartnerRoles  String    @default("[]")
+  matchIntent          String    @default("PARTNER")
   remoteOk             Boolean   @default(false)
   githubUrl            String    @default("")
   verifiedAt           DateTime?
@@ -278,6 +280,21 @@ model Session {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+model BountyRequest {
+  id          String   @id @default(cuid())
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  title       String
+  description String   @default("")
+  keywords    String   @default("[]")
+  budgetLabel String   @default("")
+  status      String   @default("open")
+  createdAt   DateTime @default(now())
+
+  @@index([status, createdAt])
+  @@index([authorId])
 }
 
 model Conversation {

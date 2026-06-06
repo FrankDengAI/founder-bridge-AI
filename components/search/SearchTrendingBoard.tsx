@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { AuthLoginLink } from "@/components/auth/AuthLoginLink";
 import {
   ChevronRight,
@@ -77,8 +77,12 @@ function heatScoreModels(rating: number, reviews: number) {
   return Math.round(rating * 22 + reviews * 3 + 50);
 }
 
-function formatHeat(n: number) {
-  if (n >= 10000) return `${(n / 10000).toFixed(1)}万`;
+function formatHeat(n: number, locale: string) {
+  if (n >= 10000) {
+    return locale === "zh"
+      ? `${(n / 10000).toFixed(1)}万` // i18n-ok zh heat suffix
+      : `${(n / 10000).toFixed(1)}w`;
+  }
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
   return String(n);
 }
@@ -112,6 +116,7 @@ type Props = {
 };
 
 export function SearchTrendingBoard({ data }: Props) {
+  const locale = useLocale();
   const t = useTranslations("pages.search");
   const tw = useTranslations("webShell");
   const [tab, setTab] = useState<TabId>("all");
@@ -237,7 +242,7 @@ export function SearchTrendingBoard({ data }: Props) {
                   <Crown className="h-4 w-4 text-amber-500" aria-hidden />
                 ) : (
                   <span className="text-[10px] font-bold tabular-nums text-orange-600">
-                    {formatHeat(item.heat)}
+                    {formatHeat(item.heat, locale)}
                   </span>
                 )}
               </div>
@@ -288,7 +293,7 @@ export function SearchTrendingBoard({ data }: Props) {
                 </div>
                 <span className="shrink-0 text-right">
                   <span className="block text-xs font-bold tabular-nums text-orange-600">
-                    {formatHeat(item.heat)}
+                    {formatHeat(item.heat, locale)}
                   </span>
                   <span className="text-[10px] text-zinc-400">{item.heatLabel}</span>
                 </span>

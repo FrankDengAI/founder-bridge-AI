@@ -15,6 +15,7 @@ import { useViewModeLabel } from "@/lib/hooks/useViewModeLabel";
 
 const TAB_REASON: Partial<Record<NavTab, string>> = {
   "/match": "match",
+  "/bounty": "bounty",
   "/messages": "messages",
   "/me": "me",
 };

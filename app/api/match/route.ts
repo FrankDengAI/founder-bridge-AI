@@ -100,7 +100,7 @@ export async function POST(req: Request) {
     draft?: Draft;
   };
   const userId = sessionUserId;
-  const limit = Math.min(20, Math.max(1, body.limit ?? 10));
+  const limit = Math.min(20, Math.max(1, body.limit ?? 3));
 
   const meRow = await prisma.user.findUnique({
     where: { id: userId },

@@ -64,7 +64,7 @@ export function MePanel() {
     setMsg(null);
     try {
       const res = await fetch(`/api/profile?userId=${encodeURIComponent(id)}`);
-      if (!res.ok) throw new Error("加载失败");
+      if (!res.ok) throw new Error("load_fail");
       const data = (await res.json()) as {
         user: { displayName: string };
         profile: { role: string };
@@ -76,7 +76,7 @@ export function MePanel() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (authLoading) return;

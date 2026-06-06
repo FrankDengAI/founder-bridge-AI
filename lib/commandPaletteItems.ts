@@ -10,6 +10,7 @@ import {
   Search,
   Settings,
   Sparkles,
+  HandCoins,
   UserRound,
   Wrench,
   Zap,
@@ -110,6 +111,15 @@ const COMMAND_ITEM_DEFS: CommandItem[] = [
     href: "/match",
     keywords: ["伙伴", "cofounder", "组队", "match"],
     Icon: Sparkles,
+  },
+  {
+    id: "bounty",
+    groupKey: "create",
+    labelKey: "bounty.label",
+    hintKey: "bounty.hint",
+    href: "/bounty",
+    keywords: ["悬赏", "需求", "bounty", "need", "hire"],
+    Icon: HandCoins,
   },
   {
     id: "saved",

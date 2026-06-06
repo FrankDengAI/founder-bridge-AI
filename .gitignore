@@ -14,7 +14,8 @@
 # production
 /build
 
-# misc
+# user uploads (message images)
+/public/uploads/
 .DS_Store
 *.pem
 npm-debug.log*

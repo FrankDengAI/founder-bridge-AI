@@ -2,6 +2,7 @@
 const REASON_BY_PREFIX: readonly [string, string][] = [
   ["/post/", "viewPost"],
   ["/match", "match"],
+  ["/bounty", "bounty"],
   ["/messages", "messages"],
   ["/me", "me"],
   ["/publish", "publish"],

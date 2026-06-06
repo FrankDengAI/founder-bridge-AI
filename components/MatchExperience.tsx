@@ -1,38 +1,37 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Image from "next/image";
-import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import {
-  ChevronDown,
-  ChevronUp,
-  Lightbulb,
-  Target,
-  Users,
-} from "lucide-react";
+import { Target, Users } from "lucide-react";
 import { useClientUserId, useCurrentUser } from "@/lib/hooks/useClientUserId";
 import type { Role } from "@/lib/domain/role";
 import { ROLES, isRole } from "@/lib/domain/role";
 import { getRoleLabel, getRoleMatchDesc } from "@/lib/labels";
-import type { ScoreBreakdown } from "@/lib/matching/types";
 import {
-  MATCH_BREAKDOWN_LABELS,
-  getDirectionPresets,
-  getKeywordSuggestions,
+  getDirectionKeys,
+  getKeywordKeys,
   matchAnimDurationMs,
   readMatchAnimMode,
-  type MatchAnimMode,
+  readMatchIntentChosen,
+  writeMatchIntentChosen,
+  clearMatchIntentChosen,
   writeMatchAnimMode,
+  type MatchAnimMode,
+  type MatchIntent,
 } from "@/lib/matchUiCopy";
+import {
+  clearMatchResultCache,
+  readMatchResultCache,
+  writeMatchResultCache,
+  type CachedMatchCandidate,
+  type ProfileFingerprint,
+} from "@/lib/matchResultCache";
 import { completeActivationStep } from "@/lib/activation";
 import { completeMission, trackEvent } from "@/lib/retention";
-import { startConversation } from "@/lib/chat/client";
-import { DailyMatchCard } from "@/components/home/DailyMatchCard";
 import { PageHeader } from "@/components/PageHeader";
 import { MatchProgress } from "./MatchProgress";
-import { useIsWebMode } from "@/lib/hooks/useIsWebMode";
-import clsx from "clsx";
+import { MatchIntentGate } from "@/components/match/MatchIntentGate";
+import { MatchResultsModal } from "@/components/match/MatchResultsModal";
 
 type ProfilePayload = {
   role: Role;
@@ -41,162 +40,17 @@ type ProfilePayload = {
   direction: string;
   skillKeywords: string[];
   desiredPartnerRoles: Role[];
+  matchIntent: MatchIntent;
 };
-
-type MatchCandidate = {
-  userId: string;
-  displayName: string;
-  avatarUrl: string | null;
-  role: string;
-  score: number;
-  breakdown: ScoreBreakdown;
-  reasons: string[];
-  introPreview?: string;
-  direction?: string;
-};
-
-function scoreIndex(score: number) {
-  const n = Math.round(Math.min(1, Math.max(0, score)) * 100);
-  if (n >= 76) return { n, tierKey: "tierHigh" as const, className: "bg-emerald-50 text-emerald-900 ring-emerald-200/80" };
-  if (n >= 58) return { n, tierKey: "tierMid" as const, className: "bg-amber-50 text-amber-950 ring-amber-200/80" };
-  return { n, tierKey: "tierExplore" as const, className: "bg-zinc-100 text-zinc-700 ring-zinc-200/80" };
-}
-
-/** 维度配色（与品牌站雷达图色系一致） */
-const DIM_COLOR: Record<keyof ScoreBreakdown, { bar: string; chip: string }> = {
-  role: { bar: "from-violet-500 to-fuchsia-500", chip: "text-violet-700 bg-violet-100" },
-  keywords: { bar: "from-fuchsia-500 to-rose-500", chip: "text-fuchsia-700 bg-fuchsia-100" },
-  direction: { bar: "from-cyan-500 to-violet-500", chip: "text-cyan-700 bg-cyan-100" },
-  interest: { bar: "from-amber-500 to-rose-500", chip: "text-amber-700 bg-amber-100" },
-  reciprocity: { bar: "from-rose-500 to-pink-500", chip: "text-rose-700 bg-rose-100" },
-  budget: { bar: "from-emerald-500 to-cyan-500", chip: "text-emerald-700 bg-emerald-100" },
-  activity: { bar: "from-lime-500 to-emerald-500", chip: "text-lime-700 bg-lime-100" },
-};
-
-/** 候选 mini 雷达图（SVG） */
-function CandidateRadar({ b }: { b: ScoreBreakdown }) {
-  const keys = Object.keys(MATCH_BREAKDOWN_LABELS) as (keyof ScoreBreakdown)[];
-  const cx = 70;
-  const cy = 70;
-  const max = 56;
-  const step = (Math.PI * 2) / keys.length;
-  const pts = keys
-    .map((k, i) => {
-      const a = -Math.PI / 2 + i * step;
-      const r = Math.min(1, Math.max(0, b[k])) * max;
-      return [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
-    })
-    .map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`)
-    .join(" ");
-
-  return (
-    <svg viewBox="0 0 140 140" className="h-32 w-32">
-      <defs>
-        <radialGradient id="cand-radar-fill" cx="50%" cy="50%">
-          <stop offset="0%" stopColor="rgba(167,139,250,0.45)" />
-          <stop offset="100%" stopColor="rgba(236,72,153,0.18)" />
-        </radialGradient>
-      </defs>
-      {[0.33, 0.66, 1].map((r, i) => (
-        <circle
-          key={i}
-          cx={cx}
-          cy={cy}
-          r={max * r}
-          fill="none"
-          stroke="rgba(139,92,246,0.18)"
-          strokeWidth="0.7"
-        />
-      ))}
-      {keys.map((_, i) => {
-        const a = -Math.PI / 2 + i * step;
-        return (
-          <line
-            key={i}
-            x1={cx}
-            y1={cy}
-            x2={cx + Math.cos(a) * max}
-            y2={cy + Math.sin(a) * max}
-            stroke="rgba(139,92,246,0.15)"
-            strokeWidth="0.7"
-          />
-        );
-      })}
-      <polygon
-        points={pts}
-        fill="url(#cand-radar-fill)"
-        stroke="rgba(124,58,237,0.85)"
-        strokeWidth="1.3"
-        strokeLinejoin="round"
-      />
-      {keys.map((k, i) => {
-        const a = -Math.PI / 2 + i * step;
-        const r = Math.min(1, Math.max(0, b[k])) * max;
-        const x = cx + Math.cos(a) * r;
-        const y = cy + Math.sin(a) * r;
-        return <circle key={k} cx={x} cy={y} r="2" fill="#7c3aed" />;
-      })}
-    </svg>
-  );
-}
-
-function BreakdownBars({ b }: { b: ScoreBreakdown }) {
-  const entries = (Object.keys(MATCH_BREAKDOWN_LABELS) as (keyof ScoreBreakdown)[]).map(
-    (key) => ({
-      key,
-      value: b[key],
-      ...MATCH_BREAKDOWN_LABELS[key],
-    }),
-  );
-  return (
-    <div className="mt-3 grid gap-3 sm:grid-cols-[auto_1fr] sm:gap-4">
-      {/* 左侧 mini 雷达 */}
-      <div className="flex justify-center sm:block">
-        <CandidateRadar b={b} />
-      </div>
-      {/* 右侧逐项 bar */}
-      <div className="space-y-2.5">
-        {entries.map((row) => {
-          const c = DIM_COLOR[row.key];
-          const pct = Math.round(Math.min(1, row.value) * 100);
-          return (
-            <div key={row.key}>
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[11px] font-medium text-zinc-800">
-                  {row.title}
-                </span>
-                <span
-                  className={`rounded-full px-1.5 py-0.5 text-[10px] font-mono font-semibold tabular-nums ${c.chip}`}
-                >
-                  {pct}
-                </span>
-              </div>
-              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-zinc-100">
-                <div
-                  className={`h-full rounded-full bg-gradient-to-r ${c.bar}`}
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-              <p className="mt-0.5 text-[10px] leading-snug text-zinc-500">
-                {row.hint}
-              </p>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
 
 const BUDGET_TIERS = [0, 1, 2, 3, 4] as const;
 
 export function MatchExperience() {
   const t = useTranslations("match");
   const te = useTranslations("matchExtra");
-  const tNav = useTranslations("nav");
+  const td = useTranslations("matchDirections");
+  const tk = useTranslations("matchKeywords");
   const tRoles = useTranslations("roles");
-  const isWeb = useIsWebMode();
-  const router = useRouter();
   const userId = useClientUserId();
   const { user: meUser } = useCurrentUser();
   const [kwInput, setKwInput] = useState("");
@@ -207,28 +61,37 @@ export function MatchExperience() {
     direction: "",
     skillKeywords: [],
     desiredPartnerRoles: ["JUNGLE", "SUPPORT"],
+    matchIntent: "PARTNER",
   });
+  const [intentSelected, setIntentSelected] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [running, setRunning] = useState(false);
-  const [results, setResults] = useState<MatchCandidate[] | null>(null);
+  const [resultsOpen, setResultsOpen] = useState(false);
+  const [results, setResults] = useState<CachedMatchCandidate[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [pendingResult, setPendingResult] = useState<MatchCandidate[] | null>(
-    null,
-  );
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [pendingResult, setPendingResult] = useState<CachedMatchCandidate[] | null>(null);
   const [animMode, setAnimMode] = useState<MatchAnimMode>("fast");
+
+  const isRecruit = form.matchIntent === "RECRUIT";
 
   useEffect(() => {
     setAnimMode(readMatchAnimMode());
   }, []);
 
-  const keywordSuggestions = useMemo(
-    () => getKeywordSuggestions(form.role),
-    [form.role],
-  );
-  const directionPresets = useMemo(
-    () => getDirectionPresets(form.role),
-    [form.role],
+  const keywordKeys = useMemo(() => getKeywordKeys(form.role), [form.role]);
+  const directionKeys = useMemo(() => getDirectionKeys(form.role), [form.role]);
+
+  const fingerprint = useMemo(
+    (): ProfileFingerprint => ({
+      role: form.role,
+      budgetTier: form.budgetTier,
+      intro: form.intro,
+      direction: form.direction,
+      skillKeywords: form.skillKeywords,
+      desiredPartnerRoles: form.desiredPartnerRoles,
+      matchIntent: form.matchIntent,
+    }),
+    [form],
   );
 
   const refreshProfile = useCallback(async () => {
@@ -251,17 +114,28 @@ export function MatchExperience() {
           direction: string;
           skillKeywords: string[];
           desiredPartnerRoles: string[];
+          matchIntent?: string;
         };
       };
       const desired = data.profile.desiredPartnerRoles.filter(isRole);
-      setForm({
+      const matchIntent: MatchIntent =
+        data.profile.matchIntent === "RECRUIT" ? "RECRUIT" : "PARTNER";
+      const nextForm: ProfilePayload = {
         role: isRole(data.profile.role) ? data.profile.role : "ADC",
         budgetTier: data.profile.budgetTier,
         intro: data.profile.intro,
         direction: data.profile.direction,
         skillKeywords: data.profile.skillKeywords,
         desiredPartnerRoles: desired.length ? desired : ["JUNGLE"],
-      });
+        matchIntent,
+      };
+      setForm(nextForm);
+      setIntentSelected(readMatchIntentChosen());
+      const cached = readMatchResultCache({ ...nextForm, matchIntent });
+      if (cached && cached.length > 0) {
+        setResults(cached);
+        setResultsOpen(true);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : te("loadFail"));
     } finally {
@@ -272,6 +146,20 @@ export function MatchExperience() {
   useEffect(() => {
     void refreshProfile();
   }, [refreshProfile]);
+
+  const selectIntent = async (intent: MatchIntent) => {
+    setForm((f) => ({ ...f, matchIntent: intent }));
+    writeMatchIntentChosen();
+    setIntentSelected(true);
+    if (userId) {
+      await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ matchIntent: intent }),
+      });
+    }
+  };
 
   const toggleDesired = (r: Role) => {
     setForm((f) => {
@@ -284,12 +172,10 @@ export function MatchExperience() {
   };
 
   const addKeyword = () => {
-    const t = kwInput.trim();
-    if (!t) return;
+    const val = kwInput.trim();
+    if (!val) return;
     setForm((f) =>
-      f.skillKeywords.includes(t)
-        ? f
-        : { ...f, skillKeywords: [...f.skillKeywords, t] },
+      f.skillKeywords.includes(val) ? f : { ...f, skillKeywords: [...f.skillKeywords, val] },
     );
     setKwInput("");
   };
@@ -299,9 +185,19 @@ export function MatchExperience() {
       setError(t("loginFirst"));
       return;
     }
+    if (!intentSelected) {
+      setError(te("intentRequired"));
+      return;
+    }
+    if (isRecruit && form.desiredPartnerRoles.length === 0) {
+      setError(te("stillNeedRolesRequired"));
+      return;
+    }
     setError(null);
+    clearMatchResultCache();
     setResults(null);
     setPendingResult(null);
+    setResultsOpen(false);
     try {
       const put = await fetch("/api/profile", {
         method: "PUT",
@@ -309,7 +205,14 @@ export function MatchExperience() {
         credentials: "include",
         body: JSON.stringify({ ...form }),
       });
-      if (!put.ok) throw new Error(t("saveProfileFail"));
+      if (!put.ok) {
+        const errBody = (await put.json().catch(() => ({}))) as { error?: string };
+        if (errBody.error === "profanity") {
+          setError(te("profanityWarning"));
+          return;
+        }
+        throw new Error(t("saveProfileFail"));
+      }
       trackEvent("match_run");
       completeMission("match_run");
       completeActivationStep("first_match");
@@ -318,11 +221,11 @@ export function MatchExperience() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ limit: 10 }),
+        body: JSON.stringify({ limit: 3 }),
       })
         .then(async (res) => {
           if (!res.ok) throw new Error(te("matchRequestFail"));
-          return (await res.json()) as { candidates: MatchCandidate[] };
+          return (await res.json()) as { candidates: CachedMatchCandidate[] };
         })
         .then((data) => setPendingResult(data.candidates))
         .catch((e: unknown) => {
@@ -342,8 +245,18 @@ export function MatchExperience() {
   useEffect(() => {
     if (!running && pendingResult) {
       setResults(pendingResult);
+      writeMatchResultCache(fingerprint, pendingResult);
+      setResultsOpen(true);
     }
-  }, [running, pendingResult]);
+  }, [running, pendingResult, fingerprint]);
+
+  const closeResults = () => setResultsOpen(false);
+
+  const rematch = () => {
+    clearMatchResultCache();
+    setResultsOpen(false);
+    void startMatch();
+  };
 
   return (
     <div className="space-y-4 pb-28">
@@ -354,72 +267,84 @@ export function MatchExperience() {
             ? `${t("subtitle")}${t("subtitleUser", { name: meUser.displayName })}`
             : t("subtitle")
         }
-        right={
-          <Link
-            href="/messages"
-            className="rounded-2xl bg-white/80 px-3 py-2 text-[11px] font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-white"
-          >
-            {tNav("messages")}
-          </Link>
-        }
       />
 
-      <DailyMatchCard />
-
-      <div
-        className={clsx(
-          isWeb && "lg:grid lg:grid-cols-[minmax(300px,360px)_1fr] lg:gap-8 lg:items-start",
-        )}
-      >
-        <div className={clsx("space-y-4", isWeb && "lg:sticky lg:top-20")}>
-      <section className="rounded-3xl bg-gradient-to-br from-violet-600/10 via-white/80 to-fuchsia-600/10 p-4 shadow-soft ring-1 ring-white/80 backdrop-blur">
-        <div className="flex items-start gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-violet-200/60">
-            <Lightbulb className="h-5 w-5 text-violet-600" />
-          </span>
-          <div className="min-w-0 space-y-2 text-xs leading-relaxed text-zinc-700">
-            <p className="font-semibold text-zinc-900">{te("whatTitle")}</p>
-            <ul className="list-inside list-disc space-y-1 text-[11px] text-zinc-600">
-              <li>{te("whatBullet1")}</li>
-              <li>{te("whatBullet2")}</li>
-              <li>{te("whatBullet3")}</li>
-            </ul>
-          </div>
-        </div>
-      </section>
+      {!intentSelected && !loadingProfile ? (
+        <MatchIntentGate value={form.matchIntent} onSelect={(i) => void selectIntent(i)} />
+      ) : null}
 
       {loadingProfile ? (
         <p className="text-sm text-zinc-500">{t("loadingProfile")}</p>
-      ) : (
-        <div className="space-y-5 rounded-3xl bg-white/80 p-4 shadow-soft ring-1 ring-white/70 backdrop-blur">
-          <section className="space-y-3">
-            <div className="flex items-center gap-2 text-xs font-semibold text-zinc-900">
-              <Target className="h-3.5 w-3.5 text-violet-600" />
-              {te("myRole")}
-            </div>
-            <p className="text-[11px] leading-relaxed text-zinc-500">
-              {te("myRoleHint")}
+      ) : intentSelected ? (
+        <div className="mx-auto max-w-xl space-y-5 rounded-3xl bg-white/80 p-4 shadow-soft ring-1 ring-white/70 backdrop-blur">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-[11px] font-semibold text-violet-700">
+              {isRecruit ? te("intentRecruitTitle") : te("intentPartnerTitle")}
             </p>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              {ROLES.map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => setForm((f) => ({ ...f, role: r }))}
-                  className={`rounded-2xl border px-3 py-3 text-left text-xs transition ${
-                    form.role === r
-                      ? "border-violet-400 bg-violet-50 text-violet-950 shadow-sm ring-1 ring-violet-200/60"
-                      : "border-zinc-200/90 bg-white/60 hover:border-violet-200 hover:bg-violet-50/30"
-                  }`}
-                >
-                  <span className="block font-semibold">{getRoleLabel(tRoles, r)}</span>
-                  <span className="mt-1.5 block text-[10px] leading-relaxed text-zinc-600">
-                    {getRoleMatchDesc(tRoles, r)}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </section>
+            <button
+              type="button"
+              onClick={() => {
+                clearMatchIntentChosen();
+                setIntentSelected(false);
+              }}
+              className="text-[11px] font-medium text-zinc-500 hover:text-violet-700"
+            >
+              {te("changeIntent")}
+            </button>
+          </div>
+
+          {!isRecruit ? (
+            <section className="space-y-3">
+              <div className="flex items-center gap-2 text-xs font-semibold text-zinc-900">
+                <Target className="h-3.5 w-3.5 text-violet-600" />
+                {te("myRole")}
+              </div>
+              <p className="text-[11px] leading-relaxed text-zinc-500">{te("myRoleHint")}</p>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                {ROLES.map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, role: r }))}
+                    className={`rounded-2xl border px-3 py-3 text-left text-xs transition ${
+                      form.role === r
+                        ? "border-violet-400 bg-violet-50 text-violet-950 shadow-sm ring-1 ring-violet-200/60"
+                        : "border-zinc-200/90 bg-white/60 hover:border-violet-200 hover:bg-violet-50/30"
+                    }`}
+                  >
+                    <span className="block font-semibold">{getRoleLabel(tRoles, r)}</span>
+                    <span className="mt-1.5 block text-[10px] leading-relaxed text-zinc-600">
+                      {getRoleMatchDesc(tRoles, r)}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          ) : (
+            <section className="space-y-2">
+              <div className="flex items-center gap-2 text-xs font-semibold text-zinc-900">
+                <Users className="h-3.5 w-3.5 text-violet-600" />
+                {te("stillNeedRoles")}
+              </div>
+              <p className="text-[11px] text-zinc-500">{te("stillNeedRolesHint")}</p>
+              <div className="flex flex-wrap gap-2">
+                {ROLES.map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => toggleDesired(r)}
+                    className={`rounded-full border px-3 py-1.5 text-[11px] font-medium transition ${
+                      form.desiredPartnerRoles.includes(r)
+                        ? "border-violet-400 bg-violet-50 text-violet-900 shadow-sm"
+                        : "border-zinc-200 text-zinc-600 hover:border-zinc-300"
+                    }`}
+                  >
+                    {getRoleLabel(tRoles, r)}
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
 
           <section className="space-y-2">
             <p className="text-xs font-semibold text-zinc-900">{te("budgetTier")}</p>
@@ -446,22 +371,25 @@ export function MatchExperience() {
             <p className="text-xs font-semibold text-zinc-900">{te("skillKeywords")}</p>
             <p className="text-[11px] text-zinc-500">{te("skillKeywordsHint")}</p>
             <div className="flex flex-wrap gap-1.5">
-              {keywordSuggestions.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() =>
-                    setForm((f) =>
-                      f.skillKeywords.includes(s)
-                        ? f
-                        : { ...f, skillKeywords: [...f.skillKeywords, s] },
-                    )
-                  }
-                  className="rounded-full bg-zinc-100 px-2.5 py-1 text-[10px] font-medium text-zinc-700 ring-1 ring-zinc-200/80 hover:bg-violet-50 hover:text-violet-900 hover:ring-violet-200/80"
-                >
-                  + {s}
-                </button>
-              ))}
+              {keywordKeys.map((key) => {
+                const label = tk(key);
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() =>
+                      setForm((f) =>
+                        f.skillKeywords.includes(label)
+                          ? f
+                          : { ...f, skillKeywords: [...f.skillKeywords, label] },
+                      )
+                    }
+                    className="rounded-full bg-zinc-100 px-2.5 py-1 text-[10px] font-medium text-zinc-700 ring-1 ring-zinc-200/80 hover:bg-violet-50 hover:text-violet-900 hover:ring-violet-200/80"
+                  >
+                    + {label}
+                  </button>
+                );
+              })}
             </div>
             <div className="flex gap-2">
               <input
@@ -502,54 +430,57 @@ export function MatchExperience() {
             <p className="text-xs font-semibold text-zinc-900">{te("direction")}</p>
             <p className="text-[11px] text-zinc-500">{te("directionHint")}</p>
             <div className="flex flex-wrap gap-1.5">
-              {directionPresets.map((d) => (
-                <button
-                  key={d}
-                  type="button"
-                  onClick={() => setForm((f) => ({ ...f, direction: d }))}
-                  className={`rounded-full border px-2.5 py-1 text-[10px] font-medium transition ${
-                    form.direction === d
-                      ? "border-violet-400 bg-violet-50 text-violet-900"
-                      : "border-zinc-200/90 bg-white text-zinc-600 hover:border-violet-200"
-                  }`}
-                >
-                  {d}
-                </button>
-              ))}
+              {directionKeys.map((key) => {
+                const label = td(key);
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, direction: label }))}
+                    className={`rounded-full border px-2.5 py-1 text-[10px] font-medium transition ${
+                      form.direction === label
+                        ? "border-violet-400 bg-violet-50 text-violet-900"
+                        : "border-zinc-200/90 bg-white text-zinc-600 hover:border-violet-200"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
             </div>
             <input
               className="w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm"
               value={form.direction}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, direction: e.target.value }))
-              }
+              onChange={(e) => setForm((f) => ({ ...f, direction: e.target.value }))}
               placeholder={te("directionPlaceholder")}
             />
           </section>
 
-          <section className="space-y-2">
-            <div className="flex items-center gap-2 text-xs font-semibold text-zinc-900">
-              <Users className="h-3.5 w-3.5 text-violet-600" />
-              {te("desiredPartner")}
-            </div>
-            <p className="text-[11px] text-zinc-500">{te("desiredPartnerHint")}</p>
-            <div className="flex flex-wrap gap-2">
-              {ROLES.map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => toggleDesired(r)}
-                  className={`rounded-full border px-3 py-1.5 text-[11px] font-medium transition ${
-                    form.desiredPartnerRoles.includes(r)
-                      ? "border-violet-400 bg-violet-50 text-violet-900 shadow-sm"
-                      : "border-zinc-200 text-zinc-600 hover:border-zinc-300"
-                  }`}
-                >
-                  {getRoleLabel(tRoles, r)}
-                </button>
-              ))}
-            </div>
-          </section>
+          {!isRecruit ? (
+            <section className="space-y-2">
+              <div className="flex items-center gap-2 text-xs font-semibold text-zinc-900">
+                <Users className="h-3.5 w-3.5 text-violet-600" />
+                {te("desiredPartner")}
+              </div>
+              <p className="text-[11px] text-zinc-500">{te("desiredPartnerHint")}</p>
+              <div className="flex flex-wrap gap-2">
+                {ROLES.map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => toggleDesired(r)}
+                    className={`rounded-full border px-3 py-1.5 text-[11px] font-medium transition ${
+                      form.desiredPartnerRoles.includes(r)
+                        ? "border-violet-400 bg-violet-50 text-violet-900 shadow-sm"
+                        : "border-zinc-200 text-zinc-600 hover:border-zinc-300"
+                    }`}
+                  >
+                    {getRoleLabel(tRoles, r)}
+                  </button>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           <section className="space-y-2">
             <p className="text-xs font-semibold text-zinc-900">{te("intro")}</p>
@@ -589,6 +520,16 @@ export function MatchExperience() {
             ))}
           </div>
 
+          {results && results.length > 0 && !resultsOpen ? (
+            <button
+              type="button"
+              onClick={() => setResultsOpen(true)}
+              className="w-full rounded-2xl border border-violet-200 bg-violet-50 py-3 text-sm font-semibold text-violet-900 hover:bg-violet-100"
+            >
+              {te("viewLastResults", { count: results.length })}
+            </button>
+          ) : null}
+
           <button
             type="button"
             disabled={running}
@@ -605,181 +546,18 @@ export function MatchExperience() {
           </button>
           {error ? <p className="text-xs text-red-600">{error}</p> : null}
         </div>
-      )}
-
-        </div>
-
-        <div className="space-y-4">
-      {results && results.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-zinc-300/80 bg-white/60 p-6 text-center text-sm text-zinc-600">
-          <p className="font-medium text-zinc-800">{t("noCandidates")}</p>
-          <p className="mt-2 text-[11px] leading-relaxed text-zinc-500">{t("noCandidatesHint")}</p>
-        </div>
       ) : null}
 
-      {results && results.length > 0 ? (
-        <div className="space-y-4">
-          <div className="flex flex-wrap items-end justify-between gap-2">
-            <div>
-              <h2 className="text-sm font-semibold text-zinc-950">{t("resultsTitle")}</h2>
-              <p className="mt-1 text-[11px] text-zinc-500">
-                {t("resultsCount", { count: results.length })}
-              </p>
-            </div>
-            <button
-              type="button"
-              disabled={running}
-              onClick={() => void startMatch()}
-              className="rounded-2xl bg-violet-100 px-3 py-2 text-xs font-semibold text-violet-900 ring-1 ring-violet-200/80 hover:bg-violet-50 disabled:opacity-50"
-            >
-              {t("rematch")}
-            </button>
-          </div>
-          <ul className="space-y-4">
-            {results.map((c, idx) => {
-              const idxInfo = scoreIndex(c.score);
-              const open = expandedId === c.userId;
-              return (
-                <li
-                  key={c.userId}
-                  className="overflow-hidden rounded-3xl bg-white/90 shadow-soft ring-1 ring-white/80 backdrop-blur"
-                >
-                  <div className="p-4">
-                    <div className="flex gap-3">
-                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-violet-200 to-fuchsia-200 ring-1 ring-white">
-                        {c.avatarUrl ? (
-                          <Image
-                            src={c.avatarUrl}
-                            alt=""
-                            width={56}
-                            height={56}
-                            className="object-cover"
-                            unoptimized
-                          />
-                        ) : (
-                          <span className="flex h-full w-full items-center justify-center text-lg font-bold text-violet-800">
-                            {c.displayName.slice(0, 1)}
-                          </span>
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-start justify-between gap-2">
-                          <div>
-                            <p className="truncate text-sm font-semibold text-zinc-900">
-                              {c.displayName}
-                            </p>
-                            <p className="text-[11px] text-zinc-500">
-                              {isRole(c.role) ? getRoleLabel(tRoles, c.role) : c.role}
-                              {c.direction ? (
-                                <span className="text-zinc-400">
-                                  {" "}
-                                  · {c.direction}
-                                </span>
-                              ) : null}
-                            </p>
-                          </div>
-                          <div className="flex shrink-0 flex-col items-end gap-1">
-                            <span className="rounded-full bg-violet-700 px-2 py-0.5 text-[10px] font-bold text-white">
-                              #{idx + 1}
-                            </span>
-                            <span
-                              className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ${idxInfo.className}`}
-                            >
-                              {t(idxInfo.tierKey)} · {idxInfo.n}
-                            </span>
-                          </div>
-                        </div>
-                        {c.introPreview ? (
-                          <p className="mt-2 line-clamp-2 text-[11px] leading-relaxed text-zinc-600">
-                            「{c.introPreview}」
-                          </p>
-                        ) : null}
-                      </div>
-                    </div>
-
-                    <ul className="mt-3 space-y-1.5 border-t border-zinc-100 pt-3">
-                      {(open ? c.reasons : c.reasons.slice(0, 2)).map((r, ri) => (
-                        <li
-                          key={`${c.userId}-r-${ri}`}
-                          className="flex gap-2 text-[11px] leading-relaxed text-zinc-700"
-                        >
-                          <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-violet-400" />
-                          <span>{r}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    {c.reasons.length > 2 ? (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setExpandedId(open ? null : c.userId)
-                        }
-                        className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-violet-700 hover:text-violet-900"
-                      >
-                        {open ? (
-                          <>
-                            {te("collapseReasons")} <ChevronUp className="h-3.5 w-3.5" />
-                          </>
-                        ) : (
-                          <>
-                            {te("expandReasons", { count: c.reasons.length })}{" "}
-                            <ChevronDown className="h-3.5 w-3.5" />
-                          </>
-                        )}
-                      </button>
-                    ) : null}
-
-                    {open ? <BreakdownBars b={c.breakdown} /> : null}
-
-                    <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
-                      <button
-                        type="button"
-                        className="rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-3 py-2.5 text-xs font-semibold text-white hover:opacity-95"
-                        onClick={() => {
-                          const intent = te("matchIntent", {
-                            name: c.displayName,
-                            role: isRole(c.role) ? getRoleLabel(tRoles, c.role) : c.role,
-                          });
-                          void startConversation(c.userId, {
-                            source: "match",
-                            contextTitle: te("matchContextTitle"),
-                            draftMessage: intent,
-                          }).then(() => {
-                            router.push(
-                              `/messages?peer=${encodeURIComponent(c.userId)}&intent=match`,
-                            );
-                          });
-                        }}
-                      >
-                        {te("reachOut")}
-                      </button>
-                      <Link
-                        href={`/user/${encodeURIComponent(c.userId)}`}
-                        className="inline-flex items-center justify-center rounded-2xl bg-white px-3 py-2.5 text-xs font-semibold text-zinc-900 ring-1 ring-zinc-200/80 hover:bg-zinc-50"
-                      >
-                        {te("viewProfile")}
-                      </Link>
-                      <Link
-                        href="/tools"
-                        className="inline-flex items-center justify-center rounded-2xl bg-brand-50 px-3 py-2.5 text-xs font-semibold text-brand-950 ring-1 ring-brand-200/70 hover:bg-white"
-                      >
-                        {te("shareTools")}
-                      </Link>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ) : null}
-
-        </div>
-      </div>
+      <MatchResultsModal
+        open={resultsOpen}
+        results={results}
+        running={running}
+        onClose={closeResults}
+        onRematch={rematch}
+      />
 
       <MatchProgress
         active={running}
-        animMode={animMode}
         durationMs={matchAnimDurationMs(animMode)}
         onComplete={onProgressDone}
         onSkip={onProgressDone}

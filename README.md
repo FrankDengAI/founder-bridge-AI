@@ -1,39 +1,112 @@
 <p align="center">
-  <img src="./docs/assets/readme/hero-cover.png" alt="VibeCoding 创业社交平台 — 学习 · 展示 · 工具 · 匹配" width="100%" />
+  <img src="./docs/assets/readme/hero-cover.png" alt="VibeCoding 创业社交平台 — 学习 · 展示 · 工具 · 匹配 · 悬赏" width="100%" />
 </p>
 
 <h1 align="center">VibeCoding 创业社交平台</h1>
 
 <p align="center">
-  <strong>学习 · 展示 · 工具 · 匹配</strong> — 面向 Vibe Coding 与独立开发者的创业社交 Web 应用<br/>
-  品牌站 · 产品 App · REST API · PostgreSQL，单仓一体化部署
+  <strong>学习 · 展示 · 工具 · 匹配 · 悬赏</strong><br/>
+  面向 Vibe Coding 与独立开发者的创业社交 Web 应用 · 品牌站 + 产品 App + REST API · 单仓部署
 </p>
 
 <p align="center">
-  <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-14.2-black?logo=next.js" alt="Next.js" /></a>
-  <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white" alt="React" /></a>
-  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white" alt="TypeScript" /></a>
-  <a href="https://www.prisma.io/"><img src="https://img.shields.io/badge/Prisma-5.22-2D3748?logo=prisma" alt="Prisma" /></a>
-  <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/Tailwind-3.4-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind" /></a>
-  <a href="./messages/"><img src="https://img.shields.io/badge/i18n-1286_keys-6366F1" alt="i18n" /></a>
-  <a href="https://next-intl-docs.vercel.app/"><img src="https://img.shields.io/badge/App_Router-14-000000" alt="App Router" /></a>
+  <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-14.2-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" /></a>
+  <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
+  <a href="https://www.prisma.io/"><img src="https://img.shields.io/badge/Prisma-5.22-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma" /></a>
+  <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/Tailwind-3.4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind" /></a>
 </p>
 
 <p align="center">
-  <sub>
-    <strong>37</strong> 页面 · <strong>31</strong> API · <strong>1286+</strong> i18n 键 · <strong>28</strong> 种子用户 · 先逛后登 · App / Web 双模式
-  </sub>
+  <a href="./messages/"><img src="https://img.shields.io/badge/i18n-1286_键-6366F1?style=flat-square" alt="i18n" /></a>
+  <img src="https://img.shields.io/badge/底部导航-5_Tab-fuchsia?style=flat-square" alt="5 Tab" />
+  <img src="https://img.shields.io/badge/先逛后登-游客可刷首页-22c55e?style=flat-square" alt="browse first" />
+  <img src="https://img.shields.io/badge/App_Web-双模式-8b5cf6?style=flat-square" alt="dual mode" />
+  <img src="https://img.shields.io/badge/API-34_路由-0ea5e9?style=flat-square" alt="API" />
 </p>
+
+<p align="center">
+  <a href="#快速开始"><img src="https://img.shields.io/badge/🚀_快速开始-本地运行-111827?style=for-the-badge" alt="快速开始" /></a>
+  <a href="#产品演示"><img src="https://img.shields.io/badge/🎬_产品演示-GIF_动图-7c3aed?style=for-the-badge" alt="产品演示" /></a>
+  <a href="#界面一览"><img src="https://img.shields.io/badge/📱_界面一览-截图导览-ec4899?style=for-the-badge" alt="界面一览" /></a>
+  <a href="./docs/ARCHITECTURE.md"><img src="https://img.shields.io/badge/📐_架构文档-ARCHITECTURE-0284c7?style=for-the-badge" alt="架构" /></a>
+</p>
+
+<br/>
+
+<table align="center">
+  <tr>
+    <td align="center" width="20%">
+      <h3>37</h3>
+      <sub>页面路由</sub>
+    </td>
+    <td align="center" width="20%">
+      <h3>34</h3>
+      <sub>REST API</sub>
+    </td>
+    <td align="center" width="20%">
+      <h3>1286+</h3>
+      <sub>i18n 键</sub>
+    </td>
+    <td align="center" width="20%">
+      <h3>28</h3>
+      <sub>种子用户</sub>
+    </td>
+    <td align="center" width="20%">
+      <h3>5</h3>
+      <sub>底部 Tab</sub>
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+## 五大主 Tab
+
+<p align="center">
+  <img src="https://img.shields.io/badge/🏠_发现-/home-6366F1?style=for-the-badge" alt="home" />
+  <img src="https://img.shields.io/badge/✨_匹配-/match-8B5CF6?style=for-the-badge" alt="match" />
+  <img src="https://img.shields.io/badge/💰_悬赏-/bounty-F59E0B?style=for-the-badge" alt="bounty" />
+  <img src="https://img.shields.io/badge/💬_消息-/messages-06B6D4?style=for-the-badge" alt="messages" />
+  <img src="https://img.shields.io/badge/👤_我的-/me-64748B?style=for-the-badge" alt="me" />
+</p>
+
+<table align="center">
+  <tr>
+    <td align="center" width="20%">
+      <a href="#发现首页-home"><img src="./docs/assets/readme/app-home-feed.png" alt="发现" width="100%" /></a><br/>
+      <strong>发现</strong><br/><sub>灵感流 · 广场 · 今日推荐</sub>
+    </td>
+    <td align="center" width="20%">
+      <a href="#伙伴匹配-match"><img src="./docs/assets/readme/app-match-results.png" alt="匹配" width="100%" /></a><br/>
+      <strong>匹配</strong><br/><sub>意图门控 · Top 3 · 雷达</sub>
+    </td>
+    <td align="center" width="20%">
+      <a href="#需求悬赏-bounty"><img src="./docs/assets/readme/app-tools-market.png" alt="悬赏" width="100%" /></a><br/>
+      <strong>悬赏</strong><br/><sub>关键词 · 文字预算</sub>
+    </td>
+    <td align="center" width="20%">
+      <a href="#私信-messages"><img src="./docs/assets/readme/app-messages.png" alt="消息" width="100%" /></a><br/>
+      <strong>消息</strong><br/><sub>私信 · 已读 · 图片</sub>
+    </td>
+    <td align="center" width="20%">
+      <a href="#我的-me"><img src="./docs/assets/readme/app-workspace.png" alt="我的" width="100%" /></a><br/>
+      <strong>我的</strong><br/><sub>资料 · 任务 · 设置</sub>
+    </td>
+  </tr>
+</table>
+
+<p align="center"><sub>App 手机壳 + 底部导航 · Web 左栏 + 右栏热榜 · <code>sessionStorage: vbc_view_mode</code></sub></p>
 
 <p align="center">
   <a href="#快速开始">快速开始</a> ·
+  <a href="#五大主-tab">5 Tab</a> ·
   <a href="#产品演示">产品演示</a> ·
   <a href="#界面一览">界面一览</a> ·
   <a href="#完整路由">完整路由</a> ·
   <a href="#账户与认证">账户</a> ·
   <a href="#架构图解">架构图</a> ·
   <a href="#伙伴匹配算法详解">匹配算法</a> ·
-  <a href="#界面与模块详解">设计说明</a> ·
   <a href="#部署指南">部署</a>
 </p>
 
@@ -41,19 +114,40 @@
 
 ## 目录
 
-**怎么读这份 README？**
-
-| 你是谁 | 建议阅读顺序 |
-|--------|----------------|
-| 完全不懂技术 | 先 [术语小词典](#术语小词典看不懂可先看这里) → [核心能力](#核心能力) → [界面与模块详解](#界面与模块详解) |
-| 产品 / 运营 | [产品设计哲学](#产品设计哲学) → [界面与模块详解](#界面与模块详解) → [产品路径](#产品路径) |
-| 开发者 | [快速开始](#快速开始) → [伙伴匹配算法详解](#伙伴匹配算法详解) → [系统架构](#系统架构) → [技术架构文档](./docs/ARCHITECTURE.md) |
-| 投资人 / 路演 | [产品演示](#产品演示) → [品牌站亮点](#品牌站亮点) → [架构图解 §4](#4-五大产品子系统) |
+<table>
+  <tr>
+    <td width="25%" valign="top">
+      <strong>👋 第一次来</strong><br/>
+      <a href="#术语小词典看不懂可先看这里">术语小词典</a><br/>
+      <a href="#核心能力">核心能力</a><br/>
+      <a href="#五大主-tab">5 Tab 导览</a>
+    </td>
+    <td width="25%" valign="top">
+      <strong>🎨 产品 / 设计</strong><br/>
+      <a href="#产品设计哲学">设计哲学</a><br/>
+      <a href="#界面与模块详解">模块详解</a><br/>
+      <a href="#产品路径">用户路径</a>
+    </td>
+    <td width="25%" valign="top">
+      <strong>💻 开发者</strong><br/>
+      <a href="#快速开始">快速开始</a><br/>
+      <a href="#伙伴匹配算法详解">匹配算法</a><br/>
+      <a href="./docs/ARCHITECTURE.md">ARCHITECTURE.md</a>
+    </td>
+    <td width="25%" valign="top">
+      <strong>🚀 部署 / 运维</strong><br/>
+      <a href="#环境变量">环境变量</a><br/>
+      <a href="#常用命令">常用命令</a><br/>
+      <a href="#部署指南">部署指南</a>
+    </td>
+  </tr>
+</table>
 
 <details>
-<summary><strong>展开完整目录</strong></summary>
+<summary><strong>📑 展开完整目录</strong></summary>
 
 - [产品演示](#产品演示)
+- [五大主 Tab](#五大主-tab)
 - [品牌站亮点](#品牌站亮点)
 - [界面一览](#界面一览)
 - [核心能力](#核心能力)
@@ -76,6 +170,11 @@
 
 ### 术语小词典（看不懂可先看这里）
 
+<p align="center">
+  <img src="https://img.shields.io/badge/📖_术语-非技术读者友好-6366F1?style=flat-square" alt="glossary" />
+  <img src="https://img.shields.io/badge/💡_提示-只看「作用」列即可-94a3b8?style=flat-square" alt="tip" />
+</p>
+
 | 词 | 通俗解释 |
 |----|----------|
 | **画像 / 资料** | 你在平台填的角色、技能、方向、简介等，用来帮你找队友 |
@@ -95,20 +194,36 @@
 ## 产品演示
 
 <p align="center">
-  <img src="./docs/assets/readme/demo-locale-switch.gif" alt="中英双语切换" width="32%" />
-  <img src="./docs/assets/readme/demo-command-palette.gif" alt="命令面板 Ctrl+K" width="32%" />
-  <img src="./docs/assets/readme/demo-match-flow.gif" alt="智能伙伴匹配" width="32%" />
+  <img src="./docs/assets/readme/demo-locale-switch.gif" alt="中英双语切换" width="31%" />
+  &nbsp;
+  <img src="./docs/assets/readme/demo-command-palette.gif" alt="命令面板 Ctrl+K" width="31%" />
+  &nbsp;
+  <img src="./docs/assets/readme/demo-match-flow.gif" alt="智能伙伴匹配" width="31%" />
 </p>
-<p align="center"><sub>中英切换 · 命令面板 ⌘K / Ctrl+K · 画像匹配与雷达评分</sub></p>
 
 <p align="center">
-  <img src="./docs/assets/readme/demo-feed-scroll.gif" alt="发现流浏览" width="66%" />
+  <img src="https://img.shields.io/badge/🌐_中英切换-LocaleSwitcher-6366F1?style=flat-square" alt="locale" />
+  <img src="https://img.shields.io/badge/⌘K_命令面板-快速跳转-8b5cf6?style=flat-square" alt="cmdk" />
+  <img src="https://img.shields.io/badge/✨_智能匹配-七维雷达-fuchsia?style=flat-square" alt="match" />
 </p>
-<p align="center"><sub>发现流 — 瀑布卡片、话题标签与收藏互动</sub></p>
+
+<p align="center">
+  <img src="./docs/assets/readme/demo-feed-scroll.gif" alt="发现流浏览" width="72%" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/📰_发现流-瀑布卡片_·_话题标签_·_收藏互动-ec4899?style=for-the-badge" alt="feed" />
+</p>
 
 ---
 
 ## 品牌站亮点
+
+<p align="center">
+  <img src="https://img.shields.io/badge/品牌站-与_App_同源数据-111827?style=for-the-badge" alt="same data" />
+  <img src="https://img.shields.io/badge/雷达图-传播用静态预览-A855F7?style=for-the-badge" alt="radar" />
+  <img src="https://img.shields.io/badge/真实打分-在_App_匹配页计算-22C55E?style=for-the-badge" alt="real score" />
+</p>
 
 官网首页（`/`）和手机 App **共用同一份真实数据**（不是两张皮），方便对外介绍时「说的和用的是一套」。
 
@@ -131,59 +246,56 @@
 
 ## 界面一览
 
-### 核心 Tab
+<p align="center">
+  <img src="https://img.shields.io/badge/扩展场景-发布_·_学习_·_模型_·_工具-6366F1?style=flat-square" alt="ext" />
+  <img src="https://img.shields.io/badge/搜索-/search_热榜-EC4899?style=flat-square" alt="search" />
+</p>
 
-<table align="center">
-  <tr>
-    <td align="center" width="33%">
-      <a href="#发现首页-home"><img src="./docs/assets/readme/app-home-feed.png" alt="发现首页" width="100%" /></a><br/>
-      <sub><strong>/home</strong> 发现 · 灵感流与今日推荐</sub>
-    </td>
-    <td align="center" width="33%">
-      <a href="#伙伴匹配-match"><img src="./docs/assets/readme/app-match-results.png" alt="智能匹配" width="100%" /></a><br/>
-      <sub><strong>/match</strong> 匹配 · 七维雷达与候选评分</sub>
-    </td>
-    <td align="center" width="33%">
-      <a href="#工具与模型-tools-models"><img src="./docs/assets/readme/app-tools-market.png" alt="工具商城" width="100%" /></a><br/>
-      <sub><strong>/tools</strong> 工具 · 榜单与市场</sub>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="33%">
-      <img src="./docs/assets/readme/app-workspace.png" alt="工作台" width="100%" /><br/>
-      <sub><strong>/workspace</strong> 工作台 · 快照与快捷入口</sub>
-    </td>
-    <td align="center" width="33%">
-      <img src="./docs/assets/readme/app-models-rank.png" alt="大模型排行" width="100%" /><br/>
-      <sub><strong>/models</strong> 模型 · 社区共建排行</sub>
-    </td>
-    <td align="center" width="33%">
-      <img src="./docs/assets/readme/marketing-bento.png" alt="品牌 Bento" width="100%" /><br/>
-      <sub><strong>品牌 Bento</strong> · 五大子系统矩阵</sub>
-    </td>
-  </tr>
-</table>
+> 五大主 Tab 见上方 [**五大主 Tab**](#五大主-tab)；以下为扩展路由与品牌素材。
 
 ### 扩展场景
 
 <table align="center">
   <tr>
-    <td align="center" width="33%">
-      <img src="./docs/assets/readme/app-messages.png" alt="消息中心" width="100%" /><br/>
-      <sub><strong>/messages</strong> 私信与会话</sub>
+    <td align="center" width="25%">
+      <img src="./docs/assets/readme/app-publish.png" alt="发布" width="100%" /><br/>
+      <strong>发布</strong><br/><code>/publish</code>
     </td>
-    <td align="center" width="33%">
-      <img src="./docs/assets/readme/app-learn.png" alt="学习路线" width="100%" /><br/>
-      <sub><strong>/learn</strong> 分步学习路径</sub>
+    <td align="center" width="25%">
+      <img src="./docs/assets/readme/app-learn.png" alt="学习" width="100%" /><br/>
+      <strong>学习</strong><br/><code>/learn</code>
     </td>
-    <td align="center" width="33%">
-      <img src="./docs/assets/readme/app-publish.png" alt="发布笔记" width="100%" /><br/>
-      <sub><strong>/publish</strong> 多类型内容发布</sub>
+    <td align="center" width="25%">
+      <img src="./docs/assets/readme/app-models-rank.png" alt="模型" width="100%" /><br/>
+      <strong>模型榜</strong><br/><code>/models</code>
+    </td>
+    <td align="center" width="25%">
+      <img src="./docs/assets/readme/app-tools-market.png" alt="工具" width="100%" /><br/>
+      <strong>工具商城</strong><br/><code>/tools</code>
     </td>
   </tr>
   <tr>
-    <td align="center" width="33%" colspan="3">
-      <sub><strong>/search</strong> 搜索 · 热搜榜 · 实时热榜（帖子 / 工具 / 模型）· 类型筛选与热度排序</sub>
+    <td align="center" colspan="4">
+      <sub>🔍 <strong>/search</strong> — 热搜榜 · 社区热榜 · 类型 / 热度筛选 · 与 ⌘K 互补</sub>
+    </td>
+  </tr>
+</table>
+
+### 品牌与营销素材
+
+<table align="center">
+  <tr>
+    <td align="center" width="33%">
+      <img src="./docs/assets/readme/marketing-bento.png" alt="品牌 Bento" width="100%" /><br/>
+      <sub><strong>Bento</strong> · 五大子系统矩阵</sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="./docs/assets/readme/marketing-match-radar.png" alt="匹配雷达" width="100%" /><br/>
+      <sub><strong>雷达海报</strong> · 传播用静态预览</sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="./docs/assets/readme/marketing-pulse.png" alt="Pulse" width="100%" /><br/>
+      <sub><strong>Pulse</strong> · 数据叙事墙</sub>
     </td>
   </tr>
 </table>
@@ -192,15 +304,40 @@
 
 ## 核心能力
 
-| 你能做什么 | 为什么值得这样做 |
-|------------|-------------------|
-| **找队友** | 不只给个名单，还告诉你「哪里合拍」，才敢点「联系」 |
-| **刷灵感、发帖** | 新人首页也不会空；老用户会看到更贴兴趣的内容 |
-| **逛工具、看模型榜** | 围绕「写代码、做产品」的场景，让人愿意多停留 |
-| **做任务、完善资料** | 把「填资料 → 去匹配 → 发消息」拆成小步，不那么容易第一天就走 |
-| **中英文、品牌页** | 方便给外人演示；英文路径 `/en/...` 给海外协作者 |
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <strong>🤝 找队友</strong><br/>
+      七维可解释匹配 + Top 3 弹窗，告诉你「哪里合拍」再点联系
+    </td>
+    <td width="50%" valign="top">
+      <strong>💰 发悬赏</strong><br/>
+      关键词搜人/帖，文字预算 + 免责声明，无支付托管
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <strong>📰 刷灵感</strong><br/>
+      For You 推荐 + 广场分区，新人首页不空、老用户越刷越准
+    </td>
+    <td width="50%" valign="top">
+      <strong>🛠 逛生态</strong><br/>
+      工具商城 · 模型榜 · 模板演示，围绕 Vibe Coding 场景停留
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <strong>💬 聊起来</strong><br/>
+      匹配来源标记 · 已读回执 · 图片消息，从「看」到「聊」闭环
+    </td>
+    <td width="50%" valign="top">
+      <strong>🌍 双语言</strong><br/>
+      中英文 UI · `/en/*` 路径 · 品牌站与 App 同一套数据
+    </td>
+  </tr>
+</table>
 
-> **一条主线：** 在匹配里点「联系」去聊天时，系统会记住「这是匹配来的」，方便以后统计「有多少人真的聊上了」，而不只是点进页面又离开。
+> **一条主线：** 匹配里点「联系」→ 私信带开场白 → 系统记住来源，方便统计「匹配有没有促成真实对话」。
 
 <details>
 <summary><strong>展开：各能力域截图与链接</strong></summary>
@@ -267,7 +404,7 @@
 |------|--------|----------------|
 | **说得明白** | 推荐谁，要说清理由 | 雷达图 + 几句中文说明；不用「黑盒 AI」那种说不清为啥的结果 |
 | **新人不尴尬** | 刚注册也不能空白首页 | 先选兴趣就能逛；首页仍有热门内容；资料不够会提示你去补 |
-| **路径要短** | 别让人找半天 | 底部四个入口：发现、匹配、消息、我的；匹配完能直接聊 |
+| **路径要短** | 别让人找半天 | 底部 **五个 Tab**：发现、匹配、悬赏、消息、我的；匹配完能直接聊 |
 | **快慢自选** | 有人要快，有人要仪式感 | 匹配时可选调「快 / 正常 / 慢一点」的等待动画，也能跳过 |
 | **演示能跑通** | 给别人看时要真有数据 | 官网和 App 同一套库；28 个种子用户 + `demo`/`demo1`–`demo3` 可直接密码登录 |
 
@@ -292,6 +429,7 @@ flowchart LR
 | [全局导航](#全局底部导航与视图模式) | Tab · App/Web 模式（见下节标题） |
 | [发现首页](#发现首页-home) | `/home` |
 | [伙伴匹配](#伙伴匹配-match) | `/match`（字段与按钮最细） |
+| [需求悬赏](#需求悬赏-bounty) | `/bounty` |
 | [私信](#私信-messages) | `/messages` |
 | [注册 Onboarding](#注册与-onboarding) | `/welcome/*` |
 | [我的](#我的-me) | `/me` |
@@ -305,6 +443,7 @@ flowchart LR
 |------|------------|--------------|
 | **发现** | 首页 `/home` | 大多数人习惯先「刷内容」，门槛最低 |
 | **匹配** | `/match` | 这是平台最核心的能力，单独给一个入口 |
+| **悬赏** | `/bounty` | 按关键词找人、发布需求；预算仅文字展示 |
 | **消息** | `/messages` | 有人找你聊天时，红点提醒；匹配完也常来这里 |
 | **我的** | `/me` | 改资料、看成就、进设置，不挤在首页里 |
 
@@ -337,7 +476,16 @@ flowchart LR
 | **辅助 SUPPORT** | 产品、设计、运营 | 产品经理、设计师 |
 | **射手 ADC** | 写代码、做交付 | 工程师、独立开发者 |
 
-**页面怎么排？** 电脑上左边填资料、右边看名单；手机上先填资料再往下滑。名单上 **#1、#2** 表示推荐优先级。右上角能进「消息」，匹配到一半也能回聊天。
+**页面怎么排？** 进入后先选「找伙伴」或「我要招人」；电脑上左边填资料、右边看名单；手机上先填资料再往下滑。匹配结果在弹窗展示 **2～3 人**（`POST /api/match` 默认 `limit=3`）。名单上 **#1、#2** 表示推荐优先级。
+
+#### 找伙伴 vs 我要招人
+
+| 模式 | 表单差异 | 说明 |
+|------|----------|------|
+| **找伙伴** | 完整画像：角色、方向、技能、期望伙伴 | 默认组队匹配 |
+| **我要招人** | 侧重「我还差什么人」、期望角色 | `matchIntent=RECRUIT` 写入资料 |
+
+首次进入需完成意图选择（[`MatchIntentGate`](./components/match/MatchIntentGate.tsx)）；选择会写入 `localStorage`，避免被数据库默认 `PARTNER` 跳过。
 
 #### 填资料：每一项在算什么
 
@@ -355,7 +503,7 @@ flowchart LR
 
 | 按钮 | 你会感受到什么 | 为啥要有 |
 |------|----------------|----------|
-| **开始匹配** | 等一小段动画，然后出名单 | 不必先点保存也能试；动画让人觉得「确实在算」 |
+| **开始匹配** | 等一小段动画，然后出 **2～3 人** 弹窗 | 不必先点保存也能试；动画让人觉得「确实在算」 |
 | **快 / 正常 / 慢一点** | 等待时间长短不同 | 赶时间就快；想要仪式感就慢，会记住你的选择 |
 | **重新匹配** | 改完资料再算一遍 | 立刻看新结果，不用刷新整页 |
 | **跳过 / 取消动画** | 不等了或这次不算了 | 不强迫你看完动画 |
@@ -608,6 +756,20 @@ UserProfile → parseProfile → scorePair(me, eachCandidate)
 
 ---
 
+### 需求悬赏 /bounty
+
+| 设计 | 通俗说明 |
+|------|----------|
+| **浏览 / 搜索 / 发布** 三 Tab | 浏览最新悬赏；按关键词搜人+帖；发布自己的需求 |
+| **预算仅文字** | `budgetLabel` 如「股权分成」「面议」；**无支付、无托管** |
+| **免责声明** | 发布页明确平台不担保交易 |
+| **违禁词过滤** | 与帖子/资料同一套 [`profanity`](./lib/moderation/profanity.ts) 校验 |
+| **联系发布者** | 一键发起私信，跳转 `/messages?peer=` |
+
+API：`GET/POST /api/bounty` · `GET /api/bounty/search?q=` · 模型 [`BountyRequest`](./prisma/schema.prisma)
+
+---
+
 ### 私信 /messages
 
 | 设计 | 通俗说明 |
@@ -616,7 +778,8 @@ UserProfile → parseProfile → scorePair(me, eachCandidate)
 | **只支持两人对话** | 就是一对一私聊，不搞群聊，先把「配对破冰」做好 |
 | **记住「从匹配来的」** | 列表里能区分来源，方便以后统计有多少人真的聊了 |
 | **进聊天页可带好一句话** | 减少「不知道第一句说什么」 |
-| **未读红点** | 对方发来新消息、你没读到，就亮红点 |
+| **未读红点 + 已读回执** | 对方发来新消息亮红点；自己发出的消息在对方已读后显示「已读」 |
+| **图片消息 MVP** | `POST /api/upload` 上传至 `public/uploads/messages/`（2MB、jpeg/png/webp） |
 
 ---
 
@@ -724,12 +887,18 @@ flowchart TB
 
 ## 项目简介
 
+<p align="center">
+  <img src="https://img.shields.io/badge/单仓-品牌站_+_App_+_API-111827?style=for-the-badge" alt="monorepo" />
+  <img src="https://img.shields.io/badge/PostgreSQL-Prisma_ORM-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="db" />
+  <img src="https://img.shields.io/badge/Next.js_App_Router-37_页面-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="pages" />
+</p>
+
 **VibeCoding 创业社交平台**（`code_demo_web`）是一个面向创业者、独立开发者与 Vibe Coding 爱好者的全栈 Web 应用。它将以下能力整合在同一套代码库中：
 
 | 模块 | 说明 |
 |------|------|
 | **营销品牌站** | 落地页、Bento、匹配雷达、Pulse 动态等对外展示 |
-| **产品 App** | 发现流、匹配、消息、发布、工作台等核心交互 |
+| **产品 App** | 发现流、匹配、悬赏、消息、发布、工作台等核心交互 |
 | **REST API** | 帖子、用户、匹配、会话、工具/模型评价等后端接口 |
 | **数据层** | PostgreSQL + Prisma ORM，支持迁移与种子数据 |
 
@@ -739,6 +908,7 @@ flowchart TB
 |--------|--------|----------------|
 | 发现与内容 | 灵感流 + For You + 发布/搜索/热榜 | [发现首页](#发现首页-home) · [发布与搜索](#发布与搜索) |
 | 匹配与社交 | 七维可解释匹配 → 私信闭环 | [伙伴匹配](#伙伴匹配-match) · [私信](#私信-messages) |
+| 需求悬赏 | 关键词搜人/帖 · 文字预算 | [需求悬赏](#需求悬赏-bounty) |
 | 工具与模型 | 工具链 + 模型榜 + 模板演示 | [工具与模型](#工具与模型-tools-models) |
 | 学习与成长 | 分步路径、成就、协作空间 | `/learn` · `/me/achievements` · `/collab/[id]` |
 | 账户与安全 | 先逛后登 + 四步注册 + 演示密码号 | [先逛后登](#先逛后登弹窗登录) · [注册 Onboarding](#注册与-onboarding) · [账户与认证](#账户与认证) |
@@ -746,6 +916,21 @@ flowchart TB
 ---
 
 ## 快速开始
+
+<p align="center">
+  <img src="https://img.shields.io/badge/⏱_约_5_分钟-本地可跑-22C55E?style=for-the-badge" alt="time" />
+  <img src="https://img.shields.io/badge/Node.js-≥_20-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="node" />
+  <img src="https://img.shields.io/badge/PostgreSQL-Neon_或本地-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="pg" />
+</p>
+
+<table align="center">
+  <tr>
+    <td align="center" width="25%"><strong>① 安装</strong><br/><code>npm install</code></td>
+    <td align="center" width="25%"><strong>② 配置</strong><br/><code>.env.local</code></td>
+    <td align="center" width="25%"><strong>③ 数据库</strong><br/><code>migrate + seed</code></td>
+    <td align="center" width="25%"><strong>④ 启动</strong><br/><code>npm run dev</code></td>
+  </tr>
+</table>
 
 ### 前置要求
 
@@ -895,25 +1080,29 @@ flowchart TD
 | 行为 | 说明 |
 |------|------|
 | 可游客访问 | 仅 `/home`（及 `/welcome/*`、公开 API） |
-| 需登录操作 | 点帖子详情、底栏匹配/消息/我的、顶栏发布/搜索/⌘K 等 → **半透明登录弹层**，背后仍是发现流 |
-| 直链受保护页 | 如 `/match` → `307` 到 `/home?auth=login&next=/match`，自动弹窗并在登录后跳转 |
+| 需登录操作 | 点帖子详情、底栏匹配/悬赏/消息/我的、顶栏发布/搜索/⌘K 等 → **半透明登录弹层**，背后仍是发现流 |
+| 直链受保护页 | 如 `/match` · `/bounty` → `307` 到 `/home?auth=login&next=...`，自动弹窗并在登录后跳转 |
 | 全屏登录页 | `/welcome/login` 保留，供 embed、分享深链；主路径为弹窗 |
 
 实现要点：`middleware.ts` 游客路径 · [`AuthGateProvider`](./components/auth/AuthGateProvider.tsx) / [`LoginModal`](./components/auth/LoginModal.tsx) · [`useRequireAuth`](./lib/hooks/useRequireAuth.ts) · 文案 `authModal.*`（`messages/zh.json`）。
 
 **视图模式：** [`ViewModeGate`](./components/view-mode/ViewModeGate.tsx) 首访无 `sessionStorage` 时按视口静默默认 App/Web，**不阻断**直达 `/home`；仍可在 `/welcome/mode` 主动切换。
 
-**自动化验收（需本地已 `npm run build` 且 `npm run start`；端口与 dev 一致，如 `3000` 或 `python main.py` 的 `3001`）：**
+**自动化验收（需本地已 `npm run build` 且 `npm run start`；默认端口 `3000`，与 Playwright 一致）：**
 
 ```bash
+npm run db:seed              # E2E / 热榜依赖种子数据（Playwright globalSetup 也会自动检测）
 npm run smoke:guest          # 游客 middleware + /api/posts
 npm run auth:smoke           # 注册/登录 API
-npm run smoke:pages          # 登录后页面非 500
-npm run test:e2e             # Playwright：先逛、弹窗、Feed/底栏、注册进匹配
+npm run smoke:pages          # 登录后页面非 500（含 /bounty · /messages）
+npm run smoke:api            # 匹配 limit · 悬赏 CRUD · 违禁词 · 资料
+npm run test:e2e             # Playwright 14 项（启动前 auto seed，见 e2e/global-setup.ts）
+npm run test:e2e:ci          # CI 别名，同 test:e2e
 
-# 非默认端口时：
-# set PLAYWRIGHT_BASE_URL=http://localhost:3001   (Windows)
-# PLAYWRIGHT_BASE_URL=http://localhost:3001 npm run test:e2e
+# 非默认端口时（Windows）：
+# set PLAYWRIGHT_BASE_URL=http://localhost:3001
+# set SMOKE_BASE_URL=http://localhost:3001
+# npm run smoke:pages
 ```
 
 > Edge middleware 仅校验 Cookie 形状与过期（[`sessionCookieEdge`](./lib/auth/sessionCookieEdge.ts)），完整验签在 Node API；演示环境可接受，生产请配置 `SESSION_SECRET`。
@@ -931,7 +1120,7 @@ npm run test:e2e             # Playwright：先逛、弹窗、Feed/底栏、注�
 | 工具 / 模型详情 | `/tools` 或 `/models` | 列表父级 |
 | 欢迎页登录 / 注册 | `/home` | **先逛后登**主路径；欢迎页入口保留 |
 | 模式选择 `/welcome/mode` | `/home` | 可跳过选模式先逛 |
-| 主 Tab（发现/匹配/消息/我的） | 无顶栏返回钮 | 用底部 `BottomNav` |
+| 主 Tab（发现/匹配/悬赏/消息/我的） | 无顶栏返回钮 | 用底部 `BottomNav`（5 Tab，见 [`lib/navConfig.ts`](./lib/navConfig.ts)） |
 
 **`next` 参数：** 登录 / 注册 / 弹窗注册链会带上 `?next=/post/xxx` 等，成功后进入原目标（全屏页走 `modeHref(next)`，弹窗走 `AuthGateProvider` + `router.push`）。
 
@@ -948,7 +1137,7 @@ UI 四步向导 [`RegisterWizard`](./app/[locale]/(shell)/welcome/register/Regis
 | 1 | 账号 `username` | 字母开头；3–32 位；字母 / 数字 / `_`（存库自动小写） |
 | 1 | 密码 `password` | **8–128** 位 |
 | 1 | 确认密码 | 与密码一致 |
-| 2 | 昵称 `displayName` | 非空 |
+| 2 | 昵称 `displayName` | 非空；**违禁词过滤**（与资料/帖子一致） |
 | 3 | 角色 `role` | `ADC` / `JUNGLE` / `SUPPORT`，默认 `ADC` |
 | 4 | 兴趣 `interestTags` | **≥1** 个（下表 10 项） |
 
@@ -1319,9 +1508,10 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-  subgraph Tabs ["底部主 Tab"]
+  subgraph Tabs ["底部主 Tab（5）"]
     H["/home"]
     Ma["/match"]
+    Bo["/bounty"]
     Me["/messages"]
     My["/me"]
   end
@@ -1329,14 +1519,16 @@ flowchart LR
   subgraph APIs ["主要 API"]
     A1["/api/feed /api/posts"]
     A2["/api/match /api/profile"]
-    A3["/api/conversations"]
-    A4["/api/me /api/profile"]
+    A3["/api/bounty"]
+    A4["/api/conversations /api/upload"]
+    A5["/api/me /api/profile"]
   end
 
   H --> A1
   Ma --> A2
-  Me --> A3
-  My --> A4
+  Bo --> A3
+  Me --> A4
+  My --> A5
 ```
 
 ---
@@ -1350,9 +1542,10 @@ flowchart LR
 | `/welcome` | 欢迎 / Onboarding 流程 |
 | `/welcome/login` · `/register` · `/guest` | 登录 / 注册 / 访客 |
 | `/welcome/mode` | App / Web 模式选择 |
-| `/home` | 发现首页 · 灵感流 |
-| `/match` | 智能伙伴匹配 |
-| `/messages` | 私信会话 |
+| `/home` | 发现首页 · 灵感流 · 广场分区 |
+| `/match` | 智能伙伴匹配（意图门控 · 弹窗 Top 3） |
+| `/bounty` | 需求悬赏 · 关键词搜人 |
+| `/messages` | 私信会话 · 图片 · 已读回执 |
 | `/publish` | 发布笔记 / 项目 / 招募 |
 | `/search` | 全局搜索 |
 | `/tools` · `/tools/[id]` | 工具商城与详情 |
@@ -1378,8 +1571,10 @@ flowchart LR
 | **内容** | `GET/POST /api/posts` · `GET/PATCH/DELETE /api/posts/[id]` | 帖子 CRUD |
 | | `POST /api/posts/[id]/react` · `GET/POST .../comments` | 互动与评论 |
 | **社交** | `POST /api/follow` · `GET /api/feed/following` | 关注与关注流 |
-| **匹配** | `GET/POST /api/match` | 伙伴打分排序；画像读写见 `/api/profile` |
-| **消息** | `GET/POST /api/conversations` · `.../messages` · `.../read` | 会话与已读 |
+| **匹配** | `GET/POST /api/match` | 伙伴打分排序（默认 Top 3）；画像读写见 `/api/profile` |
+| **悬赏** | `GET/POST /api/bounty` · `GET /api/bounty/search` | 需求列表 · 发布 · 关键词搜人/帖 |
+| **消息** | `GET/POST /api/conversations` · `.../messages` · `.../read` | 会话 · 已读 · `peerLastReadAt` |
+| | `POST /api/upload` | 消息图片上传（鉴权 · 2MB） |
 | **工具/模型** | `GET /api/models` · `POST .../reviews` · `tools/[id]/reviews` | 目录与评价 |
 | **其他** | `GET /api/home/rail` · `learn/progress` · `wishlist` · `orders` · `templates` | 首页推荐 / 学习 / 心愿单 |
 | **运维** | `POST /api/seed` | 演示种子（需 `DEMO_SEED_SECRET`） |
@@ -1431,19 +1626,67 @@ npm run docs:assets -- --only=marketing # 仅品牌站区块
 
 ## 常用命令
 
-| 命令 | 说明 |
-|------|------|
-| `python main.py` | Windows 一键启动 Next（默认 **3001**，可 `--port`） |
-| `npm run dev` | 启动开发服务器（默认 3000） |
-| `npm run build` | 生产构建 |
-| `npm run check:i18n` | 扫描 UI 硬编码中文 |
-| `npm run docs:assets` | 重新生成 README 截图与 GIF |
-| `npm run db:seed` | 写入演示种子（含演示密码；见 `lib/auth/demoSeed.ts`） |
-| `npm run db:seed:reset` | 全库清空后重建（慎用） |
-| `npm run auth:smoke` | 认证流程冒烟测试 |
-| `npm run smoke:guest` | 先逛后登：游客 `/home`、middleware |
-| `npm run smoke:pages` | 受保护页面可达性测试 |
-| `npm run test:e2e` | Playwright E2E（可用 `PLAYWRIGHT_BASE_URL` 改端口） |
+<p align="center">
+  <img src="https://img.shields.io/badge/开发-dev_·_build-111827?style=flat-square" alt="dev" />
+  <img src="https://img.shields.io/badge/测试-smoke_·_e2e-8B5CF6?style=flat-square" alt="test" />
+  <img src="https://img.shields.io/badge/数据-seed_·_i18n-06B6D4?style=flat-square" alt="data" />
+</p>
+
+<table>
+  <tr>
+    <th>分类</th>
+    <th>命令</th>
+    <th>说明</th>
+  </tr>
+  <tr>
+    <td rowspan="3"><strong>开发</strong></td>
+    <td><code>npm run dev</code></td>
+    <td>开发服务器（默认 3000）</td>
+  </tr>
+  <tr>
+    <td><code>npm run build</code></td>
+    <td>生产构建</td>
+  </tr>
+  <tr>
+    <td><code>python main.py</code></td>
+    <td>Windows 一键启动（默认 3001）</td>
+  </tr>
+  <tr>
+    <td rowspan="3"><strong>数据</strong></td>
+    <td><code>npm run db:seed</code></td>
+    <td>写入演示种子</td>
+  </tr>
+  <tr>
+    <td><code>npm run db:seed:reset</code></td>
+    <td>全库清空重建（慎用）</td>
+  </tr>
+  <tr>
+    <td><code>npm run check:i18n</code></td>
+    <td>扫描硬编码中文</td>
+  </tr>
+  <tr>
+    <td rowspan="4"><strong>测试</strong></td>
+    <td><code>npm run smoke:guest</code></td>
+    <td>游客先逛后登</td>
+  </tr>
+  <tr>
+    <td><code>npm run smoke:pages</code></td>
+    <td>受保护页面（默认 :3000）</td>
+  </tr>
+  <tr>
+    <td><code>npm run smoke:api</code></td>
+    <td>匹配 · 悬赏 · 违禁词</td>
+  </tr>
+  <tr>
+    <td><code>npm run test:e2e</code></td>
+    <td>Playwright 14 项 + auto seed</td>
+  </tr>
+  <tr>
+    <td><strong>文档</strong></td>
+    <td><code>npm run docs:assets</code></td>
+    <td>重新生成 README 截图/GIF</td>
+  </tr>
+</table>
 
 ---
 
@@ -1452,8 +1695,9 @@ npm run docs:assets -- --only=marketing # 仅品牌站区块
 ```
 code_demo_web/
 ├── app/[locale]/           # 国际化页面（marketing + shell）
-├── app/api/                # 31 个 REST Route Handlers
-├── components/             # UI（Feed、Match、search/ 热榜与热搜…）
+├── app/api/                # 34 个 REST Route Handlers
+├── components/             # UI（Feed、Match、Bounty、search/ 热榜…）
+├── e2e/                    # Playwright + global-setup.ts（自动 seed）
 ├── docs/assets/readme/     # README 截图 / GIF / manifest.json
 ├── i18n/                   # next-intl 配置
 ├── lib/                    # 业务逻辑、鉴权、匹配算法
@@ -1485,6 +1729,12 @@ npm run check:i18n   # 提交前必跑
 
 ## 部署指南
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Vercel-推荐-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="vercel" />
+  <img src="https://img.shields.io/badge/Render-render.yaml-46E3B7?style=for-the-badge" alt="render" />
+  <img src="https://img.shields.io/badge/Health-/api/health-22C55E?style=for-the-badge" alt="health" />
+</p>
+
 ### Vercel
 
 1. Root Directory → `code_demo_web`（若仓库即本目录则留空）
@@ -1498,6 +1748,7 @@ npm run check:i18n   # 提交前必跑
 ### 检查清单
 
 - [ ] `DATABASE_URL` 可达 · migrate 成功 · health 200
+- [ ] `npm run db:seed`（空库时 E2E / 热榜依赖）
 - [ ] 生产关闭 `ENABLE_DEMO_LOGIN` / `ENABLE_GUEST`（按需）
 - [ ] 配置 `RESEND_API_KEY` 启用邮箱验证（可选）
 
@@ -1505,17 +1756,33 @@ npm run check:i18n   # 提交前必跑
 
 ## 开发规范
 
+<p align="center">
+  <img src="https://img.shields.io/badge/提交前-lint_+_i18n_+_tsc-6366F1?style=flat-square" alt="pre-commit" />
+  <img src="https://img.shields.io/badge/导航-lib/navConfig.ts-fuchsia?style=flat-square" alt="nav" />
+  <img src="https://img.shields.io/badge/UGC-profanity_校验-ef4444?style=flat-square" alt="moderation" />
+</p>
+
 ```bash
 npm run lint && npm run check:i18n && npx tsc --noEmit
 ```
 
-- UI 文案走 `messages/*.json`，禁止硬编码中文
-- 路由跳转用 [`i18n/navigation.ts`](./i18n/navigation.ts) 的 `Link` / `useRouter`
-- 数据库变更：`prisma migrate dev` → 提交 `prisma/migrations/`
+| 规范 | 说明 |
+|------|------|
+| **i18n** | UI 文案走 `messages/*.json`，禁止硬编码中文 |
+| **路由** | 跳转用 [`i18n/navigation.ts`](./i18n/navigation.ts) 的 `Link` / `useRouter` |
+| **数据库** | 变更用 `prisma migrate dev` → 提交 `prisma/migrations/` |
+| **头像** | 统一 [`UserAvatar`](./components/ui/UserAvatar.tsx) |
+| **违禁词** | UGC 文本走 [`profanity`](./lib/moderation/profanity.ts) |
+| **导航** | 只改 [`lib/navConfig.ts`](./lib/navConfig.ts)；新 Tab 同步 middleware、`GuestTabGate`、`loginReason` |
 
 ---
 
 ## 常见问题
+
+<p align="center">
+  <img src="https://img.shields.io/badge/❓_FAQ-9_个常见问题-64748B?style=for-the-badge" alt="faq" />
+  <a href="#快速开始"><img src="https://img.shields.io/badge/🚀_还没跑起来？→_快速开始-6366F1?style=for-the-badge" alt="quickstart" /></a>
+</p>
 
 <details>
 <summary><strong>演示账号怎么登录？</strong></summary>
@@ -1530,6 +1797,15 @@ npm run lint && npm run check:i18n && npx tsc --noEmit
 密码定义见 [`lib/auth/demoSeed.ts`](./lib/auth/demoSeed.ts)（改 `DEMO_SEED_PASSWORD` 后需重新 seed）。
 
 `founder_01` … `founder_24` **仍无密码**，仅匹配池；需 `ENABLE_DEMO_LOGIN=true` 的「快速体验」，或自行注册。
+
+</details>
+
+<details>
+<summary><strong>E2E 测试报「社区热榜找不到」或首页 Server Error？</strong></summary>
+
+1. 先 `npm run db:seed`（Playwright `e2e/global-setup.ts` 在帖子 &lt; 5 时也会自动 seed）
+2. 确保 `npm run start` 已起且端口与 `PLAYWRIGHT_BASE_URL` 一致（默认 `3000`）
+3. Neon **connection_limit:1** 时并发 E2E 可能偶发 pool timeout；可换直连 URL 或提高 pooler limit
 
 </details>
 
@@ -1594,6 +1870,12 @@ Neon 连接池并发导致，稍后重试或用 `DIRECT_URL` 直连执行 `npx p
 
 ## 相关链接
 
+<p align="center">
+  <img src="https://img.shields.io/badge/📐_架构-ARCHITECTURE.md-0284c7?style=flat-square" alt="arch" />
+  <img src="https://img.shields.io/badge/🗄_Schema-prisma/schema.prisma-2D3748?style=flat-square" alt="schema" />
+  <img src="https://img.shields.io/badge/📸_截图-docs:assets-EC4899?style=flat-square" alt="assets" />
+</p>
+
 | 资源 | 路径 |
 |------|------|
 | **技术架构与算法** | [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) |
@@ -1607,6 +1889,19 @@ Neon 连接池并发导致，稍后重试或用 `DIRECT_URL` 直连执行 `npx p
 | Render 部署 | [`render.yaml`](./render.yaml) |
 
 ---
+
+<p align="center">
+  <strong>VibeCoding 创业社交平台</strong><br/>
+  <sub>学习 · 展示 · 工具 · 匹配 · 悬赏</sub>
+</p>
+
+<p align="center">
+  <a href="#快速开始">快速开始</a> ·
+  <a href="#五大主-tab">5 Tab</a> ·
+  <a href="#产品演示">演示</a> ·
+  <a href="./docs/ARCHITECTURE.md">架构</a> ·
+  <a href="#常见问题">FAQ</a>
+</p>
 
 <p align="center">
   <sub>Built with ❤️ for the Vibe Coding community</sub>

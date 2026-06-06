@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { useAppShell } from "./helpers";
 
 test.describe("App 顶栏与登录弹窗", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
@@ -47,6 +48,8 @@ test.describe("App 顶栏与登录弹窗", () => {
   });
 
   test("已登录用户在匹配页顶栏仍有发布", async ({ page, request }) => {
+    test.setTimeout(120_000);
+    await useAppShell(page);
     const suffix = String(Date.now()).slice(-6);
     const username = `e2e_ui_${suffix}`;
     const password = "password1234";

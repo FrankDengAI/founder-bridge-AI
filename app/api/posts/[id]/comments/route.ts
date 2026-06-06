@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromCookies } from "@/lib/session";
 import { sanitizeText } from "@/lib/sanitize";
+import { checkProfanity } from "@/lib/moderation/profanity";
 
 type Ctx = { params: { id: string } };
 
@@ -37,6 +38,12 @@ export async function POST(req: Request, { params }: Ctx) {
   const text = sanitizeText(body.body, { min: 1, max: 500 });
   if (!text) {
     return NextResponse.json({ error: "评论内容无效（1–500 字）" }, { status: 400 });
+  }
+  if (checkProfanity(text).blocked) {
+    return NextResponse.json(
+      { error: "profanity", message: "Content contains prohibited words." },
+      { status: 422 },
+    );
   }
   const post = await prisma.post.findUnique({ where: { id: params.id } });
   if (!post) {

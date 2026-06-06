@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { isPostType } from "@/lib/domain/postType";
 import { getUserIdFromCookies } from "@/lib/session";
 import { sanitizeText } from "@/lib/sanitize";
+import { checkProfanity } from "@/lib/moderation/profanity";
 
 function encodeCursor(createdAt: Date, id: string) {
   return `${createdAt.toISOString()}_${id}`;
@@ -160,6 +161,14 @@ export async function POST(req: Request) {
   const title = sanitizeText(body.title, { min: 1, max: 120 });
   if (!title) {
     return NextResponse.json({ error: "标题不能为空，长度 1–120 字" }, { status: 400 });
+  }
+
+  const combinedText = [title, body.excerpt, body.body].filter(Boolean).join(" ");
+  if (checkProfanity(combinedText).blocked) {
+    return NextResponse.json(
+      { error: "profanity", message: "Content contains prohibited words." },
+      { status: 422 },
+    );
   }
 
   const user = await prisma.user.findUnique({ where: { id: sessionUserId } });

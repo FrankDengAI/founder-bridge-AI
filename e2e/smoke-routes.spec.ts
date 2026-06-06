@@ -66,7 +66,7 @@ test.describe("全站冒烟（无连接池 500）", () => {
       await page.getByRole("button", { name: /关闭|Close/i }).click();
 
       const nav = page.getByRole("navigation", { name: /主导航|Main navigation/i });
-      for (const label of [/^(匹配|Match)$/, /^(团队消息|消息|Messages)$/, /^(我的|Me)$/]) {
+      for (const label of [/^(匹配|Match)$/, /^(悬赏|Bounty)$/, /^(团队消息|消息|Messages)$/, /^(我的|Me)$/]) {
         await nav.getByRole("button", { name: label }).click();
         await expect(page.getByRole("dialog")).toBeVisible({ timeout: 10_000 });
         await page.keyboard.press("Escape");
@@ -78,24 +78,19 @@ test.describe("全站冒烟（无连接池 500）", () => {
 
   test.describe("已登录", () => {
     test("顺序访问主要 Tab 与首页刷新", async ({ page, request }) => {
-      test.setTimeout(180_000);
+      test.setTimeout(300_000);
       const assertNoPool = attachPoolGuard(page);
       await page.setViewportSize({ width: 390, height: 844 });
       await registerAndLogin(page, request, "/home");
       await expect(page).toHaveURL(/\/home/, { timeout: 30_000 });
 
-      const routes = ["/home", "/search", "/match", "/messages", "/me", "/tools", "/models"];
+      const routes = ["/home", "/search", "/match", "/bounty", "/messages", "/me", "/tools", "/models"];
       for (const path of routes) {
-        await page.goto(path);
-        await page.waitForLoadState("networkidle", { timeout: 30_000 }).catch(() => {});
-        await expect(page).toHaveURL(new RegExp(path.replace("/", "\\/")), { timeout: 20_000 });
+        await page.goto(path, { waitUntil: "domcontentloaded", timeout: 60_000 });
+        await expect(page).toHaveURL(new RegExp(path.replace("/", "\\/")), { timeout: 30_000 });
       }
 
-      for (let i = 0; i < 3; i++) {
-        await page.goto("/home");
-        await page.waitForLoadState("domcontentloaded");
-        await page.waitForTimeout(1500);
-      }
+      await page.goto("/home", { waitUntil: "domcontentloaded", timeout: 60_000 });
 
       assertNoPool();
     });

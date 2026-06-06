@@ -37,15 +37,24 @@ export type ApiMessage = {
   senderName: string;
   body: string;
   createdAt: number;
+  meta?: Record<string, unknown>;
 };
 
-export async function fetchMessages(conversationId: string): Promise<ApiMessage[]> {
+export async function fetchMessages(
+  conversationId: string,
+): Promise<{ messages: ApiMessage[]; peerLastReadAt: number | null }> {
   const res = await fetch(`/api/conversations/${conversationId}/messages`, {
     credentials: "include",
   });
-  if (!res.ok) return [];
-  const data = (await res.json()) as { messages: ApiMessage[] };
-  return data.messages ?? [];
+  if (!res.ok) return { messages: [], peerLastReadAt: null };
+  const data = (await res.json()) as {
+    messages: ApiMessage[];
+    peerLastReadAt: number | null;
+  };
+  return {
+    messages: data.messages ?? [],
+    peerLastReadAt: data.peerLastReadAt ?? null,
+  };
 }
 
 export async function sendMessage(
